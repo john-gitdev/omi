@@ -221,10 +221,11 @@ class Wal {
 class SDCardWalSync implements IWalSync {
   List<Wal> _wals = const [];
   BtDevice? _device;
-
   StreamSubscription? _storageStream;
-
   IWalSyncListener listener;
+  
+  // Fast-Fail Lock
+  bool _isLocked = false;
 
   SDCardWalSync(this.listener);
 
@@ -522,8 +523,6 @@ class SDCardWalSync implements IWalSync {
     }
 
     // --- PHASE 2: PROCESS (UPLOAD) ALL FILES SEQUENTIALLY ---
-    // Now that downloading is 100% done, we process the list of files we collected.
-    
     var limit = 2; // Batch size for uploading
     bool syncFailed = false;
 
@@ -551,8 +550,6 @@ class SDCardWalSync implements IWalSync {
       } catch (e) {
         debugPrint('SDCard sync batch failed: $e');
         syncFailed = true;
-        // Decide if you want to stop or continue trying other batches. 
-        // Usually, we stop on error to prevent data loss or disorder.
         break; 
       }
     }
@@ -575,31 +572,80 @@ class SDCardWalSync implements IWalSync {
 
   @override
   Future<SyncLocalFilesResponse?> syncAll({IWalSyncProgressListener? progress}) async {
-    var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.sdcard).toList();
-    if (wals.isEmpty) {
-      debugPrint("All synced!");
+    // Fast-Fail Check
+    if (_isLocked) {
+      debugPrint("⚠️ SDCardSync: Sync already in progress. Skipping.");
       return null;
     }
-    var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
 
-    for (var i = wals.length - 1; i >= 0; i--) {
-      var wal = wals[i];
+    _isLocked = true;
+    try {
+      var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.sdcard).toList();
+      if (wals.isEmpty) {
+        debugPrint("All synced!");
+        return null;
+      }
+      var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
 
-      wal.isSyncing = true;
-      wal.syncStartedAt = DateTime.now();
+      for (var i = wals.length - 1; i >= 0; i--) {
+        var wal = wals[i];
+
+        wal.isSyncing = true;
+        wal.syncStartedAt = DateTime.now();
+        listener.onWalUpdated();
+
+        final storageOffsetStarts = wal.storageOffset;
+
+        var partialRes = await _syncWal(wal, (offset) {
+          wal.storageOffset = offset;
+          wal.syncEtaSeconds = DateTime.now().difference(wal.syncStartedAt!).inSeconds *
+              (wal.storageTotalBytes - wal.storageOffset) ~/
+              (wal.storageOffset - storageOffsetStarts);
+          listener.onWalUpdated();
+        });
+        resp.newConversationIds
+            .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
+        resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
+            .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
+
+        wal.status = WalStatus.synced;
+        wal.isSyncing = false;
+        wal.syncStartedAt = null;
+        wal.syncEtaSeconds = null;
+        listener.onWalUpdated();
+      }
+      return resp;
+    } finally {
+      _isLocked = false;
+    }
+  }
+
+  @override
+  Future<SyncLocalFilesResponse?> syncWal({required Wal wal, IWalSyncProgressListener? progress}) async {
+    // Fast-Fail Check
+    if (_isLocked) {
+      debugPrint("⚠️ SDCardSync: Sync already in progress. Skipping.");
+      return null;
+    }
+
+    _isLocked = true;
+    try {
+      var walToSync = _wals.where((w) => w == wal).toList().first;
+      var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
+      walToSync.isSyncing = true;
+      walToSync.syncStartedAt = DateTime.now();
       listener.onWalUpdated();
 
       final storageOffsetStarts = wal.storageOffset;
 
       var partialRes = await _syncWal(wal, (offset) {
-        wal.storageOffset = offset;
-        wal.syncEtaSeconds = DateTime.now().difference(wal.syncStartedAt!).inSeconds *
-            (wal.storageTotalBytes - wal.storageOffset) ~/
-            (wal.storageOffset - storageOffsetStarts);
+        walToSync.storageOffset = offset;
+        walToSync.syncEtaSeconds = DateTime.now().difference(walToSync.syncStartedAt!).inSeconds *
+            (walToSync.storageTotalBytes - wal.storageOffset) ~/
+            (walToSync.storageOffset - storageOffsetStarts);
         listener.onWalUpdated();
       });
-      resp.newConversationIds
-          .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
+      resp.newConversationIds.addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
       resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
           .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
 
@@ -607,39 +653,12 @@ class SDCardWalSync implements IWalSync {
       wal.isSyncing = false;
       wal.syncStartedAt = null;
       wal.syncEtaSeconds = null;
+
       listener.onWalUpdated();
+      return resp;
+    } finally {
+      _isLocked = false;
     }
-    return resp;
-  }
-
-  @override
-  Future<SyncLocalFilesResponse?> syncWal({required Wal wal, IWalSyncProgressListener? progress}) async {
-    var walToSync = _wals.where((w) => w == wal).toList().first;
-    var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
-    walToSync.isSyncing = true;
-    walToSync.syncStartedAt = DateTime.now();
-    listener.onWalUpdated();
-
-    final storageOffsetStarts = wal.storageOffset;
-
-    var partialRes = await _syncWal(wal, (offset) {
-      walToSync.storageOffset = offset;
-      walToSync.syncEtaSeconds = DateTime.now().difference(walToSync.syncStartedAt!).inSeconds *
-          (walToSync.storageTotalBytes - wal.storageOffset) ~/
-          (walToSync.storageOffset - storageOffsetStarts);
-      listener.onWalUpdated();
-    });
-    resp.newConversationIds.addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
-    resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
-        .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
-
-    wal.status = WalStatus.synced;
-    wal.isSyncing = false;
-    wal.syncStartedAt = null;
-    wal.syncEtaSeconds = null;
-
-    listener.onWalUpdated();
-    return resp;
   }
 
   void setDevice(BtDevice? device) async {
@@ -671,14 +690,14 @@ class FlashPageWalSync implements IWalSync {
   int _newestPage = 0;
   int _currentSession = 0;
 
-  // Sync state tracking - distinct phases
-  // isSyncing: true when receiving data from pendant (pendant → phone)
-  // isUploading: true when uploading files to cloud (phone → cloud)
   bool _isSyncing = false;
   bool get isSyncing => _isSyncing;
 
   bool _isUploading = false;
   bool get isUploading => _isUploading;
+  
+  // Fast-Fail Lock
+  bool _isLocked = false;
 
   IWalSyncListener listener;
 
@@ -717,7 +736,14 @@ class FlashPageWalSync implements IWalSync {
     if (pendingFiles.isEmpty) {
       return SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
     }
+    
+    // Fast-Fail Check: Don't run background upload if user is manually syncing
+    if (_isLocked) {
+      debugPrint("⚠️ FlashPageSync: Manual sync active. Skipping orphan upload.");
+      return SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
+    }
 
+    _isLocked = true;
     _isUploading = true;
     listener.onWalUpdated();
     debugPrint("FlashPageSync: Uploading ${pendingFiles.length} orphaned files with sequential batches");
@@ -727,6 +753,7 @@ class FlashPageWalSync implements IWalSync {
       return result;
     } finally {
       _isUploading = false;
+      _isLocked = false;
       listener.onWalUpdated();
     }
   }
@@ -860,56 +887,78 @@ class FlashPageWalSync implements IWalSync {
 
   @override
   Future<SyncLocalFilesResponse?> syncAll({IWalSyncProgressListener? progress}) async {
-    var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.flashPage).toList();
-    if (wals.isEmpty) {
-      debugPrint("FlashPageSync: All synced!");
+    // Fast-Fail Check
+    if (_isLocked) {
+      debugPrint("⚠️ FlashPageSync: Sync already in progress. Skipping.");
       return null;
     }
 
-    var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
-
-    for (var i = wals.length - 1; i >= 0; i--) {
-      var wal = wals[i];
-
-      wal.isSyncing = true;
-      wal.syncStartedAt = DateTime.now();
-      listener.onWalUpdated();
-
-      var partialRes = await _syncWal(wal, progress);
-      if (partialRes != null) {
-        resp.newConversationIds
-            .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
-        resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
-            .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
+    _isLocked = true;
+    try {
+      var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.flashPage).toList();
+      if (wals.isEmpty) {
+        debugPrint("FlashPageSync: All synced!");
+        return null;
       }
 
-      wal.status = WalStatus.synced;
-      wal.isSyncing = false;
-      wal.syncStartedAt = null;
-      wal.syncEtaSeconds = null;
-      listener.onWalUpdated();
-    }
+      var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
 
-    return resp;
+      for (var i = wals.length - 1; i >= 0; i--) {
+        var wal = wals[i];
+
+        wal.isSyncing = true;
+        wal.syncStartedAt = DateTime.now();
+        listener.onWalUpdated();
+
+        var partialRes = await _syncWal(wal, progress);
+        if (partialRes != null) {
+          resp.newConversationIds
+              .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
+          resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
+              .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
+        }
+
+        wal.status = WalStatus.synced;
+        wal.isSyncing = false;
+        wal.syncStartedAt = null;
+        wal.syncEtaSeconds = null;
+        listener.onWalUpdated();
+      }
+
+      return resp;
+    } finally {
+      _isLocked = false;
+    }
   }
 
   @override
   Future<SyncLocalFilesResponse?> syncWal({required Wal wal, IWalSyncProgressListener? progress}) async {
-    var walToSync = _wals.where((w) => w == wal).toList().first;
+    // Fast-Fail Check
+    if (_isLocked) {
+      debugPrint("⚠️ FlashPageSync: Sync already in progress. Skipping.");
+      return null;
+    }
 
-    walToSync.isSyncing = true;
-    walToSync.syncStartedAt = DateTime.now();
-    listener.onWalUpdated();
+    _isLocked = true;
+    try {
+      var walToSync = _wals.where((w) => w == wal).toList().first;
 
-    var resp = await _syncWal(walToSync, progress);
+      walToSync.isSyncing = true;
+      walToSync.syncStartedAt = DateTime.now();
+      listener.onWalUpdated();
 
-    walToSync.status = WalStatus.synced;
-    walToSync.isSyncing = false;
-    walToSync.syncStartedAt = null;
-    walToSync.syncEtaSeconds = null;
+      var resp = await _syncWal(walToSync, progress);
 
-    listener.onWalUpdated();
-    return resp;
+      walToSync.status = WalStatus.synced;
+      walToSync.isSyncing = false;
+      walToSync.syncStartedAt = null;
+      walToSync.syncEtaSeconds = null;
+
+      listener.onWalUpdated();
+      return resp;
+    } finally {
+      _isLocked = false;
+    }
   }
 
   Future<SyncLocalFilesResponse> _uploadAllPendingFilesSequential({bool continuous = false}) async {
@@ -1140,13 +1189,16 @@ class FlashPageWalSync implements IWalSync {
             }
 
             // Start background upload after first 3 files saved
-            /*if (!uploadStarted && filesSaved >= 2) {
+            // REMOVED: Concurrent uploads disabled to force stable sequential processing
+            /*
+            if (!uploadStarted && filesSaved >= 2) {
               uploadStarted = true;
               _isUploading = true;
               listener.onWalUpdated();
               debugPrint("FlashPageSync: Starting background upload while syncing continues");
               backgroundUpload = _uploadAllPendingFilesSequential(continuous: true);
-            }*/ //removed code so limitless pendant will also be sequential
+            }
+            */
           }
 
           accumulatedFrames.clear();
@@ -1319,6 +1371,9 @@ class LocalWalSync implements IWalSync {
 
   List<List<int>> _frames = [];
   List<bool> _frameSynced = []; // Boolean array matching _frames size
+  
+  // ADD THIS FLAG
+  bool _isLocked = false;
 
   Timer? _chunkingTimer;
   Timer? _flushingTimer;
@@ -1579,71 +1634,170 @@ class LocalWalSync implements IWalSync {
 
   @override
   Future<SyncLocalFilesResponse?> syncAll({IWalSyncProgressListener? progress}) async {
-    await _flush();
-
-    var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.disk).toList();
-    if (wals.isEmpty) {
-      debugPrint("All synced!");
+    // ADD FAST-FAIL CHECK
+    if (_isLocked) {
+      debugPrint("⚠️ LocalWalSync: Sync already in progress. Skipping.");
       return null;
     }
 
-    // Empty resp
-    var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
+    _isLocked = true;
+    try {
+      await _flush();
 
-    var steps = 3;
-    for (var i = wals.length - 1; i >= 0; i -= steps) {
-      var right = i;
-      var left = right - steps;
-      if (left < 0) {
-        left = 0;
+      var wals = _wals.where((w) => w.status == WalStatus.miss && w.storage == WalStorage.disk).toList();
+      if (wals.isEmpty) {
+        debugPrint("All synced!");
+        return null;
       }
 
-      List<File> files = [];
-      for (var j = left; j <= right; j++) {
-        var wal = wals[j];
-        debugPrint("sync id ${wal.id} ${wal.timerStart}");
-        if (wal.filePath == null) {
-          debugPrint("file path is not found. wal id ${wal.id}");
-          wal.status = WalStatus.corrupted;
-          continue;
+      // Empty resp
+      var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
+
+      var steps = 3;
+      for (var i = wals.length - 1; i >= 0; i -= steps) {
+        var right = i;
+        var left = right - steps;
+        if (left < 0) {
+          left = 0;
         }
 
-        final fullPath = await Wal.getFilePath(wal.filePath);
-        debugPrint("sync wal: ${wal.id} file: $fullPath");
-
-        try {
-          if (fullPath == null) {
-            debugPrint("could not construct file path for wal id ${wal.id}");
+        List<File> files = [];
+        for (var j = left; j <= right; j++) {
+          var wal = wals[j];
+          debugPrint("sync id ${wal.id} ${wal.timerStart}");
+          if (wal.filePath == null) {
+            debugPrint("file path is not found. wal id ${wal.id}");
             wal.status = WalStatus.corrupted;
             continue;
           }
 
+          final fullPath = await Wal.getFilePath(wal.filePath);
+          debugPrint("sync wal: ${wal.id} file: $fullPath");
+
+          try {
+            if (fullPath == null) {
+              debugPrint("could not construct file path for wal id ${wal.id}");
+              wal.status = WalStatus.corrupted;
+              continue;
+            }
+
+            File file = File(fullPath);
+            if (!file.existsSync()) {
+              debugPrint("file $fullPath does not exist");
+              wal.status = WalStatus.corrupted;
+              continue;
+            }
+            files.add(file);
+            wal.isSyncing = true;
+          } catch (e) {
+            wal.status = WalStatus.corrupted;
+            debugPrint(e.toString());
+          }
+        }
+
+        if (files.isEmpty) {
+          debugPrint("Files are empty");
+          continue;
+        }
+
+        // Progress
+        progress?.onWalSyncedProgress((left).toDouble() / wals.length);
+
+        // Sync
+        listener.onWalUpdated();
+        try {
+          var partialRes = await syncLocalFiles(files);
+
+          // Ensure unique
+          resp.newConversationIds
+              .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
+          resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
+              .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
+
+          // Success - update status to synced
+          for (var j = left; j <= right; j++) {
+            if (j < wals.length) {
+              var wal = wals[j];
+              wals[j].status = WalStatus.synced; // ref to _wals[]
+              wals[j].isSyncing = false;
+              wals[j].syncStartedAt = null;
+              wals[j].syncEtaSeconds = null;
+
+              // Send
+              listener.onWalSynced(wal);
+            }
+          }
+        } catch (e) {
+          debugPrint('Local WAL sync failed: $e');
+          // Reset syncing state for failed WALs
+          for (var j = left; j <= right; j++) {
+            if (j < wals.length) {
+              wals[j].isSyncing = false;
+              wals[j].syncStartedAt = null;
+              wals[j].syncEtaSeconds = null;
+            }
+          }
+          rethrow;
+        }
+
+        await _saveWalsToFile();
+        listener.onWalUpdated();
+      }
+
+      // Progress
+      progress?.onWalSyncedProgress(1.0);
+      return resp;
+    } finally {
+      _isLocked = false;
+    }
+  }
+
+  @override
+  Future<SyncLocalFilesResponse?> syncWal({required Wal wal, IWalSyncProgressListener? progress}) async {
+    // ADD FAST-FAIL CHECK
+    if (_isLocked) {
+      debugPrint("⚠️ LocalWalSync: Sync already in progress. Skipping.");
+      return null;
+    }
+
+    _isLocked = true;
+    try {
+      await _flush();
+
+      var walToSync = _wals.where((w) => w == wal).toList().first;
+
+      // Empty resp
+      var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
+
+      late File walFile;
+      if (wal.filePath == null) {
+        debugPrint("file path is not found. wal id ${wal.id}");
+        wal.status = WalStatus.corrupted;
+      }
+      try {
+        final fullPath = await Wal.getFilePath(wal.filePath);
+        if (fullPath == null) {
+          debugPrint("could not construct file path for wal id ${wal.id}");
+          wal.status = WalStatus.corrupted;
+        } else {
           File file = File(fullPath);
           if (!file.existsSync()) {
             debugPrint("file $fullPath does not exist");
             wal.status = WalStatus.corrupted;
-            continue;
+          } else {
+            walFile = file;
+            wal.isSyncing = true;
           }
-          files.add(file);
-          wal.isSyncing = true;
-        } catch (e) {
-          wal.status = WalStatus.corrupted;
-          debugPrint(e.toString());
         }
+      } catch (e) {
+        wal.status = WalStatus.corrupted;
+        debugPrint(e.toString());
       }
-
-      if (files.isEmpty) {
-        debugPrint("Files are empty");
-        continue;
-      }
-
-      // Progress
-      progress?.onWalSyncedProgress((left).toDouble() / wals.length);
 
       // Sync
       listener.onWalUpdated();
       try {
-        var partialRes = await syncLocalFiles(files);
+        var partialRes = await syncLocalFiles([walFile]);
 
         // Ensure unique
         resp.newConversationIds
@@ -1652,107 +1806,30 @@ class LocalWalSync implements IWalSync {
             .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
 
         // Success - update status to synced
-        for (var j = left; j <= right; j++) {
-          if (j < wals.length) {
-            var wal = wals[j];
-            wals[j].status = WalStatus.synced; // ref to _wals[]
-            wals[j].isSyncing = false;
-            wals[j].syncStartedAt = null;
-            wals[j].syncEtaSeconds = null;
+        walToSync.status = WalStatus.synced; // ref to _wals[]
+        walToSync.isSyncing = false;
+        walToSync.syncStartedAt = null;
+        walToSync.syncEtaSeconds = null;
 
-            // Send
-            listener.onWalSynced(wal);
-          }
-        }
+        // Send
+        listener.onWalSynced(wal);
       } catch (e) {
-        debugPrint('Local WAL sync failed: $e');
-        // Reset syncing state for failed WALs
-        for (var j = left; j <= right; j++) {
-          if (j < wals.length) {
-            wals[j].isSyncing = false;
-            wals[j].syncStartedAt = null;
-            wals[j].syncEtaSeconds = null;
-          }
-        }
+        debugPrint('Single WAL sync failed: $e');
+        // Reset syncing state for failed WAL
+        walToSync.isSyncing = false;
+        walToSync.syncStartedAt = null;
+        walToSync.syncEtaSeconds = null;
         rethrow;
       }
 
       await _saveWalsToFile();
       listener.onWalUpdated();
+
+      progress?.onWalSyncedProgress(1.0);
+      return resp;
+    } finally {
+      _isLocked = false;
     }
-
-    // Progress
-    progress?.onWalSyncedProgress(1.0);
-    return resp;
-  }
-
-  @override
-  Future<SyncLocalFilesResponse?> syncWal({required Wal wal, IWalSyncProgressListener? progress}) async {
-    await _flush();
-
-    var walToSync = _wals.where((w) => w == wal).toList().first;
-
-    // Empty resp
-    var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
-
-    late File walFile;
-    if (wal.filePath == null) {
-      debugPrint("file path is not found. wal id ${wal.id}");
-      wal.status = WalStatus.corrupted;
-    }
-    try {
-      final fullPath = await Wal.getFilePath(wal.filePath);
-      if (fullPath == null) {
-        debugPrint("could not construct file path for wal id ${wal.id}");
-        wal.status = WalStatus.corrupted;
-      } else {
-        File file = File(fullPath);
-        if (!file.existsSync()) {
-          debugPrint("file $fullPath does not exist");
-          wal.status = WalStatus.corrupted;
-        } else {
-          walFile = file;
-          wal.isSyncing = true;
-        }
-      }
-    } catch (e) {
-      wal.status = WalStatus.corrupted;
-      debugPrint(e.toString());
-    }
-
-    // Sync
-    listener.onWalUpdated();
-    try {
-      var partialRes = await syncLocalFiles([walFile]);
-
-      // Ensure unique
-      resp.newConversationIds
-          .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
-      resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
-          .where((id) => !resp.updatedConversationIds.contains(id) && !resp.newConversationIds.contains(id)));
-
-      // Success - update status to synced
-      walToSync.status = WalStatus.synced; // ref to _wals[]
-      walToSync.isSyncing = false;
-      walToSync.syncStartedAt = null;
-      walToSync.syncEtaSeconds = null;
-
-      // Send
-      listener.onWalSynced(wal);
-    } catch (e) {
-      debugPrint('Single WAL sync failed: $e');
-      // Reset syncing state for failed WAL
-      walToSync.isSyncing = false;
-      walToSync.syncStartedAt = null;
-      walToSync.syncEtaSeconds = null;
-      rethrow;
-    }
-
-    await _saveWalsToFile();
-    listener.onWalUpdated();
-
-    progress?.onWalSyncedProgress(1.0);
-    return resp;
   }
 }
 
