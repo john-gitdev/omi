@@ -560,15 +560,16 @@ def _reprocess_conversation_after_update(uid: str, conversation_id: str, languag
     print(f'Successfully reprocessed conversation {conversation_id}')
 
 
-def process_segment(path: str, uid: str, response: dict, source: ConversationSource = ConversationSource.omi):
+def process_segment(path: str, uid: str, response: dict, memory_languages: dict, db_lock: threading.Lock, source: ConversationSource = ConversationSource.omi):
     url = get_syncing_file_temporal_signed_url(path)
-
+    
     def delete_file():
         time.sleep(480)
         delete_syncing_temporal_file(path)
 
     threading.Thread(target=delete_file).start()
 
+    # 1. Transcribe (Slow, safe to run in parallel)
     words, language = deepgram_prerecorded(url, speakers_count=3, attempts=0, return_language=True)
     transcript_segments: List[TranscriptSegment] = postprocess_words(words, 0)
     if not transcript_segments:
@@ -577,62 +578,65 @@ def process_segment(path: str, uid: str, response: dict, source: ConversationSou
 
     timestamp = get_timestamp_from_path(path)
     segment_end_timestamp = timestamp + transcript_segments[-1].end
-    closest_memory = get_closest_conversation_to_timestamps(uid, timestamp, segment_end_timestamp)
 
-    if not closest_memory:
-        started_at = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-        finished_at = datetime.fromtimestamp(segment_end_timestamp, tz=timezone.utc)
-        create_memory = CreateConversation(
-            started_at=started_at,
-            finished_at=finished_at,
-            transcript_segments=transcript_segments,
-            source=source,
-        )
-        created = process_conversation(uid, language, create_memory)
-        response['new_memories'].add(created.id)
-    else:
+    # 2. Critical Section (Fast, must be sequential)
+    # We lock here so multiple threads don't overwrite each other's DB updates
+    with db_lock:
+        closest_memory = get_closest_conversation_to_timestamps(uid, timestamp, segment_end_timestamp)
 
-        transcript_segments = [s.dict() for s in transcript_segments]
+        if closest_memory:
+            memory_languages[closest_memory['id']] = language
 
-        # assign timestamps to each segment
-        for segment in transcript_segments:
-            segment['timestamp'] = timestamp + segment['start']
-        for segment in closest_memory['transcript_segments']:
-            segment['timestamp'] = closest_memory['started_at'].timestamp() + segment['start']
+        if not closest_memory:
+            # Create new memory
+            started_at = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+            finished_at = datetime.fromtimestamp(segment_end_timestamp, tz=timezone.utc)
+            create_memory = CreateConversation(
+                started_at=started_at,
+                finished_at=finished_at,
+                transcript_segments=transcript_segments,
+                source=source,
+            )
+            # Process immediately for new memories
+            created = process_conversation(uid, language, create_memory)
+            response['new_memories'].add(created.id)
+        else:
+            # Append to existing memory
+            transcript_segments = [s.dict() for s in transcript_segments]
 
-        # merge and sort segments by start timestamp
-        segments = closest_memory['transcript_segments'] + transcript_segments
-        segments.sort(key=lambda x: x['timestamp'])
+            # assign timestamps
+            for segment in transcript_segments:
+                segment['timestamp'] = timestamp + segment['start']
+            for segment in closest_memory['transcript_segments']:
+                segment['timestamp'] = closest_memory['started_at'].timestamp() + segment['start']
 
-        # fix segment.start .end to be relative to the memory
-        for i, segment in enumerate(segments):
-            duration = segment['end'] - segment['start']
-            segment['start'] = segment['timestamp'] - closest_memory['started_at'].timestamp()
-            segment['end'] = segment['start'] + duration
+            # merge and sort
+            segments = closest_memory['transcript_segments'] + transcript_segments
+            segments.sort(key=lambda x: x['timestamp'])
 
-        # Calculate new finished_at based on the latest segment
-        last_segment_end = segments[-1]['end'] if segments else 0
-        new_finished_at = datetime.fromtimestamp(
-            closest_memory['started_at'].timestamp() + last_segment_end, tz=timezone.utc
-        )
+            # fix relative timestamps
+            for i, segment in enumerate(segments):
+                duration = segment['end'] - segment['start']
+                segment['start'] = segment['timestamp'] - closest_memory['started_at'].timestamp()
+                segment['end'] = segment['start'] + duration
 
-        # Ensure finished_at doesn't go backwards
-        if new_finished_at < closest_memory['finished_at']:
-            new_finished_at = closest_memory['finished_at']
+            # Calculate new finished_at
+            last_segment_end = segments[-1]['end'] if segments else 0
+            new_finished_at = datetime.fromtimestamp(
+                closest_memory['started_at'].timestamp() + last_segment_end, tz=timezone.utc
+            )
 
-        # remove timestamp field
-        for segment in segments:
-            segment.pop('timestamp')
+            if new_finished_at < closest_memory['finished_at']:
+                new_finished_at = closest_memory['finished_at']
 
-        # save with updated finished_at
-        response['updated_memories'].add(closest_memory['id'])
-        update_conversation_segments(uid, closest_memory['id'], segments, finished_at=new_finished_at)
+            for segment in segments:
+                segment.pop('timestamp')
 
-        # If the conversation was previously discarded, reprocess it with the new segments
-        if closest_memory.get('discarded', False):
-            print(f'Conversation {closest_memory["id"]} was discarded, checking if it should be reprocessed')
-            _reprocess_conversation_after_update(uid, closest_memory['id'], language)
-
+            # Update DB
+            response['updated_memories'].add(closest_memory['id'])
+            update_conversation_segments(uid, closest_memory['id'], segments, finished_at=new_finished_at)
+            
+            # NOTE: We do NOT reprocess here. We do it once at the end.
 
 def process_audio_uploads_background(paths: List[str], uid: str, source: ConversationSource):
     print(f"Background processing started for {len(paths)} files for user {uid}")
@@ -640,7 +644,7 @@ def process_audio_uploads_background(paths: List[str], uid: str, source: Convers
     # 1. Decode to WAV
     wav_paths = decode_files_to_wav(paths)
 
-    # Helper for threading
+    # Threading Helper
     def chunk_threads(threads):
         chunk_size = 5
         for i in range(0, len(threads), chunk_size):
@@ -654,19 +658,32 @@ def process_audio_uploads_background(paths: List[str], uid: str, source: Convers
 
     print('Background VAD complete. Segments:', len(segmented_paths))
 
-    # 3. Transcription & Memory Creation
+    # 3. Transcription & Merging
     response = {'updated_memories': set(), 'new_memories': set()}
+    memory_languages = {}
+    db_lock = threading.Lock()  
+
     threads = [
         threading.Thread(
             target=process_segment,
-            args=(path, uid, response, source),
+            args=(path, uid, response, memory_languages, db_lock, source),
         )
         for path in segmented_paths
     ]
     chunk_threads(threads)
     
-    print(f"Background processing complete. Updated: {response['updated_memories']}, New: {response['new_memories']}")
-    # Optional: Send a push notification (FCM) here since the phone already got the 200 OK
+# 4. Reprocess Updated Memories
+    if response['updated_memories']:
+        print(f"Reprocessing {len(response['updated_memories'])} updated conversations...")
+        for memory_id in response['updated_memories']:
+            try:
+                # Retrieve the detected language, default to 'en' if missing
+                detected_language = memory_languages.get(memory_id, 'en') 
+                
+                print(f"Reprocessing memory {memory_id} in {detected_language}")
+                _reprocess_conversation_after_update(uid, memory_id, language=detected_language)
+            except Exception as e:
+                print(f"Failed to reprocess memory {memory_id}: {e}")
 
 @router.post("/v1/sync-local-files")
 async def sync_local_files(
