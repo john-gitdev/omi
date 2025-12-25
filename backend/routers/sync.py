@@ -7,7 +7,8 @@ import time
 import wave
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Dict
+from collections import defaultdict
 
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query, Header, Request, Response, BackgroundTasks
 from fastapi.responses import StreamingResponse
@@ -34,6 +35,43 @@ from utils.stt.vad import vad_is_empty
 
 router = APIRouter()
 
+# **********************************************
+# ************ USER LOCK MANAGER ***************
+# **********************************************
+
+class UserLockManager:
+    """
+    Manages locks per user to prevent race conditions during DB updates.
+    Uses reference counting to prevent memory leaks.
+    """
+    def __init__(self):
+        self._locks: Dict[str, threading.Lock] = {}
+        self._active_batches: Dict[str, int] = defaultdict(int)
+        self._global_lock = threading.Lock()
+
+    def get_lock(self, uid: str) -> threading.Lock:
+        """
+        Get the lock object for a user and increment the active batch count.
+        Does NOT acquire the lock.
+        """
+        with self._global_lock:
+            if uid not in self._locks:
+                self._locks[uid] = threading.Lock()
+            self._active_batches[uid] += 1
+            return self._locks[uid]
+
+    def release_usage(self, uid: str):
+        """
+        Decrement active batch count and clean up lock if unused.
+        """
+        with self._global_lock:
+            self._active_batches[uid] -= 1
+            if self._active_batches[uid] <= 0:
+                self._locks.pop(uid, None)
+                self._active_batches.pop(uid, None)
+
+user_locks = UserLockManager()
+
 
 # **********************************************
 # ******** AUDIO FORMAT CONVERSION *************
@@ -55,14 +93,11 @@ def parse_range_header(range_header: str, file_size: int) -> tuple[int, int] | N
     """
     Parse HTTP Range header and return (start, end) tuple.
     Returns None if the range is invalid.
-
-    Example: "bytes=0-1023" -> (0, 1023)
     """
     if not range_header:
         return None
 
     try:
-        # Parse "bytes=start-end" format
         if not range_header.startswith("bytes="):
             return None
 
@@ -74,21 +109,17 @@ def parse_range_header(range_header: str, file_size: int) -> tuple[int, int] | N
 
         start_str, end_str = parts
 
-        # Handle "bytes=start-" (from start to end of file)
         if start_str and not end_str:
             start = int(start_str)
             end = file_size - 1
-        # Handle "bytes=-suffix" (last N bytes)
         elif not start_str and end_str:
             suffix_length = int(end_str)
             start = max(0, file_size - suffix_length)
             end = file_size - 1
-        # Handle "bytes=start-end"
         else:
             start = int(start_str)
             end = int(end_str)
 
-        # RFC 7233: start must be valid, end can exceed file size and gets clamped
         if start < 0 or start >= file_size or start > end:
             return None
         end = min(end, file_size - 1)
@@ -129,7 +160,6 @@ def precache_conversation_audio_endpoint(
 ):
     """
     Warm the audio cache for a conversation.
-    Returns immediately - caching happens in background.
     """
     conversation = conversations_db.get_conversation(uid, conversation_id)
     if not conversation:
@@ -139,12 +169,10 @@ def precache_conversation_audio_endpoint(
     if not audio_files:
         return {"status": "no_audio", "message": "No audio files in conversation"}
 
-    # Start background parallel pre-caching for all audio files
     def _precache_all_parallel():
         print(f"Pre-caching all {len(audio_files)} audio files for conversation {conversation_id} (parallel)")
         with ThreadPoolExecutor(max_workers=4) as executor:
             futures = [executor.submit(_precache_audio_file, uid, conversation_id, af) for af in audio_files]
-            # Wait for all to complete
             for future in futures:
                 try:
                     future.result()
@@ -165,11 +193,6 @@ def get_audio_signed_urls_endpoint(
 ):
     """
     Get signed URLs for all audio files in a conversation.
-    Synchronously caches the first uncached file for immediate playback.
-    Remaining files are cached in background.
-
-    Returns:
-        List of audio file info with signed_url (if cached) or status "pending"
     """
     conversation = conversations_db.get_conversation(uid, conversation_id)
     if not conversation:
@@ -200,11 +223,9 @@ def get_audio_signed_urls_endpoint(
                 }
             )
         else:
-            # First uncached file: cache synchronously for immediate playback
             if not first_uncached_handled:
                 first_uncached_handled = True
                 _precache_audio_file(uid, conversation_id, af)
-                # Get signed URL after caching
                 signed_url = get_merged_audio_signed_url(uid, conversation_id, audio_file_id)
                 if signed_url:
                     result.append(
@@ -216,7 +237,6 @@ def get_audio_signed_urls_endpoint(
                         }
                     )
                 else:
-                    # Cache failed, return pending
                     result.append(
                         {
                             "id": audio_file_id,
@@ -236,9 +256,7 @@ def get_audio_signed_urls_endpoint(
                 )
                 uncached_files.append(af)
 
-    # Cache remaining files in background
     if uncached_files:
-
         def _cache_uncached_parallel():
             with ThreadPoolExecutor(max_workers=4) as executor:
                 futures = [executor.submit(_precache_audio_file, uid, conversation_id, af) for af in uncached_files]
@@ -269,25 +287,11 @@ def download_audio_file_endpoint(
 ):
     """
     Download audio file from private cloud sync in the specified format.
-    Merges chunks on-demand.
-
-    Args:
-        conversation_id: ID of the conversation
-        audio_file_id: ID of the audio file within the conversation
-        request: FastAPI Request object (for Range header)
-        format: Output format - 'wav' or 'pcm' (raw) (default: wav)
-        uid: User ID (from authentication)
-
-    Returns:
-        StreamingResponse with the audio file in the requested format.
-        Returns 206 Partial Content for Range requests, 200 OK for full file.
     """
-    # Verify user owns the conversation
     conversation = conversations_db.get_conversation(uid, conversation_id)
     if not conversation:
         raise HTTPException(status_code=404, detail="Conversation not found")
 
-    # Find the audio file in the conversation
     audio_files = conversation.get('audio_files', [])
     audio_file = None
     for af in audio_files:
@@ -298,7 +302,6 @@ def download_audio_file_endpoint(
     if not audio_file:
         raise HTTPException(status_code=404, detail="Audio file not found in conversation")
 
-    # Get audio data - use cache if available, otherwise merge and cache
     try:
         if not audio_file.get('chunk_timestamps'):
             raise HTTPException(status_code=500, detail="Audio file has no chunk timestamps")
@@ -323,7 +326,6 @@ def download_audio_file_endpoint(
         print(f"Error downloading audio file: {e}")
         raise HTTPException(status_code=500, detail="Failed to download audio file")
 
-    # Create descriptive filename
     filename = f"conversation_{conversation_id}_audio_{audio_file_id}.{extension}"
     file_size = len(audio_data)
 
@@ -336,7 +338,6 @@ def download_audio_file_endpoint(
     range_header = request.headers.get("Range")
 
     if range_header:
-        # Parse the range request
         range_tuple = parse_range_header(range_header, file_size)
 
         if range_tuple is None:
@@ -351,7 +352,6 @@ def download_audio_file_endpoint(
         start, end = range_tuple
         content_length = end - start + 1
 
-        # Return partial content
         return StreamingResponse(
             io.BytesIO(audio_data[start : end + 1]),
             status_code=206,
@@ -441,7 +441,6 @@ def retrieve_file_paths(files: List[UploadFile], uid: str):
     paths = []
     for file in files:
         filename = file.filename
-        # Validate the file is .bin and contains a _$timestamp.bin, if not, 400 bad request
         if not filename.endswith('.bin'):
             raise HTTPException(status_code=400, detail=f"Invalid file format {filename}")
         if '_' not in filename:
@@ -505,15 +504,6 @@ def retrieve_vad_segments(path: str, segmented_paths: set):
     voice_segments = vad_is_empty(path, return_segments=True, cache=True)
 
     segments = []
-    # should we merge more aggressively, to avoid too many small segments? ~ not for now
-    # Pros -> lesser segments, faster, less concurrency
-    # Cons -> less accuracy.
-
-    # edge case, multiple small segments that map towards the same memory .-.
-    # so ... let's merge them if distance < 120 seconds
-    # a better option would be to keep here 1s, and merge them like that after transcribing
-    # but FAL has 10 RPS limit, **let's merge it here for simplicity for now**
-
     for i, segment in enumerate(voice_segments):
         if segments and (segment['start'] - segments[-1]['end']) < 120:
             segments[-1]['end'] = segment['end']
@@ -537,16 +527,12 @@ def retrieve_vad_segments(path: str, segmented_paths: set):
 def _reprocess_conversation_after_update(uid: str, conversation_id: str, language: str):
     """
     Reprocess a conversation after new segments have been added.
-    This checks if the conversation should still be discarded and regenerates
-    the summary/structured data if it now has sufficient content.
     """
-    # Fetch the updated conversation with all segments
     conversation_data = conversations_db.get_conversation(uid, conversation_id)
     if not conversation_data:
         print(f'Conversation {conversation_id} not found for reprocessing')
         return
 
-    # Convert to Conversation object
     conversation = Conversation(**conversation_data)
 
     process_conversation(
@@ -561,153 +547,147 @@ def _reprocess_conversation_after_update(uid: str, conversation_id: str, languag
 
 
 def process_segment(path: str, uid: str, response: dict, memory_languages: dict, db_lock: threading.Lock, source: ConversationSource = ConversationSource.omi):
-    url = get_syncing_file_temporal_signed_url(path)
-    
-    def delete_file():
-        time.sleep(480)
-        delete_syncing_temporal_file(path)
+    try:
+        # Get the URL for Deepgram
+        url = get_syncing_file_temporal_signed_url(path)
 
-    threading.Thread(target=delete_file).start()
+        # 1. Transcribe (Slow, safe to run in parallel)
+        # Note: We removed the delete_file thread. Cleanup is now handled in 'finally'.
+        words, language = deepgram_prerecorded(url, speakers_count=3, attempts=0, return_language=True)
+        transcript_segments: List[TranscriptSegment] = postprocess_words(words, 0)
+        
+        if not transcript_segments:
+            print(f'Failed to get deepgram segments for {path}')
+            return
 
-    # 1. Transcribe (Slow, safe to run in parallel)
-    words, language = deepgram_prerecorded(url, speakers_count=3, attempts=0, return_language=True)
-    transcript_segments: List[TranscriptSegment] = postprocess_words(words, 0)
-    if not transcript_segments:
-        print('failed to get deepgram segments')
-        return
+        timestamp = get_timestamp_from_path(path)
+        segment_end_timestamp = timestamp + transcript_segments[-1].end
 
-    timestamp = get_timestamp_from_path(path)
-    segment_end_timestamp = timestamp + transcript_segments[-1].end
+        # 2. Critical Section (Fast, must be sequential)
+        with db_lock:
+            closest_memory = get_closest_conversation_to_timestamps(uid, timestamp, segment_end_timestamp)
 
-    # 2. Critical Section (Fast, must be sequential)
-    # We lock here so multiple threads don't overwrite each other's DB updates
-    with db_lock:
-        closest_memory = get_closest_conversation_to_timestamps(uid, timestamp, segment_end_timestamp)
+            if closest_memory:
+                memory_languages[closest_memory['id']] = language
 
-        if closest_memory:
-            memory_languages[closest_memory['id']] = language
+            if not closest_memory:
+                started_at = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+                finished_at = datetime.fromtimestamp(segment_end_timestamp, tz=timezone.utc)
+                create_memory = CreateConversation(
+                    started_at=started_at,
+                    finished_at=finished_at,
+                    transcript_segments=transcript_segments,
+                    source=source,
+                )
+                created = process_conversation(uid, language, create_memory)
+                response['new_memories'].add(created.id)
+            else:
+                transcript_segments = [s.dict() for s in transcript_segments]
+                for segment in transcript_segments:
+                    segment['timestamp'] = timestamp + segment['start']
+                for segment in closest_memory['transcript_segments']:
+                    segment['timestamp'] = closest_memory['started_at'].timestamp() + segment['start']
 
-        if not closest_memory:
-            # Create new memory
-            started_at = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-            finished_at = datetime.fromtimestamp(segment_end_timestamp, tz=timezone.utc)
-            create_memory = CreateConversation(
-                started_at=started_at,
-                finished_at=finished_at,
-                transcript_segments=transcript_segments,
-                source=source,
-            )
-            # Process immediately for new memories
-            created = process_conversation(uid, language, create_memory)
-            response['new_memories'].add(created.id)
-        else:
-            # Append to existing memory
-            transcript_segments = [s.dict() for s in transcript_segments]
+                segments = closest_memory['transcript_segments'] + transcript_segments
+                segments.sort(key=lambda x: x['timestamp'])
 
-            # assign timestamps
-            for segment in transcript_segments:
-                segment['timestamp'] = timestamp + segment['start']
-            for segment in closest_memory['transcript_segments']:
-                segment['timestamp'] = closest_memory['started_at'].timestamp() + segment['start']
+                for i, segment in enumerate(segments):
+                    duration = segment['end'] - segment['start']
+                    segment['start'] = segment['timestamp'] - closest_memory['started_at'].timestamp()
+                    segment['end'] = segment['start'] + duration
 
-            # merge and sort
-            segments = closest_memory['transcript_segments'] + transcript_segments
-            segments.sort(key=lambda x: x['timestamp'])
+                last_segment_end = segments[-1]['end'] if segments else 0
+                new_finished_at = datetime.fromtimestamp(
+                    closest_memory['started_at'].timestamp() + last_segment_end, tz=timezone.utc
+                )
 
-            # fix relative timestamps
-            for i, segment in enumerate(segments):
-                duration = segment['end'] - segment['start']
-                segment['start'] = segment['timestamp'] - closest_memory['started_at'].timestamp()
-                segment['end'] = segment['start'] + duration
+                if new_finished_at < closest_memory['finished_at']:
+                    new_finished_at = closest_memory['finished_at']
 
-            # Calculate new finished_at
-            last_segment_end = segments[-1]['end'] if segments else 0
-            new_finished_at = datetime.fromtimestamp(
-                closest_memory['started_at'].timestamp() + last_segment_end, tz=timezone.utc
-            )
+                for segment in segments:
+                    segment.pop('timestamp')
 
-            if new_finished_at < closest_memory['finished_at']:
-                new_finished_at = closest_memory['finished_at']
+                response['updated_memories'].add(closest_memory['id'])
+                update_conversation_segments(uid, closest_memory['id'], segments, finished_at=new_finished_at)
 
-            for segment in segments:
-                segment.pop('timestamp')
-
-            # Update DB
-            response['updated_memories'].add(closest_memory['id'])
-            update_conversation_segments(uid, closest_memory['id'], segments, finished_at=new_finished_at)
-            
-            # NOTE: We do NOT reprocess here. We do it once at the end.
+    except Exception as e:
+        print(f"Error processing segment {path}: {e}")
+    finally:
+        # 3. Explicit Cleanup (Always runs)
+        # We delete the file only AFTER we are completely done with it.
+        try:
+            delete_syncing_temporal_file(path)
+        except Exception as e:
+            print(f"Failed to cleanup file {path}: {e}")
 
 def process_audio_uploads_background(paths: List[str], uid: str, source: ConversationSource):
     print(f"Background processing started for {len(paths)} files for user {uid}")
     
-    # 1. Decode to WAV
     wav_paths = decode_files_to_wav(paths)
 
-    # Threading Helper
     def chunk_threads(threads):
         chunk_size = 5
         for i in range(0, len(threads), chunk_size):
             [t.start() for t in threads[i : i + chunk_size]]
             [t.join() for t in threads[i : i + chunk_size]]
 
-    # 2. VAD Segmentation
     segmented_paths = set()
     threads = [threading.Thread(target=retrieve_vad_segments, args=(path, segmented_paths)) for path in wav_paths]
     chunk_threads(threads)
 
     print('Background VAD complete. Segments:', len(segmented_paths))
 
-    # 3. Transcription & Merging
     response = {'updated_memories': set(), 'new_memories': set()}
     memory_languages = {}
-    db_lock = threading.Lock()  
 
-    threads = [
-        threading.Thread(
-            target=process_segment,
-            args=(path, uid, response, memory_languages, db_lock, source),
-        )
-        for path in segmented_paths
-    ]
-    chunk_threads(threads)
+    # 1. Get lock object (but don't acquire it yet)
+    # This prevents memory leak by counting usage
+    user_lock = user_locks.get_lock(uid)
     
-# 4. Reprocess Updated Memories
-    if response['updated_memories']:
-        print(f"Reprocessing {len(response['updated_memories'])} updated conversations...")
-        for memory_id in response['updated_memories']:
-            try:
-                # Retrieve the detected language, default to 'en' if missing
-                detected_language = memory_languages.get(memory_id, 'en') 
-                
-                print(f"Reprocessing memory {memory_id} in {detected_language}")
-                _reprocess_conversation_after_update(uid, memory_id, language=detected_language)
-            except Exception as e:
-                print(f"Failed to reprocess memory {memory_id}: {e}")
+    try:
+        threads = [
+            threading.Thread(
+                target=process_segment,
+                args=(path, uid, response, memory_languages, user_lock, source),
+            )
+            for path in segmented_paths
+        ]
+        chunk_threads(threads)
+        
+        # 4. Reprocess Updated Memories
+        if response['updated_memories']:
+            print(f"Reprocessing {len(response['updated_memories'])} updated conversations...")
+            # We lock here too to ensure we don't reprocess while a new batch is writing
+            with user_lock:
+                for memory_id in response['updated_memories']:
+                    try:
+                        detected_language = memory_languages.get(memory_id, 'en') 
+                        print(f"Reprocessing memory {memory_id} in {detected_language}")
+                        _reprocess_conversation_after_update(uid, memory_id, language=detected_language)
+                    except Exception as e:
+                        print(f"Failed to reprocess memory {memory_id}: {e}")
+                        
+    finally:
+        # 2. Release usage count so lock can be cleaned up
+        user_locks.release_usage(uid)
+
+    print(f"Background processing complete. Updated: {response['updated_memories']}, New: {response['new_memories']}")
 
 @router.post("/v1/sync-local-files")
 async def sync_local_files(
-    background_tasks: BackgroundTasks, # <--- Inject dependency
+    background_tasks: BackgroundTasks,
     files: List[UploadFile] = File(...), 
     uid: str = Depends(auth.get_current_user_uid)
 ):
-    # 1. Detect Source
     source = ConversationSource.omi
     for f in files:
         if f.filename and 'limitless' in f.filename.lower():
             source = ConversationSource.limitless
             break
 
-    # 2. Save files to disk IMMEDIATELY (Fast I/O)
-    # This takes < 1 second.
     paths = retrieve_file_paths(files, uid)
-
-    # 3. Schedule the heavy lifting for LATER
-    # The server accepts the task but doesn't run it yet.
     background_tasks.add_task(process_audio_uploads_background, paths, uid, source)
 
-    # 4. Return success IMMEDIATELY
-    # The phone receives this instantly and can upload the next batch.
     return {
         "status": "processing", 
         "message": "Uploads accepted, processing in background",
