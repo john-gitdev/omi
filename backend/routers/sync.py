@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from typing import List
 
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query, Header, Request, Response
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Query, Header, Request, Response, BackgroundTasks
 from fastapi.responses import StreamingResponse
 from opuslib import Decoder
 from pydub import AudioSegment
@@ -634,45 +634,66 @@ def process_segment(path: str, uid: str, response: dict, source: ConversationSou
             _reprocess_conversation_after_update(uid, closest_memory['id'], language)
 
 
-@router.post("/v1/sync-local-files")
-async def sync_local_files(files: List[UploadFile] = File(...), uid: str = Depends(auth.get_current_user_uid)):
-    # Improve a version without timestamp, to consider uploads from the stored in v2 device bytes.
-    # Detect source from filenames
-    source = ConversationSource.omi
-    for f in files:
-        if f.filename and 'limitless' in f.filename.lower():
-            source = ConversationSource.limitless
-            break
-
-    paths = retrieve_file_paths(files, uid)
+def process_audio_uploads_background(paths: List[str], uid: str, source: ConversationSource):
+    print(f"Background processing started for {len(paths)} files for user {uid}")
+    
+    # 1. Decode to WAV
     wav_paths = decode_files_to_wav(paths)
 
+    # Helper for threading
     def chunk_threads(threads):
         chunk_size = 5
         for i in range(0, len(threads), chunk_size):
             [t.start() for t in threads[i : i + chunk_size]]
             [t.join() for t in threads[i : i + chunk_size]]
 
+    # 2. VAD Segmentation
     segmented_paths = set()
     threads = [threading.Thread(target=retrieve_vad_segments, args=(path, segmented_paths)) for path in wav_paths]
     chunk_threads(threads)
 
-    print('sync_local_files len(segmented_paths)', len(segmented_paths))
+    print('Background VAD complete. Segments:', len(segmented_paths))
 
+    # 3. Transcription & Memory Creation
     response = {'updated_memories': set(), 'new_memories': set()}
     threads = [
         threading.Thread(
             target=process_segment,
-            args=(
-                path,
-                uid,
-                response,
-                source,
-            ),
+            args=(path, uid, response, source),
         )
         for path in segmented_paths
     ]
     chunk_threads(threads)
+    
+    print(f"Background processing complete. Updated: {response['updated_memories']}, New: {response['new_memories']}")
+    # Optional: Send a push notification (FCM) here since the phone already got the 200 OK
 
-    # notify through FCM too ?
-    return response
+@router.post("/v1/sync-local-files")
+async def sync_local_files(
+    background_tasks: BackgroundTasks, # <--- Inject dependency
+    files: List[UploadFile] = File(...), 
+    uid: str = Depends(auth.get_current_user_uid)
+):
+    # 1. Detect Source
+    source = ConversationSource.omi
+    for f in files:
+        if f.filename and 'limitless' in f.filename.lower():
+            source = ConversationSource.limitless
+            break
+
+    # 2. Save files to disk IMMEDIATELY (Fast I/O)
+    # This takes < 1 second.
+    paths = retrieve_file_paths(files, uid)
+
+    # 3. Schedule the heavy lifting for LATER
+    # The server accepts the task but doesn't run it yet.
+    background_tasks.add_task(process_audio_uploads_background, paths, uid, source)
+
+    # 4. Return success IMMEDIATELY
+    # The phone receives this instantly and can upload the next batch.
+    return {
+        "status": "processing", 
+        "message": "Uploads accepted, processing in background",
+        "new_memories": [],      
+        "updated_memories": []   
+    }

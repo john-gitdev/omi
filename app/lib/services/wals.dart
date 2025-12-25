@@ -496,80 +496,78 @@ class SDCardWalSync implements IWalSync {
 
     var resp = SyncLocalFilesResponse(newConversationIds: [], updatedConversationIds: []);
     List<File> files = [];
-    bool syncFailed = false;
+    bool downloadFailed = false;
 
-    var limit = 2;
-
-    // Read with file chunking
+    // --- PHASE 1: DOWNLOAD ALL FILES ---
     int lastOffset = 0;
     try {
       await _readStorageBytesToFile(wal, (File file, int offset) async {
-        if (syncFailed) return; // Stop processing if sync already failed
-
+        // 1. Just collect the file. Do NOT upload yet.
         files.add(file);
         lastOffset = offset;
-
-        // Sync files with batch
-        if (files.isNotEmpty && files.length % limit == 0) {
-          var syncFiles = files.sublist(0, limit);
-          files = files.sublist(limit);
-          try {
-            var partialRes = await syncLocalFiles(syncFiles);
-            resp.newConversationIds
-                .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
-            resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
-                .where((id) => !resp.updatedConversationIds.contains(id) && !resp.updatedConversationIds.contains(id)));
-          } catch (e) {
-            debugPrint('SDCard sync batch failed: $e');
-            syncFailed = true;
-
-            await _storageStream?.cancel();
-            throw Exception('SDCard sync batch failed: $e');
-          }
-
-          // Update progress without sending command (avoids restarting transfer)
-          if (!syncFailed && updates != null) {
-            updates(offset);
-          }
+        
+        // 2. Update progress so the UI bar moves while downloading
+        if (updates != null) {
+          updates(offset);
         }
       });
     } catch (e) {
-      syncFailed = true;
+      downloadFailed = true;
       await _storageStream?.cancel();
       rethrow;
     }
 
-    // Stop here if sync failed during chunking
-    if (syncFailed) {
-      throw Exception('SDCard sync failed during processing');
+    if (downloadFailed) {
+      throw Exception('SDCard download failed');
     }
 
-    // Sync remaining files
-    if (files.isNotEmpty) {
-      var syncFiles = files;
+    // --- PHASE 2: PROCESS (UPLOAD) ALL FILES SEQUENTIALLY ---
+    // Now that downloading is 100% done, we process the list of files we collected.
+    
+    var limit = 2; // Batch size for uploading
+    bool syncFailed = false;
+
+    // Loop until we have processed all files
+    while (files.isNotEmpty) {
+      // Take a batch of files (e.g., 2 at a time)
+      int endIndex = (files.length < limit) ? files.length : limit;
+      var syncFiles = files.sublist(0, endIndex);
+      
+      // Remove them from the main list so we don't process them again
+      files = files.sublist(endIndex);
+
       try {
+        debugPrint("Processing batch of ${syncFiles.length} files...");
+        
+        // Upload to backend
         var partialRes = await syncLocalFiles(syncFiles);
-        resp.newConversationIds
-            .addAll(partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
-        resp.updatedConversationIds.addAll(partialRes.updatedConversationIds
-            .where((id) => !resp.updatedConversationIds.contains(id) && !resp.updatedConversationIds.contains(id)));
+        
+        // Update response data
+        resp.newConversationIds.addAll(
+            partialRes.newConversationIds.where((id) => !resp.newConversationIds.contains(id)));
+        resp.updatedConversationIds.addAll(partialRes.updatedConversationIds.where(
+            (id) => !resp.updatedConversationIds.contains(id) && !resp.updatedConversationIds.contains(id)));
+            
       } catch (e) {
-        debugPrint('SDCard sync remaining files failed: $e');
-        // Cancel the storage stream to stop further processing
-        await _storageStream?.cancel();
-        throw Exception('SDCard sync remaining files failed: $e');
-      }
-
-      // Update offset in memory only (don't restart transfer)
-      wal.storageOffset = lastOffset;
-
-      // Callback
-      if (updates != null) {
-        updates(lastOffset);
+        debugPrint('SDCard sync batch failed: $e');
+        syncFailed = true;
+        // Decide if you want to stop or continue trying other batches. 
+        // Usually, we stop on error to prevent data loss or disorder.
+        break; 
       }
     }
 
-    // Clear file only if everything succeeded
+    if (syncFailed) {
+       throw Exception('SDCard sync failed during upload phase');
+    }
+
+    // Update offset in memory to the final offset
+    wal.storageOffset = lastOffset;
+    if (updates != null) {
+      updates(lastOffset);
+    }
+
+    // Clear file on device only if everything succeeded
     await _writeToStorage(wal.device, wal.fileNum, 1, 0);
 
     return resp;
@@ -1142,13 +1140,13 @@ class FlashPageWalSync implements IWalSync {
             }
 
             // Start background upload after first 3 files saved
-            if (!uploadStarted && filesSaved >= 2) {
+            /*if (!uploadStarted && filesSaved >= 2) {
               uploadStarted = true;
               _isUploading = true;
               listener.onWalUpdated();
               debugPrint("FlashPageSync: Starting background upload while syncing continues");
               backgroundUpload = _uploadAllPendingFilesSequential(continuous: true);
-            }
+            }*/ //removed code so limitless pendant will also be sequential
           }
 
           accumulatedFrames.clear();
