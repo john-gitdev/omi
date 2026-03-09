@@ -24,6 +24,9 @@
 #include "imu.h"
 
 #include "lib/core/sd_card.h"
+#ifdef CONFIG_OMI_OFFLINE_RECORDER
+#include "lib/core/offline_recorder.h"
+#endif
 #include "spi_flash.h"
 #include "wdog_facade.h"
 
@@ -295,6 +298,16 @@ int main(void)
         // Non-critical, continue boot
     } else {
         LOG_INF("Storage service initialized");
+    }
+#endif
+
+#ifdef CONFIG_OMI_OFFLINE_RECORDER
+    // Initialize offline recorder (writes file header with RTC timestamp)
+    ret = offline_recorder_init();
+    if (ret) {
+        LOG_ERR("Failed to initialize offline recorder (err %d)", ret);
+    } else {
+        LOG_INF("Offline recorder initialized - recording to SD card");
     }
 #endif
 
