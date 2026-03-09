@@ -30,6 +30,9 @@
 #include "settings.h"
 #include "storage.h"
 #include "rtc.h"
+#ifdef CONFIG_OMI_OFFLINE_RECORDER
+#include "offline_recorder.h"
+#endif
 LOG_MODULE_REGISTER(transport, CONFIG_LOG_DEFAULT_LEVEL);
 
 #ifdef CONFIG_OMI_ENABLE_RFSW_CTRL
@@ -429,6 +432,9 @@ features_read_handler(struct bt_conn *conn, const struct bt_gatt_attr *attr, voi
 #endif
 #ifdef CONFIG_OMI_ENABLE_WIFI
     features |= OMI_FEATURE_WIFI;
+#endif
+#ifdef CONFIG_OMI_OFFLINE_RECORDER
+    features |= OMI_FEATURE_OFFLINE_RECORDER;
 #endif
     // LED dimming is always enabled now with PWM.
     features |= OMI_FEATURE_LED_DIMMING;
@@ -871,6 +877,18 @@ void pusher(void)
             continue;
         }
 
+#ifdef CONFIG_OMI_OFFLINE_RECORDER
+        // Offline recorder mode: always write to SD card, never stream live
+        if (get_file_size() < MAX_STORAGE_BYTES && is_sd_on()) {
+            storage_full_warned = false;
+            write_to_storage();
+        } else {
+            if (!storage_full_warned) {
+                LOG_WRN("Storage full, stopping offline storage");
+                storage_full_warned = true;
+            }
+        }
+#else
         // Check BT connection and subscription
         struct bt_conn *conn = current_connection;
         bool is_subscribed = false;
@@ -903,6 +921,7 @@ void pusher(void)
             if (conn) bt_conn_unref(conn);
             k_sleep(K_MSEC(10));
         }
+#endif // CONFIG_OMI_OFFLINE_RECORDER
     }
 }
 
