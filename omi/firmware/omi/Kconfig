@@ -69,4 +69,14 @@ config OMI_ENABLE_WIFI
         "Enable the WiFi support to sync audio data over TCP."
     default n
 
+config OMI_OFFLINE_RECORDER
+    bool "Offline Recorder Mode"
+    select OMI_ENABLE_OFFLINE_STORAGE
+    help
+        "Enable offline recorder mode. Audio is always written to SD card
+         regardless of BLE connection state. BLE and WiFi are used only
+         for syncing recorded files to the companion app.
+         Recording starts automatically on boot."
+    default n
+
 endmenu
