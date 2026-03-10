@@ -5,7 +5,8 @@ import 'package:omi/utils/logger.dart';
 
 enum Environment {
   prod,
-  dev;
+  dev,
+  offline;
 
   static Environment fromFlavor() {
     return Environment.values.firstWhere(
@@ -21,12 +22,16 @@ enum Environment {
 class F {
   static Environment env = Environment.fromFlavor();
 
+  static bool get isOfflineMode => env == Environment.offline;
+
   static String get title {
     switch (env) {
       case Environment.prod:
         return 'Omi';
       case Environment.dev:
         return 'Omi Dev';
+      case Environment.offline:
+        return 'Omi Offline';
       default:
         return 'Omi Dev';
     }
