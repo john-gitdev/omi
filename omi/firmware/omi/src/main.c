@@ -33,6 +33,7 @@ LOG_MODULE_REGISTER(main, CONFIG_LOG_DEFAULT_LEVEL);
 #define BATTERY_FULL_THRESHOLD_PERCENT 98 // 98%
 extern uint8_t battery_percentage;
 #endif
+
 bool is_connected = false;
 bool is_charging = false;
 bool is_off = false;
@@ -129,6 +130,13 @@ static void boot_ready_sequence(void)
 
 void set_led_state()
 {
+    // If not charging AND user has toggled LED off via button, keep it off
+    extern bool led_state;
+    if (!is_charging && !led_state) {
+        led_off();
+        return;
+    }
+
     // If device is off, turn off all LEDs immediately
     if (is_off) {
         led_off();
@@ -163,7 +171,15 @@ void set_led_state()
             red = !blink_toggle && !is_connected;
             blink_toggle = !blink_toggle;
         }
-    } else {
+    }
+    /*
+    else if (!mic_is_running()) {
+        red = true;
+        green = true;
+        blue = false;
+    }
+    */
+    else {
         blue = is_connected;
         red = !is_connected;
     }

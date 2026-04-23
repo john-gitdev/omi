@@ -1252,9 +1252,7 @@ int transport_start()
 #endif
     //  Enable button
 #ifdef CONFIG_OMI_ENABLE_BUTTON
-    button_init();
     register_button_service();
-    activate_button_work();
 #endif
 
 // Initialize and register Haptic service if enabled
