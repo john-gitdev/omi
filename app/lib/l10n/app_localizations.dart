@@ -4827,18 +4827,6 @@ abstract class AppLocalizations {
   /// **'Track your personal goals on homepage'**
   String get trackPersonalGoalsOnHomepage;
 
-  /// Section header for daily reflection settings
-  ///
-  /// In en, this message translates to:
-  /// **'Daily Reflection'**
-  String get dailyReflection;
-
-  /// Description for daily reflection
-  ///
-  /// In en, this message translates to:
-  /// **'Get a 9 PM reminder to reflect on your day'**
-  String get get9PmReminderToReflect;
-
   /// Error message when action item description is empty
   ///
   /// In en, this message translates to:
@@ -7544,12 +7532,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track personal goals on homepage'**
   String get trackPersonalGoals;
-
-  /// Description text for daily reflection section
-  ///
-  /// In en, this message translates to:
-  /// **'Get a reminder at 9 PM to reflect on your day and capture your thoughts.'**
-  String get dailyReflectionDescription;
 
   /// No description provided for @endpointURL.
   ///
@@ -13514,18 +13496,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} conversations have been merged successfully'**
   String mergeConversationsSuccessBody(int count);
-
-  /// Title for the daily reflection notification shown at 9 PM
-  ///
-  /// In en, this message translates to:
-  /// **'Time for Daily Reflection'**
-  String get dailyReflectionNotificationTitle;
-
-  /// Body text for the daily reflection notification
-  ///
-  /// In en, this message translates to:
-  /// **'Tell me about your day'**
-  String get dailyReflectionNotificationBody;
 
   /// Title for action item reminder notifications
   ///

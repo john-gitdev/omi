@@ -2516,12 +2516,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'முதற்பக்கத்தில் உங்கள் ব்যক்திগত இலக்குகளை ট்র்যாக் செய்';
 
   @override
-  String get dailyReflection => 'தினசரி பிரதிபலனை';
-
-  @override
-  String get get9PmReminderToReflect => 'உங்கள் நாளைப் பிரதிபலிக்க 9 PM நினைவூட்டல் பெறவும்';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'செயல் உருப்படி விளக்கம் காலியாக இருக்க முடியாது';
 
   @override
@@ -3942,10 +3936,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'முகப்பில் ব்যக்তிगத இலக்குகளைக் கண்காணிக்கவும்';
-
-  @override
-  String get dailyReflectionDescription =>
-      'உங்கள் நாளைக் பிரதிபலிக்கவும் மற்றும் உங்கள் எண்ணங்களைப் பிடிக்க இரவு 9 மணிக்கு நினைவூட்டல் பান்.';
 
   @override
   String get endpointURL => 'இறுதிப்புள்ளி URL';
@@ -7238,12 +7228,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count உரையாடல்கள் வெற்றிகரமாக இணைக்கப்பட்டுள்ளன';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'தினசரி சிந்தனைக்கான நேரம்';
-
-  @override
-  String get dailyReflectionNotificationBody => 'உங்கள் நாளைப் பற்றி சொல்லுங்கள்';
 
   @override
   String get actionItemReminderTitle => 'Omi நினைவூட்டல்';

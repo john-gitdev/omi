@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "రోజువారీ ఆలోచన",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "మీ రోజుపై ఆలోచించడానికి సాయంత్రం 9 గంటలకు రిమైండర్ పొందండి",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "కార్యాచరణ అంశం వివరణ ఖాళీగా ఉండకూడదు",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "API కీలు లేనివి. ప్రారంభించడానికి ఒకటి సృష్టించండి.",
     "autoCreateWhenDetected": "పేరు గుర్తించినప్పుడు స్వయంచాలకంగా సృష్టించండి",
     "trackPersonalGoals": "హోమ్‌పేజీలో వ్యక్తిగత లక్ష్యాలను ట్రాక్ చేయండి",
-    "dailyReflectionDescription": "రాత్రి 9:00 కు మీ దిన్ను ఆలోచించుకోవటానికి మరియు మీ ఆలోచనలను కేటుకోవటానికి రిమైండర్ పొందండి.",
     "endpointURL": "ఎండ్‌పాయింట్ URL",
     "links": "లింకులు",
     "discordMemberCount": "Discord లో 8000+ సభ్యులు",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "ఆఫ్",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "రోజువారీ ప్రతిబింబ సమయం",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "మీ రోజు గురించి నాకు చెప్పండి",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi రిమైండర్",
     "@actionItemReminderTitle": {

@@ -2504,12 +2504,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Volg je persoonlijke doelen op de startpagina';
 
   @override
-  String get dailyReflection => 'Dagelijkse reflectie';
-
-  @override
-  String get get9PmReminderToReflect => 'Ontvang om 21:00 uur een herinnering om te reflecteren op je dag';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Actiepuntomschrijving mag niet leeg zijn';
 
   @override
@@ -3928,10 +3922,6 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Persoonlijke doelen volgen op de homepage';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Ontvang om 21:00 een herinnering om te reflecteren op je dag en je gedachten vast te leggen.';
 
   @override
   String get endpointURL => 'Eindpunt-URL';
@@ -7203,12 +7193,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count gesprekken zijn succesvol samengevoegd';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Tijd voor dagelijkse reflectie';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Vertel me over je dag';
 
   @override
   String get actionItemReminderTitle => 'Omi-herinnering';

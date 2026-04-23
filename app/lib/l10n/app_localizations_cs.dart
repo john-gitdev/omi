@@ -2499,12 +2499,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Sledujte své osobní cíle na domovské stránce';
 
   @override
-  String get dailyReflection => 'Denní reflexe';
-
-  @override
-  String get get9PmReminderToReflect => 'Získejte připomínku v 21:00 k zamyšlení nad svým dnem';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Popis úkolu nesmí být prázdný';
 
   @override
@@ -3914,10 +3908,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Sledovat osobní cíle na domovské stránce';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Získejte připomínku ve 21:00, abyste se zamysleli nad svým dnem a zachytili své myšlenky.';
 
   @override
   String get endpointURL => 'URL koncového bodu';
@@ -7172,12 +7162,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count konverzací bylo úspěšně sloučeno';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Čas na denní reflexi';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Pověz mi o svém dni';
 
   @override
   String get actionItemReminderTitle => 'Připomínka Omi';

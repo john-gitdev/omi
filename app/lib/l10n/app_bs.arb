@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "Dnevna refleksija",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "Dobij podsjetnik u 21:00 za razmišljanje o svom danu",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "Opis elementa akcije ne može biti prazan",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "Nema API ključeva. Stvori jedan kako bi započeo.",
     "autoCreateWhenDetected": "Automatski stvori kada je ime detektirano",
     "trackPersonalGoals": "Prati osobne ciljeve na početnoj stranici",
-    "dailyReflectionDescription": "Obavijest u 21:00 da razmislim na dan i zabilježi svoje misli.",
     "endpointURL": "URL krajnje točke",
     "links": "Veze",
     "discordMemberCount": "8000+ članova na Discordu",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "Isključeno",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "Vrijeme za dnevnu razmjenu",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "Reči mi o tvom danu",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi podsjetnik",
     "@actionItemReminderTitle": {

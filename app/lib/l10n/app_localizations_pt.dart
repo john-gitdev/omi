@@ -2471,12 +2471,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Acompanhe suas metas pessoais na página inicial';
 
   @override
-  String get dailyReflection => 'Reflexão diária';
-
-  @override
-  String get get9PmReminderToReflect => 'Receba um lembrete às 21h para refletir sobre seu dia';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'A descrição do item de ação não pode estar vazia';
 
   @override
@@ -3897,10 +3891,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Acompanhar metas pessoais na página inicial';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Receba um lembrete às 21h para refletir sobre seu dia e capturar seus pensamentos.';
 
   @override
   String get endpointURL => 'URL do Endpoint';
@@ -7176,12 +7166,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count conversas foram mescladas com sucesso';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Hora da reflexão diária';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Conte-me sobre o seu dia';
 
   @override
   String get actionItemReminderTitle => 'Lembrete do Omi';

@@ -2499,12 +2499,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Spåra dina personliga mål på startsidan';
 
   @override
-  String get dailyReflection => 'Daglig reflektion';
-
-  @override
-  String get get9PmReminderToReflect => 'Få en påminnelse kl. 21 att reflektera över din dag';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Åtgärdspostbeskrivning kan inte vara tom';
 
   @override
@@ -3921,10 +3915,6 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Spåra personliga mål på startsidan';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Få en påminnelse kl. 21 för att reflektera över din dag och fånga dina tankar.';
 
   @override
   String get endpointURL => 'Slutpunkts-URL';
@@ -7185,12 +7175,6 @@ class AppLocalizationsSv extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count konversationer har sammanfogats';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Dags för daglig reflektion';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Berätta om din dag';
 
   @override
   String get actionItemReminderTitle => 'Omi-påminnelse';

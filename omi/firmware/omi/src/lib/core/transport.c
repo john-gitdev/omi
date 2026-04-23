@@ -17,6 +17,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/settings/settings.h>
 #include <shell/shell_bt_nus.h>
+#include <zephyr/settings/settings.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/ring_buffer.h>
 
@@ -1231,6 +1232,12 @@ int transport_start()
 
     LOG_INF("Transport bluetooth initialized");
 
+    // Load settings AFTER bt_enable so BLE identity address is available
+    err = settings_load();
+    if (err) {
+        LOG_WRN("BLE settings_load failed (err %d), advertising may fail", err);
+    }
+
     if (IS_ENABLED(CONFIG_SHELL_BT_NUS)) {
         err = shell_bt_nus_init();
         if (err) {
@@ -1286,8 +1293,8 @@ int transport_start()
 #endif
     err = bt_le_adv_start(BT_LE_ADV_CONN, bt_ad, ARRAY_SIZE(bt_ad), bt_sd, ARRAY_SIZE(bt_sd));
     if (err) {
-        LOG_ERR("Transport advertising failed to start (err %d)", err);
-        return err;
+        LOG_ERR("Transport advertising failed to start (err %d), continuing without BLE", err);
+        // Non-fatal: continue with pusher and ring buffer so offline recording works
     } else {
         LOG_INF("Advertising successfully started");
     }

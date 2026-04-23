@@ -2480,12 +2480,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'تتبع أهدافك الشخصية على الصفحة الرئيسية';
 
   @override
-  String get dailyReflection => 'التأمل اليومي';
-
-  @override
-  String get get9PmReminderToReflect => 'احصل على تذكير في الساعة 9 مساءً للتأمل في يومك';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'لا يمكن أن يكون وصف عنصر الإجراء فارغًا';
 
   @override
@@ -3887,9 +3881,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'تتبع الأهداف الشخصية على الصفحة الرئيسية';
-
-  @override
-  String get dailyReflectionDescription => 'احصل على تذكير في الساعة 9 مساءً للتأمل في يومك وتدوين أفكارك.';
 
   @override
   String get endpointURL => 'عنوان URL لنقطة النهاية';
@@ -7128,12 +7119,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return 'تم دمج $count محادثات بنجاح';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'حان وقت التأمل اليومي';
-
-  @override
-  String get dailyReflectionNotificationBody => 'أخبرني عن يومك';
 
   @override
   String get actionItemReminderTitle => 'تذكير Omi';

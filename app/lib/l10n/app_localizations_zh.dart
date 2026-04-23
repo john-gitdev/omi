@@ -2450,12 +2450,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => '在主页上跟踪您的个人目标';
 
   @override
-  String get dailyReflection => '每日反思';
-
-  @override
-  String get get9PmReminderToReflect => '在晚上 9 点收到提醒，回顾您的一天';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => '操作项描述不能为空';
 
   @override
@@ -3845,9 +3839,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => '在主页上跟踪个人目标';
-
-  @override
-  String get dailyReflectionDescription => '晚上 9 点收到提醒，反思您的一天并记录想法。';
 
   @override
   String get endpointURL => '端点 URL';
@@ -7046,12 +7037,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count个会话已成功合并';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => '每日反思时间';
-
-  @override
-  String get dailyReflectionNotificationBody => '告诉我你今天过得怎么样';
 
   @override
   String get actionItemReminderTitle => 'Omi 提醒';

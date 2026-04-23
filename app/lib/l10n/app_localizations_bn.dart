@@ -2503,12 +2503,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'হোমপেজে ব্যক্তিগত লক্ষ্য ট্র্যাক করুন';
 
   @override
-  String get dailyReflection => 'দৈনিক প্রতিফলন';
-
-  @override
-  String get get9PmReminderToReflect => 'আপনার দিন প্রতিফলিত করার জন্য রাত ৯টায় অনুস্মারক পান';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'কর্মপরিকল্পনার বর্ণনা খালি হতে পারে না';
 
   @override
@@ -3920,10 +3914,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'হোমপেজে ব্যক্তিগত লক্ষ্য ট্র্যাক করুন';
-
-  @override
-  String get dailyReflectionDescription =>
-      'আপনার দিনটি প্রতিফলিত করতে এবং আপনার চিন্তাভাবনা ক্যাপচার করতে রাত ৯টায় একটি অনুস্মারক পান।';
 
   @override
   String get endpointURL => 'এন্ডপয়েন্ট URL';
@@ -7192,12 +7182,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count টি কথোপকথন সফলভাবে একীভূত হয়েছে';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'দৈনিক প্রতিফলনের সময়';
-
-  @override
-  String get dailyReflectionNotificationBody => 'আমাকে আপনার দিন সম্পর্কে বলুন';
 
   @override
   String get actionItemReminderTitle => 'Omi রিমাইন্ডার';

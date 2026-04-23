@@ -2496,12 +2496,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Sekite savo asmeninius tikslus pagrindiniame puslapyje';
 
   @override
-  String get dailyReflection => 'Dienos refleksija';
-
-  @override
-  String get get9PmReminderToReflect => 'Gaukite priminimą 21 val. apmąstyti savo dieną';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Veiksmo elemento aprašymas negali būti tuščias';
 
   @override
@@ -3916,9 +3910,6 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Stebėti asmeninius tikslus pagrindiniame puslapyje';
-
-  @override
-  String get dailyReflectionDescription => 'Gaukite priminimą 21 val. apmąstyti savo dieną ir užfiksuoti mintis.';
 
   @override
   String get endpointURL => 'Galinio taško URL';
@@ -7185,12 +7176,6 @@ class AppLocalizationsLt extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count pokalbiai sėkmingai sujungti';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Laikas dienos refleksijai';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Papasakok apie savo dieną';
 
   @override
   String get actionItemReminderTitle => 'Omi priminimas';

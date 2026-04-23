@@ -2508,12 +2508,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Urmărește-ți obiectivele personale pe pagina principală';
 
   @override
-  String get dailyReflection => 'Reflecție zilnică';
-
-  @override
-  String get get9PmReminderToReflect => 'Primește o reamintire la ora 21 pentru a reflecta asupra zilei tale';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Descrierea elementului de acțiune nu poate fi goală';
 
   @override
@@ -3938,10 +3932,6 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Urmăriți obiective personale pe pagina de pornire';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Primește un memento la ora 21 pentru a reflecta asupra zilei și a-ți nota gândurile.';
 
   @override
   String get endpointURL => 'URL punct final';
@@ -7215,12 +7205,6 @@ class AppLocalizationsRo extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count conversații au fost îmbinate cu succes';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'E timpul pentru reflecție zilnică';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Povestește-mi despre ziua ta';
 
   @override
   String get actionItemReminderTitle => 'Memento Omi';

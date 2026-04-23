@@ -2455,12 +2455,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => '홈페이지에서 개인 목표 추적';
 
   @override
-  String get dailyReflection => '일일 성찰';
-
-  @override
-  String get get9PmReminderToReflect => '오후 9시에 하루를 되돌아보는 알림 받기';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => '실행 항목 설명은 비워둘 수 없습니다';
 
   @override
@@ -3850,9 +3844,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => '홈페이지에서 개인 목표 추적';
-
-  @override
-  String get dailyReflectionDescription => '오후 9시에 하루를 되돌아보고 생각을 기록하라는 알림을 받습니다.';
 
   @override
   String get endpointURL => '엔드포인트 URL';
@@ -7057,12 +7048,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count개의 대화가 성공적으로 병합되었습니다';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => '일일 성찰 시간입니다';
-
-  @override
-  String get dailyReflectionNotificationBody => '오늘 하루에 대해 말해주세요';
 
   @override
   String get actionItemReminderTitle => 'Omi 알림';

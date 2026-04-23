@@ -2502,12 +2502,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'ردیابی اهداف شخصی خود در صفحه اصلی';
 
   @override
-  String get dailyReflection => 'تأمل روزانه';
-
-  @override
-  String get get9PmReminderToReflect => 'یادآوری ساعت 9 شب برای تأمل در روز خود';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'توضیح مورد اقدام نمی‌تواند خالی باشد';
 
   @override
@@ -3921,9 +3915,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'پیگیری اهداف شخصی در صفحه اصلی';
-
-  @override
-  String get dailyReflectionDescription => 'یادآوری در ساعت ۹ شب برای تفکر در روز خود و ثبت افکار خود.';
 
   @override
   String get endpointURL => 'URL نقطه پایانی';
@@ -7185,12 +7176,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count گفتگو با موفقیت ادغام شدند';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'وقت تأمل روزانه';
-
-  @override
-  String get dailyReflectionNotificationBody => 'درباره روز خود برای من بگویید';
 
   @override
   String get actionItemReminderTitle => 'یادآور Omi';

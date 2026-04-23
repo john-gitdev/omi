@@ -2484,12 +2484,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'ติดตามเป้าหมายส่วนตัวบนหน้าแรก';
 
   @override
-  String get dailyReflection => 'การทบทวนรายวัน';
-
-  @override
-  String get get9PmReminderToReflect => 'รับการแจ้งเตือนเวลา 21:00 น. เพื่อทบทวนวันของคุณ';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'คำอธิบายรายการการดำเนินการต้องไม่ว่างเปล่า';
 
   @override
@@ -3895,9 +3889,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'ติดตามเป้าหมายส่วนตัวบนหน้าแรก';
-
-  @override
-  String get dailyReflectionDescription => 'รับการเตือนความจำเวลา 21.00 น. เพื่อทบทวนวันของคุณและบันทึกความคิด';
 
   @override
   String get endpointURL => 'URL ปลายทาง';
@@ -7145,12 +7136,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return 'รวม $count การสนทนาสำเร็จแล้ว';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'ถึงเวลาทบทวนรายวัน';
-
-  @override
-  String get dailyReflectionNotificationBody => 'เล่าให้ฟังเกี่ยวกับวันของคุณ';
 
   @override
   String get actionItemReminderTitle => 'การแจ้งเตือน Omi';

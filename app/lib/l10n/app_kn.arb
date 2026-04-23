@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "ದೈನಿಕ ಪ್ರತಿಫಲನ",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "ನಿಮ್ಮ ದಿನದ ಮೇಲೆ ಪ್ರತಿಫಲಿತ ಮಾಡಲು ರಾತ್ರಿ 9 ಬಾರಿ ಸ್ಮರಣೆ ಪಡೆಯಿರಿ",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "ಕ್ರಿಯೆ ಪದ ವಿವರಣೆ ಖಾಲಿ ಇರಬಾರದು",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "API ಕೀಲಿಗಳು ಇಲ್ಲ. ಪ್ರಾರಂಭಿಸಲು ಒಂದು ರಚಿಸಿ.",
     "autoCreateWhenDetected": "ಹೆಸರನ್ನು ಪತ್ತೆ ಮಾಡಿದಾಗ ಸ್ವಯಂ-ರಚಿಸಿ",
     "trackPersonalGoals": "ಮುಖ್ಯ ಪುಟದಲ್ಲಿ ವ್ಯಕ್ತಿಗತ ಲಕ್ಷ್ಯಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",
-    "dailyReflectionDescription": "ನಿಮ್ಮ ದಿನವನ್ನು ಪ್ರತಿಫಲಿತ ಮಾಡಲು ಮತ್ತು ನಿಮ್ಮ ಆಲೋಚನೆಗಳನ್ನು ಹಿಡಿದುಕೊಳ್ಳಲು ರಾತ್ರಿ 9 ಗಂಟೆಗೆ ಸ್ಮರಣೀಯ ಪಡೆಯಿರಿ.",
     "endpointURL": "ಸಮಾಪ್ತಿ URL",
     "links": "ಲಿಂಕ್‌ಗಳು",
     "discordMemberCount": "Discord ಮಲ್ಲಸದಲ್ಲಿ 8000+ ಸದಸ್ಯರು",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "ಆಫ್",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "ದೈನಿಕ ಪ್ರತಿಫಲನದ ಸಮಯ",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "ನಿಮ್ಮ ದಿನದ ಬಗ್ಗೆ ನನಗೆ ಹೇಳಿ",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi ಜ್ಞಾಪಕ",
     "@actionItemReminderTitle": {

@@ -2485,12 +2485,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'עקוב אחר היעדים האישיים שלך בעמוד הבית';
 
   @override
-  String get dailyReflection => 'השתקפות יומית';
-
-  @override
-  String get get9PmReminderToReflect => 'קבל תזכורת בשעה 21:00 להשתקפות על היום שלך';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'תיאור פריט פעולה לא יכול להיות ריק';
 
   @override
@@ -3891,9 +3885,6 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'עקוב אחר יעדים אישיים בדף הבית';
-
-  @override
-  String get dailyReflectionDescription => 'קבל תזכורת ב-9 בערב להתבוננות על היום שלך וללכידת המחשבות שלך.';
 
   @override
   String get endpointURL => 'כתובת URL של נקודת קצה';
@@ -7122,12 +7113,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count שיחות מוזגו בהצלחה';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'זמן להתרכזות יומית';
-
-  @override
-  String get dailyReflectionNotificationBody => 'ספר לי על היום שלך';
 
   @override
   String get actionItemReminderTitle => 'תזכורת Omi';

@@ -338,9 +338,8 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
                   title: context.l10n.offlineSync,
                   icon: const FaIcon(FontAwesomeIcons.solidCloud, color: Color(0xFF8E8E93), size: 20),
                   onTap: () {
-                    final page = SharedPreferencesUtil().deviceSupportsMultiFileSync
-                        ? const AutoSyncPage()
-                        : const SyncPage();
+                    final page =
+                        SharedPreferencesUtil().deviceSupportsMultiFileSync ? const AutoSyncPage() : const SyncPage();
                     Navigator.of(context).push(MaterialPageRoute(builder: (context) => page));
                   },
                 ),
@@ -374,10 +373,7 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
                 ),
                 Consumer<UsageProvider>(
                   builder: (context, usageProvider, child) {
-                    final sp2 = usageProvider.subscription?.subscription.plan;
-                    final isUnlimited =
-                        sp2 == PlanType.unlimited || sp2 == PlanType.operator || sp2 == PlanType.architect;
-                    if (!isUnlimited) return const SizedBox.shrink();
+                    if (!usageProvider.shouldShowPhoneCallsEntry) return const SizedBox.shrink();
                     return Column(
                       children: [
                         const Divider(height: 1, color: Color(0xFF3C3C43)),

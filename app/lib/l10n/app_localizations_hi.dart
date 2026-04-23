@@ -2470,12 +2470,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'होमपेज पर अपने व्यक्तिगत लक्ष्यों को ट्रैक करें';
 
   @override
-  String get dailyReflection => 'दैनिक चिंतन';
-
-  @override
-  String get get9PmReminderToReflect => 'अपने दिन पर विचार करने के लिए रात 9 बजे रिमाइंडर प्राप्त करें';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'कार्य आइटम विवरण खाली नहीं हो सकता';
 
   @override
@@ -3891,10 +3885,6 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'होमपेज पर व्यक्तिगत लक्ष्यों को ट्रैक करें';
-
-  @override
-  String get dailyReflectionDescription =>
-      'रात 9 बजे अपने दिन पर विचार करने और अपने विचारों को कैप्चर करने के लिए एक अनुस्मारक प्राप्त करें।';
 
   @override
   String get endpointURL => 'एंडपॉइंट URL';
@@ -7156,12 +7146,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count वार्तालाप सफलतापूर्वक मर्ज किए गए';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'दैनिक चिंतन का समय';
-
-  @override
-  String get dailyReflectionNotificationBody => 'मुझे अपने दिन के बारे में बताओ';
 
   @override
   String get actionItemReminderTitle => 'Omi अनुस्मारक';

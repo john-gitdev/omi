@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "தினசரி பிரதிபலனை",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "உங்கள் நாளைப் பிரதிபலிக்க 9 PM நினைவூட்டல் பெறவும்",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "செயல் உருப்படி விளக்கம் காலியாக இருக்க முடியாது",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "API விசைகள் இல்லை. தொடங்க ஒன்றை உருவாக்கவும்.",
     "autoCreateWhenDetected": "பெயர் கண்டறியப்பட்டபோது தானாக உருவாக்கவும்",
     "trackPersonalGoals": "முகப்பில் ব்যக்তிगத இலக்குகளைக் கண்காணிக்கவும்",
-    "dailyReflectionDescription": "உங்கள் நாளைக் பிரதிபலிக்கவும் மற்றும் உங்கள் எண்ணங்களைப் பிடிக்க இரவு 9 மணிக்கு நினைவூட்டல் பান்.",
     "endpointURL": "இறுதிப்புள்ளி URL",
     "links": "இணைப்புகள்",
     "discordMemberCount": "Discord இல் 8000+ உறுப்பினர்கள்",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "முடக்கவும்",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "தினசரி சிந்தனைக்கான நேரம்",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "உங்கள் நாளைப் பற்றி சொல்லுங்கள்",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi நினைவூட்டல்",
     "@actionItemReminderTitle": {

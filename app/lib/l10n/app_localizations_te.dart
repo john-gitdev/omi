@@ -2513,12 +2513,6 @@ class AppLocalizationsTe extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'హోమ్‌పేజ్‌లో వ్యక్తిగత లక్ష్యాలను ట్రాక్ చేయండి';
 
   @override
-  String get dailyReflection => 'రోజువారీ ఆలోచన';
-
-  @override
-  String get get9PmReminderToReflect => 'మీ రోజుపై ఆలోచించడానికి సాయంత్రం 9 గంటలకు రిమైండర్ పొందండి';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'కార్యాచరణ అంశం వివరణ ఖాళీగా ఉండకూడదు';
 
   @override
@@ -3939,10 +3933,6 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'హోమ్‌పేజీలో వ్యక్తిగత లక్ష్యాలను ట్రాక్ చేయండి';
-
-  @override
-  String get dailyReflectionDescription =>
-      'రాత్రి 9:00 కు మీ దిన్ను ఆలోచించుకోవటానికి మరియు మీ ఆలోచనలను కేటుకోవటానికి రిమైండర్ పొందండి.';
 
   @override
   String get endpointURL => 'ఎండ్‌పాయింట్ URL';
@@ -7226,12 +7216,6 @@ class AppLocalizationsTe extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count సంభాషణలను విజయవంతంగా విలీనం చేయబడింది';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'రోజువారీ ప్రతిబింబ సమయం';
-
-  @override
-  String get dailyReflectionNotificationBody => 'మీ రోజు గురించి నాకు చెప్పండి';
 
   @override
   String get actionItemReminderTitle => 'Omi రిమైండర్';

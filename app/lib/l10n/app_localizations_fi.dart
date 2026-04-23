@@ -2495,12 +2495,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Seuraa henkilökohtaisia tavoitteitasi etusivulla';
 
   @override
-  String get dailyReflection => 'Päivittäinen reflektio';
-
-  @override
-  String get get9PmReminderToReflect => 'Saa muistutus klo 21 päiväsi pohtimiseen';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Toimintokohteen kuvaus ei voi olla tyhjä';
 
   @override
@@ -3915,10 +3909,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Seuraa henkilökohtaisia tavoitteita etusivulla';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Saa muistutus klo 21 reflektoidaksesi päivääsi ja tallentaaksesi ajatuksesi.';
 
   @override
   String get endpointURL => 'Päätepisteen URL';
@@ -7182,12 +7172,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count keskustelua yhdistettiin onnistuneesti';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Aika päivittäiselle reflektiolle';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Kerro minulle päivästäsi';
 
   @override
   String get actionItemReminderTitle => 'Omi-muistutus';

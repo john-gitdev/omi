@@ -2502,12 +2502,6 @@ class AppLocalizationsLv extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Izsekojiet savus personīgos mērķus sākumlapā';
 
   @override
-  String get dailyReflection => 'Ikdienas pārdomu';
-
-  @override
-  String get get9PmReminderToReflect => 'Saņemiet atgādinājumu plkst. 21, lai pārdomātu savu dienu';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Darbības vienuma apraksts nevar būt tukšs';
 
   @override
@@ -3922,10 +3916,6 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Izsekot personīgos mērķus sākumlapā';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Saņemiet atgādinājumu plkst. 21, lai pārdomātu savu dienu un piefiksētu domas.';
 
   @override
   String get endpointURL => 'Galapunkta URL';
@@ -7195,12 +7185,6 @@ class AppLocalizationsLv extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count sarunas veiksmīgi apvienotas';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Laiks ikdienas pārdomām';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Pastāsti man par savu dienu';
 
   @override
   String get actionItemReminderTitle => 'Omi atgādinājums';

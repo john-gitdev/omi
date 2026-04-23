@@ -2515,12 +2515,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Παρακολουθήστε τους προσωπικούς σας στόχους στην αρχική σελίδα';
 
   @override
-  String get dailyReflection => 'Ημερήσιος αναστοχασμός';
-
-  @override
-  String get get9PmReminderToReflect => 'Λάβετε υπενθύμιση στις 9 μ.μ. για να αναλογιστείτε την ημέρα σας';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Η περιγραφή του στοιχείου ενέργειας δεν μπορεί να είναι κενή';
 
   @override
@@ -3945,10 +3939,6 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Παρακολουθήστε προσωπικούς στόχους στην αρχική σελίδα';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Λάβετε μια υπενθύμιση στις 9 μ.μ. για να αναστοχαστείτε την ημέρα σας και να καταγράψετε τις σκέψεις σας.';
 
   @override
   String get endpointURL => 'URL τελικού σημείου';
@@ -7231,12 +7221,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count συνομιλίες συγχωνεύθηκαν επιτυχώς';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Ώρα για ημερήσιο αναστοχασμό';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Πες μου για την ημέρα σου';
 
   @override
   String get actionItemReminderTitle => 'Υπενθύμιση Omi';

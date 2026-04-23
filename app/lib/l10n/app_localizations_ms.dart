@@ -2505,12 +2505,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Jejaki matlamat peribadi anda di laman utama';
 
   @override
-  String get dailyReflection => 'Refleksi Harian';
-
-  @override
-  String get get9PmReminderToReflect => 'Dapatkan peringatan jam 9 malam untuk merenung hari anda';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Penerangan item tindakan tidak boleh kosong';
 
   @override
@@ -3928,10 +3922,6 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Jejaki matlamat peribadi pada laman utama';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Terima peringatan pada jam 9 malam untuk merenung hari anda dan mencatat fikiran anda.';
 
   @override
   String get endpointURL => 'URL Titik Akhir';
@@ -7203,12 +7193,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count perbualan berjaya digabungkan';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Masa untuk Refleksi Harian';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Ceritakan tentang hari anda';
 
   @override
   String get actionItemReminderTitle => 'Peringatan Omi';

@@ -2500,12 +2500,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Theo dõi mục tiêu cá nhân trên trang chủ';
 
   @override
-  String get dailyReflection => 'Suy ngẫm hàng ngày';
-
-  @override
-  String get get9PmReminderToReflect => 'Nhận nhắc nhở lúc 9 giờ tối để suy ngẫm về ngày của bạn';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Mô tả mục hành động không được để trống';
 
   @override
@@ -3923,10 +3917,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Theo dõi mục tiêu cá nhân trên trang chủ';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Nhận nhắc nhở lúc 9 giờ tối để suy ngẫm về ngày của bạn và ghi lại suy nghĩ.';
 
   @override
   String get endpointURL => 'URL Điểm cuối';
@@ -7187,12 +7177,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count hội thoại đã được hợp nhất thành công';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Đến giờ suy ngẫm hàng ngày';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Kể cho tôi nghe về ngày của bạn';
 
   @override
   String get actionItemReminderTitle => 'Nhắc nhở Omi';

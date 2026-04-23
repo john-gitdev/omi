@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "দৈনিক প্রতিফলন",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "আপনার দিন প্রতিফলিত করার জন্য রাত ৯টায় অনুস্মারক পান",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "কর্মপরিকল্পনার বর্ণনা খালি হতে পারে না",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "কোনো API চাবি নেই। শুরু করতে একটি তৈরি করুন।",
     "autoCreateWhenDetected": "নাম সনাক্ত হলে স্বয়ংক্রিয় তৈরি করুন",
     "trackPersonalGoals": "হোমপেজে ব্যক্তিগত লক্ষ্য ট্র্যাক করুন",
-    "dailyReflectionDescription": "আপনার দিনটি প্রতিফলিত করতে এবং আপনার চিন্তাভাবনা ক্যাপচার করতে রাত ৯টায় একটি অনুস্মারক পান।",
     "endpointURL": "এন্ডপয়েন্ট URL",
     "links": "লিঙ্ক",
     "discordMemberCount": "Discord-এ ৮০০০+ সদস্য",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "বন্ধ",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "দৈনিক প্রতিফলনের সময়",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "আমাকে আপনার দিন সম্পর্কে বলুন",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi রিমাইন্ডার",
     "@actionItemReminderTitle": {

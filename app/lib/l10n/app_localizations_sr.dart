@@ -2504,12 +2504,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Пратите своје личне циљеве на почетној страници';
 
   @override
-  String get dailyReflection => 'Дневна рефлексија';
-
-  @override
-  String get get9PmReminderToReflect => 'Добите подсетник у 21:00 да размислите о својем дану';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Опис ставке радног списка не може бити празан';
 
   @override
@@ -3924,10 +3918,6 @@ class AppLocalizationsSr extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Пратите личне циљеве на почетној страни';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Добијте подсетник у 21:00 да размислите о вашем дану и хватите своје мисли.';
 
   @override
   String get endpointURL => 'URL крајне тачке';
@@ -7192,12 +7182,6 @@ class AppLocalizationsSr extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count разговора је успешно спојено';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Време за дневну рефлексију';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Расскажите ми о вашем дану';
 
   @override
   String get actionItemReminderTitle => 'Omi подсетник';

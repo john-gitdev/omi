@@ -2501,12 +2501,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Відстежуйте особисті цілі на головній сторінці';
 
   @override
-  String get dailyReflection => 'Щоденна рефлексія';
-
-  @override
-  String get get9PmReminderToReflect => 'Отримуйте нагадування о 21:00, щоб обдумати свій день';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Опис елемента дії не може бути порожнім';
 
   @override
@@ -3922,9 +3916,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Відстежувати особисті цілі на головній сторінці';
-
-  @override
-  String get dailyReflectionDescription => 'Отримуйте нагадування о 21:00 для роздумів про свій день та запису думок.';
 
   @override
   String get endpointURL => 'URL кінцевої точки';
@@ -7190,12 +7181,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count розмов успішно об\'єднано';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Час для щоденної рефлексії';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Розкажи мені про свій день';
 
   @override
   String get actionItemReminderTitle => 'Нагадування Omi';

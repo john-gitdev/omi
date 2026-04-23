@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "Дневна рефлексија",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "Добите подсетник у 21:00 да размислите о својем дану",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "Опис ставке радног списка не може бити празан",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "Нема API кључева. Направите један да почнете.",
     "autoCreateWhenDetected": "Аутоматски направи када је име открито",
     "trackPersonalGoals": "Пратите личне циљеве на почетној страни",
-    "dailyReflectionDescription": "Добијте подсетник у 21:00 да размислите о вашем дану и хватите своје мисли.",
     "endpointURL": "URL крајне тачке",
     "links": "Веза",
     "discordMemberCount": "8000+ чланова на Discord-у",
@@ -6841,9 +6832,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "Искључено",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8898,14 +8886,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "Време за дневну рефлексију",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "Расскажите ми о вашем дану",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi подсетник",
     "@actionItemReminderTitle": {

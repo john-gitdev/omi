@@ -2501,12 +2501,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Track your personal goals on homepage';
 
   @override
-  String get dailyReflection => 'Daily Reflection';
-
-  @override
-  String get get9PmReminderToReflect => 'Get a 9 PM reminder to reflect on your day';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Action item description cannot be empty';
 
   @override
@@ -3920,9 +3914,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Track personal goals on homepage';
-
-  @override
-  String get dailyReflectionDescription => 'Get a reminder at 9 PM to reflect on your day and capture your thoughts.';
 
   @override
   String get endpointURL => 'Endpoint URL';
@@ -7178,12 +7169,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count conversations have been merged successfully';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Time for Daily Reflection';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Tell me about your day';
 
   @override
   String get actionItemReminderTitle => 'Omi Reminder';

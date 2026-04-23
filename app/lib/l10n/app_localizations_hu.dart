@@ -2511,12 +2511,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Kövesse személyes céljait a kezdőlapon';
 
   @override
-  String get dailyReflection => 'Napi reflexió';
-
-  @override
-  String get get9PmReminderToReflect => 'Kapjon emlékeztetőt este 9-kor, hogy elgondolkodjon a napján';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'A műveleti elem leírása nem lehet üres';
 
   @override
@@ -3937,10 +3931,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Személyes célok követése a főoldalon';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Kapj emlékeztetőt este 9-kor, hogy elgondolkodj a napodról és rögzítsd gondolataidat.';
 
   @override
   String get endpointURL => 'Végpont URL';
@@ -7214,12 +7204,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count beszélgetés sikeresen összevonva';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Ideje a napi reflexiónak';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Mesélj a napodról';
 
   @override
   String get actionItemReminderTitle => 'Omi emlékeztető';

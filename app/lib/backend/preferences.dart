@@ -172,11 +172,6 @@ class SharedPreferencesUtil {
 
   bool get claudeAgentEnabled => getBool('claudeAgentEnabled');
 
-  // Daily reflection notification at 9 PM - default is true (enabled)
-  set dailyReflectionEnabled(bool value) => saveBool('dailyReflectionEnabled', value);
-
-  bool get dailyReflectionEnabled => getBool('dailyReflectionEnabled', defaultValue: true);
-
   // Notification frequency (0-5): 0 = off, 5 = most frequent. Default is 0 (disabled)
   set notificationFrequency(int value) => saveInt('notificationFrequency', value);
 

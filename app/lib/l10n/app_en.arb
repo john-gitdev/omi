@@ -2779,14 +2779,6 @@
     "@trackPersonalGoalsOnHomepage": {
         "description": "Description for goal tracker"
     },
-    "dailyReflection": "Daily Reflection",
-    "@dailyReflection": {
-        "description": "Section header for daily reflection settings"
-    },
-    "get9PmReminderToReflect": "Get a 9 PM reminder to reflect on your day",
-    "@get9PmReminderToReflect": {
-        "description": "Description for daily reflection"
-    },
     "actionItemDescriptionCannotBeEmpty": "Action item description cannot be empty",
     "@actionItemDescriptionCannotBeEmpty": {
         "description": "Error message when action item description is empty"
@@ -4421,7 +4413,6 @@
     "noAPIKeys": "No API keys. Create one to get started.",
     "autoCreateWhenDetected": "Auto-create when name detected",
     "trackPersonalGoals": "Track personal goals on homepage",
-    "dailyReflectionDescription": "Get a reminder at 9 PM to reflect on your day and capture your thoughts.",
     "endpointURL": "Endpoint URL",
     "links": "Links",
     "discordMemberCount": "8000+ members on Discord",
@@ -6839,9 +6830,6 @@
     "@notificationFrequencyDescription": {
         "description": "Description text for notification frequency section"
     },
-    "@dailyReflectionDescription": {
-        "description": "Description text for daily reflection section"
-    },
     "sliderOff": "Off",
     "@sliderOff": {
         "description": "Label for slider minimum value"
@@ -8896,14 +8884,6 @@
                 "example": "3"
             }
         }
-    },
-    "dailyReflectionNotificationTitle": "Time for Daily Reflection",
-    "@dailyReflectionNotificationTitle": {
-        "description": "Title for the daily reflection notification shown at 9 PM"
-    },
-    "dailyReflectionNotificationBody": "Tell me about your day",
-    "@dailyReflectionNotificationBody": {
-        "description": "Body text for the daily reflection notification"
     },
     "actionItemReminderTitle": "Omi Reminder",
     "@actionItemReminderTitle": {

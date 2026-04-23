@@ -2503,12 +2503,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Ana sayfada kişisel hedeflerinizi takip edin';
 
   @override
-  String get dailyReflection => 'Günlük Düşünce';
-
-  @override
-  String get get9PmReminderToReflect => 'Gününüzü değerlendirmek için saat 21:00 hatırlatıcısı alın';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Eylem öğesi açıklaması boş olamaz';
 
   @override
@@ -3924,10 +3918,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Ana sayfada kişisel hedefleri izleyin';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Gününüzü değerlendirmek ve düşüncelerinizi kaydetmek için saat 21:00\'da hatırlatıcı alın.';
 
   @override
   String get endpointURL => 'Uç Nokta URL\'si';
@@ -7192,12 +7182,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count konuşma başarıyla birleştirildi';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Günlük düşünce zamanı';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Bana gününü anlat';
 
   @override
   String get actionItemReminderTitle => 'Omi Hatırlatıcı';

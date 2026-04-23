@@ -2509,12 +2509,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Segueix els teus objectius personals a la pàgina d\'inici';
 
   @override
-  String get dailyReflection => 'Reflexió diària';
-
-  @override
-  String get get9PmReminderToReflect => 'Rep un recordatori a les 21:00 per reflexionar sobre el teu dia';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'La descripció de l\'element d\'acció no pot estar buida';
 
   @override
@@ -3936,10 +3930,6 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Fes el seguiment d\'objectius personals a la pàgina d\'inici';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Rep un recordatori a les 21:00 per reflexionar sobre el teu dia i capturar els teus pensaments.';
 
   @override
   String get endpointURL => 'URL del Punt Final';
@@ -7221,12 +7211,6 @@ class AppLocalizationsCa extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count converses s\'han fusionat amb èxit';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Hora de la reflexió diària';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Explica\'m el teu dia';
 
   @override
   String get actionItemReminderTitle => 'Recordatori d\'Omi';

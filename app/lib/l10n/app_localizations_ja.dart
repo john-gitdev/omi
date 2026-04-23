@@ -2455,12 +2455,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'ホームページで個人目標を追跡';
 
   @override
-  String get dailyReflection => 'デイリー振り返り';
-
-  @override
-  String get get9PmReminderToReflect => '午後9時に一日を振り返るリマインダーを受け取る';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'アクションアイテムの説明を空にすることはできません';
 
   @override
@@ -3850,9 +3844,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'ホームページで個人目標を追跡';
-
-  @override
-  String get dailyReflectionDescription => '午後9時に1日を振り返り、考えを記録するリマインダーを受け取ります。';
 
   @override
   String get endpointURL => 'エンドポイント URL';
@@ -7055,12 +7046,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count件の会話が正常にマージされました';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'デイリー振り返りの時間です';
-
-  @override
-  String get dailyReflectionNotificationBody => '今日のことを教えてください';
 
   @override
   String get actionItemReminderTitle => 'Omiリマインダー';

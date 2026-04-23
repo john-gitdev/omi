@@ -2517,12 +2517,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get trackPersonalGoalsOnHomepage => 'Subaybayan ang iyong personal na mga layunin sa homepage';
 
   @override
-  String get dailyReflection => 'Pang-araw-araw na Pag-iisip';
-
-  @override
-  String get get9PmReminderToReflect => 'Makatanggap ng 9 PM reminder upang mag-isip sa iyong araw';
-
-  @override
   String get actionItemDescriptionCannotBeEmpty => 'Ang paglalarawan ng action item ay hindi maaaring walang laman';
 
   @override
@@ -3949,10 +3943,6 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get trackPersonalGoals => 'Subaybayan ang personal na mga layunin sa homepage';
-
-  @override
-  String get dailyReflectionDescription =>
-      'Makatanggap ng reminder sa 9 PM upang mag-isip tungkol sa iyong araw at kunin ang iyong mga iisip.';
 
   @override
   String get endpointURL => 'Endpoint URL';
@@ -7247,12 +7237,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String mergeConversationsSuccessBody(int count) {
     return '$count conversations ay matagumpay na pinagsama';
   }
-
-  @override
-  String get dailyReflectionNotificationTitle => 'Panahon na para sa Daily Reflection';
-
-  @override
-  String get dailyReflectionNotificationBody => 'Sabihin sa akin ang tungkol sa iyong araw';
 
   @override
   String get actionItemReminderTitle => 'Omi Reminder';
