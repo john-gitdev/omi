@@ -9168,4 +9168,16 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get voiceResponseAlways => 'Vienmēr';
+
+  @override
+  String get agreeAndContinue => 'Piekrītu un turpināt';
+
+  @override
+  String get startVoiceRecording => 'Start voice recording';
+
+  @override
+  String get startCallRecording => 'Start call recording';
+
+  @override
+  String get mindMap => 'Mind Map';
 }

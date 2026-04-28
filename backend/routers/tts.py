@@ -19,7 +19,7 @@ from fastapi.responses import StreamingResponse
 
 from database import redis_db
 from models.tts import TtsSynthesizeRequest
-from utils.http_client import get_webhook_client, get_webhook_semaphore
+from utils.http_client import get_tts_client, get_tts_semaphore
 from utils.log_sanitizer import sanitize
 from utils.other import endpoints as auth
 
@@ -106,8 +106,8 @@ async def tts_synthesize(
         "xi-api-key": api_key,
     }
 
-    client = get_webhook_client()
-    semaphore = get_webhook_semaphore()
+    client = get_tts_client()
+    semaphore = get_tts_semaphore()
 
     # Acquire the semaphore and open the upstream request OUTSIDE the generator
     # so we can raise a proper HTTPException before StreamingResponse starts

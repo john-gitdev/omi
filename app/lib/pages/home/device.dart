@@ -174,7 +174,11 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 2, top: 1),
                 child: charging
-                    ? const Icon(Icons.bolt, color: Color.fromARGB(255, 0, 255, 8), size: 22)
+                    ? const FaIcon(
+                        FontAwesomeIcons.chargingStation,
+                        color: Color.fromARGB(255, 0, 255, 8),
+                        size: 20,
+                      )
                     : FaIcon(
                         _getBatteryIcon(provider.batteryLevel),
                         color: _getBatteryColor(provider.batteryLevel),
@@ -466,9 +470,12 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
     final manufacturer = provider.pairedDevice?.manufacturerName ?? context.l10n.unknown;
     final firmware = provider.pairedDevice?.firmwareRevision ?? context.l10n.unknown;
     final deviceId = provider.pairedDevice?.id ?? context.l10n.unknown;
-    final serialNumber = provider.pairedDevice?.serialNumber ??
-        provider.pairedDevice?.id.replaceAll(':', '').replaceAll('-', '').toUpperCase() ??
-        context.l10n.unknown;
+    final normalizedDeviceId = deviceId.replaceAll(':', '').replaceAll('-', '').toUpperCase();
+    final serialNumber = provider.pairedDevice?.serialNumber ?? normalizedDeviceId;
+    // Hide the serial number row when it's the same value as the device id —
+    // (raw or normalized) — so we don't show two rows that look identical.
+    final showSerialNumber =
+        serialNumber != context.l10n.unknown && serialNumber != normalizedDeviceId && serialNumber != deviceId;
 
     String truncateValue(String value) {
       if (value.length > 12) {
@@ -520,14 +527,16 @@ class _ConnectedDeviceState extends State<ConnectedDevice> {
             copyValue: deviceId,
             showChevron: false,
           ),
-          const Divider(height: 1, color: Color(0xFF3C3C43)),
-          _buildProfileStyleItem(
-            icon: FontAwesomeIcons.barcode,
-            title: context.l10n.serialNumber,
-            chipValue: truncateValue(serialNumber),
-            copyValue: serialNumber,
-            showChevron: false,
-          ),
+          if (showSerialNumber) ...[
+            const Divider(height: 1, color: Color(0xFF3C3C43)),
+            _buildProfileStyleItem(
+              icon: FontAwesomeIcons.barcode,
+              title: context.l10n.serialNumber,
+              chipValue: truncateValue(serialNumber),
+              copyValue: serialNumber,
+              showChevron: false,
+            ),
+          ],
         ],
       ),
     );

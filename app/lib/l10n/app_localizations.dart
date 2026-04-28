@@ -9654,7 +9654,7 @@ abstract class AppLocalizations {
   /// Consent message explaining how user data will be stored and used
   ///
   /// In en, this message translates to:
-  /// **'By continuing, your conversations, recordings, and personal information will be securely stored on our servers. Your audio recordings and transcripts are processed by third-party AI services (including Deepgram for transcription and OpenAI for analysis) to provide you with AI-powered insights and enable all app features.'**
+  /// **'By continuing, your conversations, recordings, and personal information will be securely stored on our servers. Your audio recordings and transcripts are processed by third-party AI services — Deepgram for transcription and OpenAI for analysis — to provide you with AI-powered insights and enable all app features.'**
   String get consentDataMessage;
 
   /// Empty state message shown when there are no tasks, with instruction to tap + button
@@ -14526,7 +14526,7 @@ abstract class AppLocalizations {
   /// No description provided for @capabilityNotification.
   ///
   /// In en, this message translates to:
-  /// **'Notification'**
+  /// **'Smart Notifications'**
   String get capabilityNotification;
 
   /// No description provided for @triggerAudioBytes.
@@ -17078,6 +17078,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Always'**
   String get voiceResponseAlways;
+
+  /// Button label on the data and AI consent screen — explicit consent action.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree & Continue'**
+  String get agreeAndContinue;
+
+  /// No description provided for @startVoiceRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start voice recording'**
+  String get startVoiceRecording;
+
+  /// No description provided for @startCallRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start call recording'**
+  String get startCallRecording;
+
+  /// Section header for memory knowledge graph on home page
+  ///
+  /// In en, this message translates to:
+  /// **'Mind Map'**
+  String get mindMap;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

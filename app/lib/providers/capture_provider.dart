@@ -26,7 +26,6 @@ import 'package:omi/backend/schema/structured.dart';
 import 'package:omi/backend/schema/transcript_segment.dart';
 import 'package:omi/models/custom_stt_config.dart';
 import 'package:omi/models/stt_provider.dart';
-import 'package:omi/providers/calendar_provider.dart';
 import 'package:omi/providers/conversation_provider.dart';
 import 'package:omi/providers/message_provider.dart';
 import 'package:omi/providers/people_provider.dart';
@@ -69,7 +68,6 @@ class CaptureProvider extends ChangeNotifier
   MessageProvider? messageProvider;
   PeopleProvider? peopleProvider;
   UsageProvider? usageProvider;
-  CalendarProvider? calendarProvider;
 
   // Cache refresh for backend-created persons
   Future<void>? _peopleRefreshFuture;
@@ -818,6 +816,16 @@ class CaptureProvider extends ChangeNotifier
   void clearTranscripts() {
     segments = [];
     hasTranscripts = false;
+    notifyListeners();
+  }
+
+  void clearUserData() {
+    segments = [];
+    photos = [];
+    hasTranscripts = false;
+    _transcriptionServiceStatuses = [];
+    suggestionsBySegmentId = {};
+    taggingSegmentIds = [];
     notifyListeners();
   }
 

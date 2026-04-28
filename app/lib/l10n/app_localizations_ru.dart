@@ -9179,4 +9179,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get voiceResponseAlways => 'Всегда';
+
+  @override
+  String get agreeAndContinue => 'Принять и продолжить';
+
+  @override
+  String get startVoiceRecording => 'Start voice recording';
+
+  @override
+  String get startCallRecording => 'Start call recording';
+
+  @override
+  String get mindMap => 'Mind Map';
 }

@@ -44,6 +44,10 @@ Future<Uint8List?> synthesizeSpeech({
     headers: {},
     method: 'POST',
     body: jsonEncode(body),
+    // TTS is a background-effect endpoint; a transient 401 here must NOT
+    // log the user out of the entire app. Surface as a non-200 instead so
+    // playback degrades gracefully.
+    signOutOn401: false,
   );
 
   if (response == null) {

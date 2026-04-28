@@ -39,6 +39,7 @@ pytest tests/unit/test_firmware_pagination.py -v
 pytest tests/unit/test_vad_gate.py -v
 pytest tests/unit/test_vad_onnx.py -v
 pytest tests/unit/test_log_sanitizer.py -v
+pytest tests/unit/test_auth_redirect_uri.py -v
 pytest tests/unit/test_pusher_heartbeat.py -v
 pytest tests/unit/test_pusher_conversation_retry.py -v
 pytest tests/unit/test_listen_fallback_removal.py -v
@@ -58,6 +59,7 @@ pytest tests/unit/test_ws_auth_handshake.py -v
 pytest tests/unit/test_streaming_deepgram_backoff.py -v
 pytest tests/unit/test_batch_upload_storage.py -v
 pytest tests/unit/test_action_item_date_validation.py -v
+pytest tests/unit/test_action_item_dedup.py -v
 pytest tests/unit/test_tools_router.py -v
 pytest tests/unit/test_kg_user_type_mismatch.py -v
 pytest tests/unit/test_kg_edge_id_sanitization.py -v
@@ -99,6 +101,7 @@ pytest tests/unit/test_async_geocoding.py -v
 pytest tests/unit/test_geocoding_cache.py -v
 pytest tests/unit/test_realtime_integrations_usage_tracking.py -v
 pytest tests/unit/test_async_auth.py -v
+pytest tests/unit/test_auth_redirect_uri.py -v
 pytest tests/unit/test_thread_join_elimination.py -v
 pytest tests/unit/test_async_http_infrastructure.py -v
 pytest tests/unit/test_clean_sweep_migrations.py -v

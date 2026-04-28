@@ -9174,4 +9174,16 @@ class AppLocalizationsSl extends AppLocalizations {
 
   @override
   String get voiceResponseAlways => 'Vedno';
+
+  @override
+  String get agreeAndContinue => 'Strinjam se in nadaljuj';
+
+  @override
+  String get startVoiceRecording => 'Start voice recording';
+
+  @override
+  String get startCallRecording => 'Start call recording';
+
+  @override
+  String get mindMap => 'Mind Map';
 }

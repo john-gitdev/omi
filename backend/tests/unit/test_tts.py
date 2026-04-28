@@ -79,8 +79,8 @@ def _load_tts_router_module():
 
     # Stub http_client
     http_client_stub = types.ModuleType("utils.http_client")
-    http_client_stub.get_webhook_client = MagicMock()
-    http_client_stub.get_webhook_semaphore = MagicMock()
+    http_client_stub.get_tts_client = MagicMock()
+    http_client_stub.get_tts_semaphore = MagicMock()
     sys.modules["utils.http_client"] = http_client_stub
 
     # Stub log_sanitizer

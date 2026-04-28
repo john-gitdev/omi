@@ -9164,4 +9164,16 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get voiceResponseAlways => 'Завжди';
+
+  @override
+  String get agreeAndContinue => 'Прийняти та продовжити';
+
+  @override
+  String get startVoiceRecording => 'Start voice recording';
+
+  @override
+  String get startCallRecording => 'Start call recording';
+
+  @override
+  String get mindMap => 'Mind Map';
 }

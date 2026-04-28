@@ -72,7 +72,6 @@ class OmiVoicePlaybackService {
 
     _player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
-        _player.seek(Duration.zero);
         _playNextFromQueue();
       }
     });
@@ -304,9 +303,13 @@ class OmiVoicePlaybackService {
   Future<void> _activateSession() async {
     if (_sessionActive) return;
     _sessionActive = true;
-    // AudioSession (configured with AudioSessionConfiguration.speech()) plus
-    // just_audio handles the AVAudioSession / AudioFocus lifecycle across iOS
-    // and Android. Nothing further to do here.
+    try {
+      final session = await AudioSession.instance;
+      await session.setActive(true);
+    } catch (e) {
+      _sessionActive = false;
+      Logger.debug('OmiVoicePlaybackService: setActive(true) failed: $e');
+    }
   }
 
   Future<void> _deactivateSession() async {

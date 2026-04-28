@@ -9201,4 +9201,16 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get voiceResponseAlways => 'ఎల్లప్పుడూ';
+
+  @override
+  String get agreeAndContinue => 'అంగీకరించి కొనసాగించండి';
+
+  @override
+  String get startVoiceRecording => 'Start voice recording';
+
+  @override
+  String get startCallRecording => 'Start call recording';
+
+  @override
+  String get mindMap => 'Mind Map';
 }
