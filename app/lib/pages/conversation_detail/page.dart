@@ -325,8 +325,8 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> with Ti
         final conversation = provider.conversation;
         final summaryContent =
             conversation.appResults.isNotEmpty && conversation.appResults[0].content.trim().isNotEmpty
-            ? conversation.appResults[0].content.trim()
-            : conversation.structured.toString();
+                ? conversation.appResults[0].content.trim()
+                : conversation.structured.toString();
         _copyContent(context, summaryContent);
         break;
       case 'download_audio':
@@ -655,8 +655,8 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> with Ti
                                         provider.conversation.starred = newStarredState;
                                         // Update in conversation provider
                                         context.read<ConversationProvider>().updateConversationInSortedList(
-                                          provider.conversation,
-                                        );
+                                              provider.conversation,
+                                            );
                                         // Track star/unstar action
                                         MixpanelManager().conversationStarToggled(
                                           conversation: provider.conversation,
@@ -961,57 +961,56 @@ class _ConversationDetailPageState extends State<ConversationDetailPage> with Ti
                 ),
               ),
 
-              // Floating bottom bar
-              Positioned(
-                bottom: 32,
-                left: 0,
-                right: 0,
-                child: Consumer<ConversationDetailProvider>(
-                  builder: (context, provider, child) {
-                    final conversation = provider.conversation;
-                    final hasActionItems = conversation.structured.actionItems
-                        .where((item) => !item.deleted)
-                        .isNotEmpty;
-                    return ConversationBottomBar(
-                      mode: ConversationBottomBarMode.detail,
-                      selectedTab: selectedTab,
-                      conversation: conversation,
-                      hasSegments:
-                          conversation.transcriptSegments.isNotEmpty ||
-                          conversation.photos.isNotEmpty ||
-                          conversation.externalIntegration != null,
-                      hasActionItems: hasActionItems,
-                      onSeekFunctionReady: (seekFunction) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) {
-                            setState(() {
-                              _seekToSegmentCallback = seekFunction;
-                            });
+              // Floating bottom bar — hidden while keyboard is up (e.g. inline summary edit)
+              if (MediaQuery.of(context).viewInsets.bottom == 0)
+                Positioned(
+                  bottom: 32,
+                  left: 0,
+                  right: 0,
+                  child: Consumer<ConversationDetailProvider>(
+                    builder: (context, provider, child) {
+                      final conversation = provider.conversation;
+                      final hasActionItems =
+                          conversation.structured.actionItems.where((item) => !item.deleted).isNotEmpty;
+                      return ConversationBottomBar(
+                        mode: ConversationBottomBarMode.detail,
+                        selectedTab: selectedTab,
+                        conversation: conversation,
+                        hasSegments: conversation.transcriptSegments.isNotEmpty ||
+                            conversation.photos.isNotEmpty ||
+                            conversation.externalIntegration != null,
+                        hasActionItems: hasActionItems,
+                        onSeekFunctionReady: (seekFunction) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) {
+                              setState(() {
+                                _seekToSegmentCallback = seekFunction;
+                              });
+                            }
+                          });
+                        },
+                        onTabSelected: (tab) {
+                          int index;
+                          switch (tab) {
+                            case ConversationTab.transcript:
+                              index = 0;
+                              break;
+                            case ConversationTab.summary:
+                              index = 1;
+                              break;
+                            case ConversationTab.actionItems:
+                              index = 2;
+                              break;
                           }
-                        });
-                      },
-                      onTabSelected: (tab) {
-                        int index;
-                        switch (tab) {
-                          case ConversationTab.transcript:
-                            index = 0;
-                            break;
-                          case ConversationTab.summary:
-                            index = 1;
-                            break;
-                          case ConversationTab.actionItems:
-                            index = 2;
-                            break;
-                        }
-                        _controller!.animateTo(index);
-                      },
-                      onStopPressed: () {
-                        // Empty since we don't show the stop button in detail mode
-                      },
-                    );
-                  },
+                          _controller!.animateTo(index);
+                        },
+                        onStopPressed: () {
+                          // Empty since we don't show the stop button in detail mode
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
 
               // thinh's comment: temporary disabled
               //// Unassigned segments notification - positioned above the bottom bar
@@ -1282,46 +1281,53 @@ class _SummaryTabState extends State<SummaryTab> with AutomaticKeepAliveClientMi
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Listener(
-      onPointerDown: (PointerDownEvent event) {
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
         FocusScope.of(context).unfocus();
+        // If search is empty, call the callback to close search
         if (widget.searchQuery.isEmpty && widget.onTapWhenSearchEmpty != null) {
           widget.onTapWhenSearchEmpty!();
         }
       },
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () {
-          FocusScope.of(context).unfocus();
-          // If search is empty, call the callback to close search
-          if (widget.searchQuery.isEmpty && widget.onTapWhenSearchEmpty != null) {
-            widget.onTapWhenSearchEmpty!();
-          }
+      child: Selector<ConversationDetailProvider, Tuple3<bool, bool, Function(int)>>(
+        selector: (context, provider) =>
+            Tuple3(provider.conversation.discarded, provider.showRatingUI, provider.setConversationRating),
+        builder: (context, data, child) {
+          return Stack(
+            children: [
+              ListView(
+                shrinkWrap: true,
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+                children: [
+                  const GetSummaryWidgets(),
+                  data.item1
+                      ? const ReprocessDiscardedWidget()
+                      : GetAppsWidgets(
+                          searchQuery: widget.searchQuery,
+                          currentResultIndex: widget.currentResultIndex,
+                          canStartEditing: () {
+                            final connectivityProvider = Provider.of<ConnectivityProvider>(context, listen: false);
+                            if (!connectivityProvider.isConnected) {
+                              ConnectivityProvider.showNoInternetDialog(context);
+                              return false;
+                            }
+                            return true;
+                          },
+                          onEditStarted: (_) => MixpanelManager().editSummaryStarted(),
+                          onEditCancelled: (_) => MixpanelManager().editSummaryCancelled(),
+                          onSaveSummary: (appId, newContent) {
+                            MixpanelManager().editSummarySaved();
+                            context.read<ConversationDetailProvider>().saveEditingSummary(appId, newContent);
+                          },
+                        ),
+                  const GetGeolocationWidgets(),
+                  const SizedBox(height: 150),
+                ],
+              ),
+            ],
+          );
         },
-        child: Selector<ConversationDetailProvider, Tuple3<bool, bool, Function(int)>>(
-          selector: (context, provider) =>
-              Tuple3(provider.conversation.discarded, provider.showRatingUI, provider.setConversationRating),
-          builder: (context, data, child) {
-            return Stack(
-              children: [
-                ListView(
-                  shrinkWrap: true,
-                  children: [
-                    const GetSummaryWidgets(),
-                    data.item1
-                        ? const ReprocessDiscardedWidget()
-                        : GetAppsWidgets(
-                            searchQuery: widget.searchQuery,
-                            currentResultIndex: widget.currentResultIndex,
-                          ),
-                    const GetGeolocationWidgets(),
-                    const SizedBox(height: 150),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
       ),
     );
   }
@@ -1411,11 +1417,9 @@ class _TranscriptWidgetsState extends State<TranscriptWidgets> with AutomaticKee
                 }
                 final segments = provider.conversation.transcriptSegments;
                 final segment = segments[segmentIndex];
-                final person = segment.personId != null
-                    ? SharedPreferencesUtil().getPersonById(segment.personId!)
-                    : null;
-                final speakerName =
-                    person?.name ??
+                final person =
+                    segment.personId != null ? SharedPreferencesUtil().getPersonById(segment.personId!) : null;
+                final speakerName = person?.name ??
                     context.l10n.speakerWithId('${TranscriptSegment.getDisplaySpeakerId(segment.speakerId, segments)}');
                 MixpanelManager().editSegmentTextStarted();
                 bool saved = false;
@@ -1472,9 +1476,8 @@ class _TranscriptWidgetsState extends State<TranscriptWidgets> with AutomaticKee
                               );
                               if (segmentIndex == -1) continue;
                               provider.conversation.transcriptSegments[segmentIndex].isUser = finalPersonId == 'user';
-                              provider.conversation.transcriptSegments[segmentIndex].personId = finalPersonId == 'user'
-                                  ? null
-                                  : finalPersonId;
+                              provider.conversation.transcriptSegments[segmentIndex].personId =
+                                  finalPersonId == 'user' ? null : finalPersonId;
                             }
                             await assignBulkConversationTranscriptSegments(
                               provider.conversation.id,
