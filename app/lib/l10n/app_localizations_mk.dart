@@ -64,6 +64,12 @@ class AppLocalizationsMk extends AppLocalizations {
   String get copySummary => 'Копирај резиме';
 
   @override
+  String get copyConversationId => 'Копирај ID на разговорот';
+
+  @override
+  String get conversationIdCopied => 'ID на разговорот е копиран во клипборд';
+
+  @override
   String get testPrompt => 'Тест подсетник';
 
   @override
@@ -4547,12 +4553,12 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Вашиот план заврши на $date.\\nПретплатете се сега - ќе бидете наплатени веднаш за нов период на наплатување.';
+    return 'Вашиот план заврши на $date.\nПретплатете се сега - ќе бидете наплатени веднаш за нов период на наплатување.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Вашиот план е поставен да се откаже на $date.\\nПретплатете се сега за да ги задржите вашите бенефиции - без наплата до $date.';
+    return 'Вашиот план е поставен да се откаже на $date.\nПретплатете се сега за да ги задржите вашите бенефиции - без наплата до $date.';
   }
 
   @override
@@ -5123,7 +5129,7 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get tasksEmptyStateMessage =>
-      'Задачите од вашите разговори ќе се појават овде.\\nОтвори + за да создадеш една ручно.';
+      'Задачите од вашите разговори ќе се појават овде.\nОтвори + за да создадеш една ручно.';
 
   @override
   String get clearChatAction => 'Очисти разговор';
@@ -9277,4 +9283,10 @@ class AppLocalizationsMk extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Одселектирај ги сите';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

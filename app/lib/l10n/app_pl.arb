@@ -18,6 +18,8 @@
     "clear": "Wyczyść",
     "copyTranscript": "Kopiuj transkrypcję",
     "copySummary": "Kopiuj podsumowanie",
+    "copyConversationId": "Kopiuj ID rozmowy",
+    "conversationIdCopied": "ID rozmowy skopiowane do schowka",
     "testPrompt": "Testuj prompt",
     "reprocessConversation": "Przetwórz ponownie rozmowę",
     "deleteConversation": "Usuń rozmowę",
@@ -1389,8 +1391,8 @@
     "upgradeAlreadyScheduled": "Twoja aktualizacja do planu rocznego jest już zaplanowana",
     "youAreOnUnlimitedPlan": "Jesteś na planie Unlimited.",
     "yourOmiUnleashed": "Twoje Omi, uwolnione. Przejdź na unlimited dla nieskończonych możliwości.",
-    "planEndedOn": "Twój plan zakończył się {date}.\\nSubskrybuj ponownie teraz - zostaniesz natychmiast obciążony za nowy okres rozliczeniowy.",
-    "planSetToCancelOn": "Twój plan jest ustawiony na anulowanie {date}.\\nSubskrybuj ponownie teraz, aby zachować korzyści - bez opłat do {date}.",
+    "planEndedOn": "Twój plan zakończył się {date}.\nSubskrybuj ponownie teraz - zostaniesz natychmiast obciążony za nowy okres rozliczeniowy.",
+    "planSetToCancelOn": "Twój plan jest ustawiony na anulowanie {date}.\nSubskrybuj ponownie teraz, aby zachować korzyści - bez opłat do {date}.",
     "annualPlanStartsAutomatically": "Twój plan roczny rozpocznie się automatycznie po zakończeniu planu miesięcznego.",
     "planRenewsOn": "Twój plan odnawia się {date}.",
     "unlimitedConversations": "Nieograniczone rozmowy",
@@ -2048,7 +2050,7 @@
     "defaultLabel": "Domyślny",
     "lastUsedLabel": "Ostatnio używany",
     "setDefaultApp": "Ustaw domyślną aplikację",
-    "setDefaultAppContent": "Ustawić {appName} jako domyślną aplikację do podsumowań?\\n\\nTa aplikacja będzie automatycznie używana do wszystkich przyszłych podsumowań rozmów.",
+    "setDefaultAppContent": "Ustawić {appName} jako domyślną aplikację do podsumowań?\n\nTa aplikacja będzie automatycznie używana do wszystkich przyszłych podsumowań rozmów.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

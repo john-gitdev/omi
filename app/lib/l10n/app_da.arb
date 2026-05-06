@@ -18,6 +18,8 @@
     "clear": "Ryd",
     "copyTranscript": "Kopier transskription",
     "copySummary": "Kopier opsummering",
+    "copyConversationId": "Kopiér samtale-ID",
+    "conversationIdCopied": "Samtale-ID kopieret til udklipsholder",
     "testPrompt": "Test prompt",
     "reprocessConversation": "Genbehandl samtale",
     "deleteConversation": "Slet samtale",
@@ -1389,8 +1391,8 @@
     "upgradeAlreadyScheduled": "Din opgradering til det årlige abonnement er allerede planlagt",
     "youAreOnUnlimitedPlan": "Du er på det ubegrænsede abonnement.",
     "yourOmiUnleashed": "Din Omi, frigjort. Bliv ubegrænset for uendelige muligheder.",
-    "planEndedOn": "Dit abonnement sluttede {date}.\\nGentilmeld dig nu - du vil straks blive opkrævet for en ny faktureringsperiode.",
-    "planSetToCancelOn": "Dit abonnement er sat til at blive annulleret {date}.\\nGentilmeld dig nu for at beholde dine fordele - ingen opkrævning indtil {date}.",
+    "planEndedOn": "Dit abonnement sluttede {date}.\nGentilmeld dig nu - du vil straks blive opkrævet for en ny faktureringsperiode.",
+    "planSetToCancelOn": "Dit abonnement er sat til at blive annulleret {date}.\nGentilmeld dig nu for at beholde dine fordele - ingen opkrævning indtil {date}.",
     "annualPlanStartsAutomatically": "Dit årlige abonnement starter automatisk, når dit månedlige abonnement slutter.",
     "planRenewsOn": "Dit abonnement fornyes {date}.",
     "unlimitedConversations": "Ubegrænsede samtaler",
@@ -2006,7 +2008,7 @@
     "defaultLabel": "Standard",
     "lastUsedLabel": "Sidst brugt",
     "setDefaultApp": "Angiv standardapp",
-    "setDefaultAppContent": "Angiv {appName} som din standardapp til resuméer?\\n\\nDenne app vil automatisk blive brugt til alle fremtidige samtaleresuméer.",
+    "setDefaultAppContent": "Angiv {appName} som din standardapp til resuméer?\n\nDenne app vil automatisk blive brugt til alle fremtidige samtaleresuméer.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

@@ -64,6 +64,12 @@ class AppLocalizationsNl extends AppLocalizations {
   String get copySummary => 'Kopieer samenvatting';
 
   @override
+  String get copyConversationId => 'Gesprek-ID kopiëren';
+
+  @override
+  String get conversationIdCopied => 'Gesprek-ID gekopieerd naar klembord';
+
+  @override
   String get testPrompt => 'Prompt testen';
 
   @override
@@ -4537,12 +4543,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Uw plan eindigde op $date.\\nAbonneer nu opnieuw - u wordt direct belast voor een nieuwe factureringsperiode.';
+    return 'Uw plan eindigde op $date.\nAbonneer nu opnieuw - u wordt direct belast voor een nieuwe factureringsperiode.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Uw plan wordt geannuleerd op $date.\\nAbonneer nu opnieuw om uw voordelen te behouden - geen kosten tot $date.';
+    return 'Uw plan wordt geannuleerd op $date.\nAbonneer nu opnieuw om uw voordelen te behouden - geen kosten tot $date.';
   }
 
   @override
@@ -6559,7 +6565,7 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return '$appName instellen als je standaard samenvattingsapp?\\n\\nDeze app wordt automatisch gebruikt voor alle toekomstige gesprekssamenvattingen.';
+    return '$appName instellen als je standaard samenvattingsapp?\n\nDeze app wordt automatisch gebruikt voor alle toekomstige gesprekssamenvattingen.';
   }
 
   @override
@@ -9256,4 +9262,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Alles deselecteren';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

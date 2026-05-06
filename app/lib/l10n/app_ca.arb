@@ -18,6 +18,8 @@
     "clear": "Neteja",
     "copyTranscript": "Copiar transcripció",
     "copySummary": "Copiar resum",
+    "copyConversationId": "Copia l'ID de la conversa",
+    "conversationIdCopied": "ID de la conversa copiat al porta-retalls",
     "testPrompt": "Provar indicació",
     "reprocessConversation": "Reprocessar conversa",
     "deleteConversation": "Suprimir conversa",
@@ -1391,8 +1393,8 @@
     "upgradeAlreadyScheduled": "La teva actualització al pla anual ja està programada",
     "youAreOnUnlimitedPlan": "Estàs al pla Il·limitat.",
     "yourOmiUnleashed": "El teu Omi, deslliurat. Fes-te il·limitat per a possibilitats infinites.",
-    "planEndedOn": "El teu pla va acabar el {date}.\\nTorna a subscriure't ara - se't cobrarà immediatament per un nou període de facturació.",
-    "planSetToCancelOn": "El teu pla està configurat per cancel·lar-se el {date}.\\nTorna a subscriure't ara per mantenir els teus beneficis - sense càrrec fins {date}.",
+    "planEndedOn": "El teu pla va acabar el {date}.\nTorna a subscriure't ara - se't cobrarà immediatament per un nou període de facturació.",
+    "planSetToCancelOn": "El teu pla està configurat per cancel·lar-se el {date}.\nTorna a subscriure't ara per mantenir els teus beneficis - sense càrrec fins {date}.",
     "annualPlanStartsAutomatically": "El teu pla anual començarà automàticament quan acabi el teu pla mensual.",
     "planRenewsOn": "El teu pla es renova el {date}.",
     "unlimitedConversations": "Converses il·limitades",
@@ -2031,7 +2033,7 @@
     "defaultLabel": "Predeterminada",
     "lastUsedLabel": "Últim ús",
     "setDefaultApp": "Establir aplicació predeterminada",
-    "setDefaultAppContent": "Establir {appName} com la teva aplicació de resum predeterminada?\\n\\nAquesta aplicació s'utilitzarà automàticament per a tots els resums de converses futures.",
+    "setDefaultAppContent": "Establir {appName} com la teva aplicació de resum predeterminada?\n\nAquesta aplicació s'utilitzarà automàticament per a tots els resums de converses futures.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

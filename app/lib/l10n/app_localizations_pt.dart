@@ -64,6 +64,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get copySummary => 'Copiar resumo';
 
   @override
+  String get copyConversationId => 'Copiar ID da conversa';
+
+  @override
+  String get conversationIdCopied => 'ID da conversa copiado para a área de transferência';
+
+  @override
   String get testPrompt => 'Testar prompt';
 
   @override
@@ -4506,12 +4512,12 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Seu plano terminou em $date.\\nAssine novamente agora - você será cobrado imediatamente por um novo período de cobrança.';
+    return 'Seu plano terminou em $date.\nAssine novamente agora - você será cobrado imediatamente por um novo período de cobrança.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Seu plano está configurado para cancelar em $date.\\nAssine novamente agora para manter seus benefícios - sem cobrança até $date.';
+    return 'Seu plano está configurado para cancelar em $date.\nAssine novamente agora para manter seus benefícios - sem cobrança até $date.';
   }
 
   @override
@@ -6530,7 +6536,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Definir $appName como seu app de resumo padrão?\\n\\nEste app será usado automaticamente para todos os resumos de conversas futuras.';
+    return 'Definir $appName como seu app de resumo padrão?\n\nEste app será usado automaticamente para todos os resumos de conversas futuras.';
   }
 
   @override
@@ -9232,4 +9238,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Desmarcar todos';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

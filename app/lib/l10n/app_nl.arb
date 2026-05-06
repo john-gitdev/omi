@@ -18,6 +18,8 @@
     "clear": "Wissen",
     "copyTranscript": "Kopieer transcript",
     "copySummary": "Kopieer samenvatting",
+    "copyConversationId": "Gesprek-ID kopiëren",
+    "conversationIdCopied": "Gesprek-ID gekopieerd naar klembord",
     "testPrompt": "Prompt testen",
     "reprocessConversation": "Gesprek opnieuw verwerken",
     "deleteConversation": "Gesprek verwijderen",
@@ -1389,8 +1391,8 @@
     "upgradeAlreadyScheduled": "Uw upgrade naar het jaarabonnement is al gepland",
     "youAreOnUnlimitedPlan": "U bent op het Unlimited-abonnement.",
     "yourOmiUnleashed": "Uw Omi, ontketend. Ga unlimited voor eindeloze mogelijkheden.",
-    "planEndedOn": "Uw plan eindigde op {date}.\\nAbonneer nu opnieuw - u wordt direct belast voor een nieuwe factureringsperiode.",
-    "planSetToCancelOn": "Uw plan wordt geannuleerd op {date}.\\nAbonneer nu opnieuw om uw voordelen te behouden - geen kosten tot {date}.",
+    "planEndedOn": "Uw plan eindigde op {date}.\nAbonneer nu opnieuw - u wordt direct belast voor een nieuwe factureringsperiode.",
+    "planSetToCancelOn": "Uw plan wordt geannuleerd op {date}.\nAbonneer nu opnieuw om uw voordelen te behouden - geen kosten tot {date}.",
     "annualPlanStartsAutomatically": "Uw jaarabonnement start automatisch wanneer uw maandabonnement eindigt.",
     "planRenewsOn": "Uw plan wordt verlengd op {date}.",
     "unlimitedConversations": "Onbeperkte gesprekken",
@@ -2048,7 +2050,7 @@
     "defaultLabel": "Standaard",
     "lastUsedLabel": "Laatst gebruikt",
     "setDefaultApp": "Standaardapp instellen",
-    "setDefaultAppContent": "{appName} instellen als je standaard samenvattingsapp?\\n\\nDeze app wordt automatisch gebruikt voor alle toekomstige gesprekssamenvattingen.",
+    "setDefaultAppContent": "{appName} instellen als je standaard samenvattingsapp?\n\nDeze app wordt automatisch gebruikt voor alle toekomstige gesprekssamenvattingen.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

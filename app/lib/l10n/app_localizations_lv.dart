@@ -64,6 +64,12 @@ class AppLocalizationsLv extends AppLocalizations {
   String get copySummary => 'Kopēt kopsavilkumu';
 
   @override
+  String get copyConversationId => 'Kopēt sarakstes ID';
+
+  @override
+  String get conversationIdCopied => 'Sarakstes ID nokopēts starpliktuvē';
+
+  @override
   String get testPrompt => 'Testēt uzvedni';
 
   @override
@@ -4531,12 +4537,12 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Jūsu plāns beidzās $date.\\nAbonejiet atkārtoti tagad - jums nekavējoties tiks iekasēta maksa par jauno norēķinu periodu.';
+    return 'Jūsu plāns beidzās $date.\nAbonejiet atkārtoti tagad - jums nekavējoties tiks iekasēta maksa par jauno norēķinu periodu.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Jūsu plāns ir iestatīts atcelšanai $date.\\nAbonejiet atkārtoti tagad, lai saglabātu savus ieguvumus - bez maksas līdz $date.';
+    return 'Jūsu plāns ir iestatīts atcelšanai $date.\nAbonejiet atkārtoti tagad, lai saglabātu savus ieguvumus - bez maksas līdz $date.';
   }
 
   @override
@@ -6552,7 +6558,7 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Vai iestatīt $appName kā noklusējuma kopsavilkuma lietotni?\\n\\nŠī lietotne tiks automātiski izmantota visiem turpmākajiem sarunu kopsavilkumiem.';
+    return 'Vai iestatīt $appName kā noklusējuma kopsavilkuma lietotni?\n\nŠī lietotne tiks automātiski izmantota visiem turpmākajiem sarunu kopsavilkumiem.';
   }
 
   @override
@@ -9246,4 +9252,10 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Noņemt visu atlasi';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

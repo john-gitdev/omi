@@ -64,6 +64,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get copySummary => 'Összefoglaló másolása';
 
   @override
+  String get copyConversationId => 'Társalgás azonosítójának másolása';
+
+  @override
+  String get conversationIdCopied => 'A társalgás azonosítója vágólapra másolva';
+
+  @override
   String get testPrompt => 'Prompt tesztelése';
 
   @override
@@ -4546,12 +4552,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'A csomagja $date-án lejárt.\\nIratkozzon fel újra most - azonnal felszámítjuk az új számlázási időszakot.';
+    return 'A csomagja $date-án lejárt.\nIratkozzon fel újra most - azonnal felszámítjuk az új számlázási időszakot.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'A csomagja $date-án törlésre van beállítva.\\nIratkozzon fel újra most, hogy megtartsa előnyeit - nincs díj $date-ig.';
+    return 'A csomagja $date-án törlésre van beállítva.\nIratkozzon fel újra most, hogy megtartsa előnyeit - nincs díj $date-ig.';
   }
 
   @override
@@ -6569,7 +6575,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Beállítja a(z) $appName alkalmazást alapértelmezett összefoglaló alkalmazásként?\\n\\nEz az alkalmazás automatikusan használva lesz minden jövőbeli beszélgetés összefoglalásához.';
+    return 'Beállítja a(z) $appName alkalmazást alapértelmezett összefoglaló alkalmazásként?\n\nEz az alkalmazás automatikusan használva lesz minden jövőbeli beszélgetés összefoglalásához.';
   }
 
   @override
@@ -9267,4 +9273,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Összes kijelölés törlése';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

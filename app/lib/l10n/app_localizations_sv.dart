@@ -64,6 +64,12 @@ class AppLocalizationsSv extends AppLocalizations {
   String get copySummary => 'Kopiera sammanfattning';
 
   @override
+  String get copyConversationId => 'Kopiera konversations-ID';
+
+  @override
+  String get conversationIdCopied => 'Konversations-ID kopierat till urklipp';
+
+  @override
   String get testPrompt => 'Testa prompt';
 
   @override
@@ -4525,12 +4531,12 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Din plan avslutades $date.\\nPrenumerera igen nu - du debiteras omedelbart för en ny faktureringsperiod.';
+    return 'Din plan avslutades $date.\nPrenumerera igen nu - du debiteras omedelbart för en ny faktureringsperiod.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Din plan är inställd på att avbrytas $date.\\nPrenumerera igen nu för att behålla dina fördelar - ingen avgift till $date.';
+    return 'Din plan är inställd på att avbrytas $date.\nPrenumerera igen nu för att behålla dina fördelar - ingen avgift till $date.';
   }
 
   @override
@@ -6542,7 +6548,7 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Ange $appName som din standardapp för sammanfattningar?\\n\\nDenna app kommer automatiskt att användas för alla framtida konversationssammanfattningar.';
+    return 'Ange $appName som din standardapp för sammanfattningar?\n\nDenna app kommer automatiskt att användas för alla framtida konversationssammanfattningar.';
   }
 
   @override
@@ -9232,4 +9238,10 @@ class AppLocalizationsSv extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Avmarkera alla';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

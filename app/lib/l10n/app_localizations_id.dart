@@ -64,6 +64,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get copySummary => 'Salin ringkasan';
 
   @override
+  String get copyConversationId => 'Salin ID percakapan';
+
+  @override
+  String get conversationIdCopied => 'ID percakapan disalin ke papan klip';
+
+  @override
   String get testPrompt => 'Uji Prompt';
 
   @override
@@ -4535,12 +4541,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Paket Anda berakhir pada $date.\\nBerlangganan lagi sekarang - Anda akan dikenakan biaya segera untuk periode penagihan baru.';
+    return 'Paket Anda berakhir pada $date.\nBerlangganan lagi sekarang - Anda akan dikenakan biaya segera untuk periode penagihan baru.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Paket Anda diatur untuk dibatalkan pada $date.\\nBerlangganan lagi sekarang untuk mempertahankan manfaat Anda - tidak ada biaya hingga $date.';
+    return 'Paket Anda diatur untuk dibatalkan pada $date.\nBerlangganan lagi sekarang untuk mempertahankan manfaat Anda - tidak ada biaya hingga $date.';
   }
 
   @override
@@ -6556,7 +6562,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Atur $appName sebagai aplikasi ringkasan default Anda?\\n\\nAplikasi ini akan otomatis digunakan untuk semua ringkasan percakapan di masa depan.';
+    return 'Atur $appName sebagai aplikasi ringkasan default Anda?\n\nAplikasi ini akan otomatis digunakan untuk semua ringkasan percakapan di masa depan.';
   }
 
   @override
@@ -9238,4 +9244,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Batalkan pilihan semua';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

@@ -64,6 +64,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get copySummary => 'Αντιγραφή σύνοψης';
 
   @override
+  String get copyConversationId => 'Αντιγραφή ID συνομιλίας';
+
+  @override
+  String get conversationIdCopied => 'Το ID συνομιλίας αντιγράφηκε στο πρόχειρο';
+
+  @override
   String get testPrompt => 'Δοκιμή Εντολής';
 
   @override
@@ -4559,12 +4565,12 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Το πρόγραμμά σας έληξε στις $date.\\nΕπανεγγραφείτε τώρα - θα χρεωθείτε αμέσως για μια νέα περίοδο χρέωσης.';
+    return 'Το πρόγραμμά σας έληξε στις $date.\nΕπανεγγραφείτε τώρα - θα χρεωθείτε αμέσως για μια νέα περίοδο χρέωσης.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Το πρόγραμμά σας έχει ρυθμιστεί να ακυρωθεί στις $date.\\nΕπανεγγραφείτε τώρα για να διατηρήσετε τα οφέλη σας - χωρίς χρέωση μέχρι $date.';
+    return 'Το πρόγραμμά σας έχει ρυθμιστεί να ακυρωθεί στις $date.\nΕπανεγγραφείτε τώρα για να διατηρήσετε τα οφέλη σας - χωρίς χρέωση μέχρι $date.';
   }
 
   @override
@@ -6585,7 +6591,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Να οριστεί το $appName ως προεπιλεγμένη εφαρμογή σύνοψης;\\n\\nΑυτή η εφαρμογή θα χρησιμοποιείται αυτόματα για όλες τις μελλοντικές συνόψεις συνομιλιών.';
+    return 'Να οριστεί το $appName ως προεπιλεγμένη εφαρμογή σύνοψης;\n\nΑυτή η εφαρμογή θα χρησιμοποιείται αυτόματα για όλες τις μελλοντικές συνόψεις συνομιλιών.';
   }
 
   @override
@@ -9293,4 +9299,10 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Αποεπιλογή όλων';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

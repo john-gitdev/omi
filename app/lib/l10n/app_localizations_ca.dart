@@ -64,6 +64,12 @@ class AppLocalizationsCa extends AppLocalizations {
   String get copySummary => 'Copiar resum';
 
   @override
+  String get copyConversationId => 'Copia l\'ID de la conversa';
+
+  @override
+  String get conversationIdCopied => 'ID de la conversa copiat al porta-retalls';
+
+  @override
   String get testPrompt => 'Provar indicació';
 
   @override
@@ -4549,12 +4555,12 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'El teu pla va acabar el $date.\\nTorna a subscriure\'t ara - se\'t cobrarà immediatament per un nou període de facturació.';
+    return 'El teu pla va acabar el $date.\nTorna a subscriure\'t ara - se\'t cobrarà immediatament per un nou període de facturació.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'El teu pla està configurat per cancel·lar-se el $date.\\nTorna a subscriure\'t ara per mantenir els teus beneficis - sense càrrec fins $date.';
+    return 'El teu pla està configurat per cancel·lar-se el $date.\nTorna a subscriure\'t ara per mantenir els teus beneficis - sense càrrec fins $date.';
   }
 
   @override
@@ -6575,7 +6581,7 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Establir $appName com la teva aplicació de resum predeterminada?\\n\\nAquesta aplicació s\'utilitzarà automàticament per a tots els resums de converses futures.';
+    return 'Establir $appName com la teva aplicació de resum predeterminada?\n\nAquesta aplicació s\'utilitzarà automàticament per a tots els resums de converses futures.';
   }
 
   @override
@@ -9282,4 +9288,10 @@ class AppLocalizationsCa extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Desselecciona tot';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

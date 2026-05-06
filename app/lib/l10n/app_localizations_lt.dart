@@ -64,6 +64,12 @@ class AppLocalizationsLt extends AppLocalizations {
   String get copySummary => 'Kopijuoti santrauką';
 
   @override
+  String get copyConversationId => 'Kopijuoti pokalbio ID';
+
+  @override
+  String get conversationIdCopied => 'Pokalbio ID nukopijuotas į mainų sritį';
+
+  @override
   String get testPrompt => 'Testuoti užklausą';
 
   @override
@@ -4522,12 +4528,12 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Jūsų planas baigėsi $date.\\nPersiregistruokite dabar - jums bus nedelsiant apmokestinta už naują atsiskaitymo laikotarpį.';
+    return 'Jūsų planas baigėsi $date.\nPersiregistruokite dabar - jums bus nedelsiant apmokestinta už naują atsiskaitymo laikotarpį.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Jūsų planas nustatytas atšaukti $date.\\nPersiregistruokite dabar, kad išsaugotumėte privalumus - nėra mokesčio iki $date.';
+    return 'Jūsų planas nustatytas atšaukti $date.\nPersiregistruokite dabar, kad išsaugotumėte privalumus - nėra mokesčio iki $date.';
   }
 
   @override
@@ -6542,7 +6548,7 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Ar nustatyti $appName kaip numatytąją santraukų programą?\\n\\nŠi programa bus automatiškai naudojama visoms būsimoms pokalbių santraukoms.';
+    return 'Ar nustatyti $appName kaip numatytąją santraukų programą?\n\nŠi programa bus automatiškai naudojama visoms būsimoms pokalbių santraukoms.';
   }
 
   @override
@@ -9237,4 +9243,10 @@ class AppLocalizationsLt extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Atžymėti viską';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

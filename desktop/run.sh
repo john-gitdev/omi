@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Force C locale for numeric formatting so `printf %f` accepts the
+# dot-decimal values produced by `bc` even when the user's shell runs in
+# a non-English locale (e.g. de_DE.UTF-8 expects a comma separator).
+export LC_NUMERIC=C
+
 # ─── Help ──────────────────────────────────────────────────────────────
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     cat <<'USAGE'

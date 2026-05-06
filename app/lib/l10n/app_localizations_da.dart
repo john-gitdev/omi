@@ -64,6 +64,12 @@ class AppLocalizationsDa extends AppLocalizations {
   String get copySummary => 'Kopier opsummering';
 
   @override
+  String get copyConversationId => 'Kopiér samtale-ID';
+
+  @override
+  String get conversationIdCopied => 'Samtale-ID kopieret til udklipsholder';
+
+  @override
   String get testPrompt => 'Test prompt';
 
   @override
@@ -4508,12 +4514,12 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Dit abonnement sluttede $date.\\nGentilmeld dig nu - du vil straks blive opkrævet for en ny faktureringsperiode.';
+    return 'Dit abonnement sluttede $date.\nGentilmeld dig nu - du vil straks blive opkrævet for en ny faktureringsperiode.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Dit abonnement er sat til at blive annulleret $date.\\nGentilmeld dig nu for at beholde dine fordele - ingen opkrævning indtil $date.';
+    return 'Dit abonnement er sat til at blive annulleret $date.\nGentilmeld dig nu for at beholde dine fordele - ingen opkrævning indtil $date.';
   }
 
   @override
@@ -6523,7 +6529,7 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Angiv $appName som din standardapp til resuméer?\\n\\nDenne app vil automatisk blive brugt til alle fremtidige samtaleresuméer.';
+    return 'Angiv $appName som din standardapp til resuméer?\n\nDenne app vil automatisk blive brugt til alle fremtidige samtaleresuméer.';
   }
 
   @override
@@ -9214,4 +9220,10 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Fravælg alle';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

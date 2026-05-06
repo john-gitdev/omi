@@ -64,6 +64,12 @@ class AppLocalizationsSk extends AppLocalizations {
   String get copySummary => 'Kopírovať zhrnutie';
 
   @override
+  String get copyConversationId => 'Kopírovať ID konverzácie';
+
+  @override
+  String get conversationIdCopied => 'ID konverzácie skopírované do schránky';
+
+  @override
   String get testPrompt => 'Otestovať výzvu';
 
   @override
@@ -4520,12 +4526,12 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Váš plán skončil $date.\\nZnova sa prihláste teraz - budete okamžite účtovaní za nové fakturačné obdobie.';
+    return 'Váš plán skončil $date.\nZnova sa prihláste teraz - budete okamžite účtovaní za nové fakturačné obdobie.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Váš plán je nastavený na zrušenie $date.\\nZnova sa prihláste teraz, aby ste si zachovali výhody - bez poplatku do $date.';
+    return 'Váš plán je nastavený na zrušenie $date.\nZnova sa prihláste teraz, aby ste si zachovali výhody - bez poplatku do $date.';
   }
 
   @override
@@ -6538,7 +6544,7 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Nastaviť $appName ako predvolenú aplikáciu na zhrnutia?\\n\\nTáto aplikácia sa automaticky použije pre všetky budúce zhrnutia konverzácií.';
+    return 'Nastaviť $appName ako predvolenú aplikáciu na zhrnutia?\n\nTáto aplikácia sa automaticky použije pre všetky budúce zhrnutia konverzácií.';
   }
 
   @override
@@ -9216,4 +9222,10 @@ class AppLocalizationsSk extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Zrušiť výber všetkých';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

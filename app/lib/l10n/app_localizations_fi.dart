@@ -64,6 +64,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get copySummary => 'Kopioi tiivistelmä';
 
   @override
+  String get copyConversationId => 'Kopioi keskustelun tunnus';
+
+  @override
+  String get conversationIdCopied => 'Keskustelun tunnus kopioitu leikepöydälle';
+
+  @override
   String get testPrompt => 'Testaa kehotetta';
 
   @override
@@ -4523,12 +4529,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Tilauksesi päättyi $date.\\nTilaa uudelleen nyt - sinulta veloitetaan välittömästi uudesta laskutusjaksosta.';
+    return 'Tilauksesi päättyi $date.\nTilaa uudelleen nyt - sinulta veloitetaan välittömästi uudesta laskutusjaksosta.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Tilauksesi on asetettu peruuntumaan $date.\\nTilaa uudelleen nyt säilyttääksesi edut - ei veloitusta ennen $date.';
+    return 'Tilauksesi on asetettu peruuntumaan $date.\nTilaa uudelleen nyt säilyttääksesi edut - ei veloitusta ennen $date.';
   }
 
   @override
@@ -6540,7 +6546,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Asetetaanko $appName oletusyhteenvetosovellukseksi?\\n\\nTätä sovellusta käytetään automaattisesti kaikkiin tuleviin keskusteluyhteenvetoihin.';
+    return 'Asetetaanko $appName oletusyhteenvetosovellukseksi?\n\nTätä sovellusta käytetään automaattisesti kaikkiin tuleviin keskusteluyhteenvetoihin.';
   }
 
   @override
@@ -9227,4 +9233,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Poista kaikkien valinta';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

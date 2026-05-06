@@ -64,6 +64,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get copySummary => 'Sao chép tóm tắt';
 
   @override
+  String get copyConversationId => 'Sao chép ID cuộc trò chuyện';
+
+  @override
+  String get conversationIdCopied => 'Đã sao chép ID cuộc trò chuyện vào clipboard';
+
+  @override
   String get testPrompt => 'Thử nghiệm';
 
   @override
@@ -4531,12 +4537,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Gói của bạn đã kết thúc vào $date.\\nĐăng ký lại ngay - bạn sẽ bị tính phí ngay lập tức cho kỳ thanh toán mới.';
+    return 'Gói của bạn đã kết thúc vào $date.\nĐăng ký lại ngay - bạn sẽ bị tính phí ngay lập tức cho kỳ thanh toán mới.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Gói của bạn được đặt để hủy vào $date.\\nĐăng ký lại ngay để giữ quyền lợi - không tính phí cho đến $date.';
+    return 'Gói của bạn được đặt để hủy vào $date.\nĐăng ký lại ngay để giữ quyền lợi - không tính phí cho đến $date.';
   }
 
   @override
@@ -6544,7 +6550,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Đặt $appName làm ứng dụng tóm tắt mặc định của bạn?\\n\\nỨng dụng này sẽ được tự động sử dụng cho tất cả các bản tóm tắt cuộc trò chuyện trong tương lai.';
+    return 'Đặt $appName làm ứng dụng tóm tắt mặc định của bạn?\n\nỨng dụng này sẽ được tự động sử dụng cho tất cả các bản tóm tắt cuộc trò chuyện trong tương lai.';
   }
 
   @override
@@ -9228,4 +9234,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Bỏ chọn tất cả';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

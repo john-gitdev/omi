@@ -18,6 +18,8 @@
     "clear": "Limpiar",
     "copyTranscript": "Copiar transcripción",
     "copySummary": "Copiar resumen",
+    "copyConversationId": "Copiar ID de conversación",
+    "conversationIdCopied": "ID de conversación copiado al portapapeles",
     "testPrompt": "Probar prompt",
     "reprocessConversation": "Reprocesar conversación",
     "deleteConversation": "Eliminar conversación",
@@ -1390,8 +1392,8 @@
     "upgradeAlreadyScheduled": "Tu actualización al plan anual ya está programada",
     "youAreOnUnlimitedPlan": "Estás en el plan Ilimitado.",
     "yourOmiUnleashed": "Tu Omi, liberado. Hazte ilimitado para posibilidades infinitas.",
-    "planEndedOn": "Tu plan terminó el {date}.\\nVuelve a suscribirte ahora - se te cobrará inmediatamente por un nuevo período de facturación.",
-    "planSetToCancelOn": "Tu plan está configurado para cancelarse el {date}.\\nVuelve a suscribirte ahora para mantener tus beneficios - sin cargo hasta {date}.",
+    "planEndedOn": "Tu plan terminó el {date}.\nVuelve a suscribirte ahora - se te cobrará inmediatamente por un nuevo período de facturación.",
+    "planSetToCancelOn": "Tu plan está configurado para cancelarse el {date}.\nVuelve a suscribirte ahora para mantener tus beneficios - sin cargo hasta {date}.",
     "annualPlanStartsAutomatically": "Tu plan anual comenzará automáticamente cuando termine tu plan mensual.",
     "planRenewsOn": "Tu plan se renueva el {date}.",
     "unlimitedConversations": "Conversaciones ilimitadas",
@@ -2049,7 +2051,7 @@
     "defaultLabel": "Predeterminada",
     "lastUsedLabel": "Último uso",
     "setDefaultApp": "Establecer app predeterminada",
-    "setDefaultAppContent": "¿Establecer {appName} como tu app de resumen predeterminada?\\n\\nEsta app se usará automáticamente para todos los resúmenes de conversaciones futuras.",
+    "setDefaultAppContent": "¿Establecer {appName} como tu app de resumen predeterminada?\n\nEsta app se usará automáticamente para todos los resúmenes de conversaciones futuras.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

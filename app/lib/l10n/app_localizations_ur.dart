@@ -64,6 +64,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get copySummary => 'خلاصہ کاپی کریں';
 
   @override
+  String get copyConversationId => 'گفتگو کی ID کاپی کریں';
+
+  @override
+  String get conversationIdCopied => 'گفتگو کی ID کلپ بورڈ پر کاپی ہو گئی';
+
+  @override
   String get testPrompt => 'ٹیسٹ پروپٹ';
 
   @override
@@ -6548,7 +6554,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return '$appName کو اپنی ڈیفالٹ خلاصہ کاری ایپ کے طور پر سیٹ کریں؟\\n\\nیہ ایپ تمام مستقبل کی بات چیت کے خلاصوں کے لیے خودکار طور پر استعمال کی جائے گی۔';
+    return '$appName کو اپنی ڈیفالٹ خلاصہ کاری ایپ کے طور پر سیٹ کریں؟\n\nیہ ایپ تمام مستقبل کی بات چیت کے خلاصوں کے لیے خودکار طور پر استعمال کی جائے گی۔';
   }
 
   @override
@@ -9245,4 +9251,10 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'تمام کا انتخاب ختم کریں';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

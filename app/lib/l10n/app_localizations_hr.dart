@@ -64,6 +64,12 @@ class AppLocalizationsHr extends AppLocalizations {
   String get copySummary => 'Kopiraj sažetak';
 
   @override
+  String get copyConversationId => 'Kopiraj ID razgovora';
+
+  @override
+  String get conversationIdCopied => 'ID razgovora kopiran u međuspremnik';
+
+  @override
   String get testPrompt => 'Testiraj upit';
 
   @override
@@ -4540,12 +4546,12 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Vaš plan je završio $date.\\nPrenazovite se sada - bit će vam odmah naplaćeno novo razdoblje naplate.';
+    return 'Vaš plan je završio $date.\nPrenazovite se sada - bit će vam odmah naplaćeno novo razdoblje naplate.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Vaš plan je postavljen da se otkaže $date.\\nPrenazovite se sada kako biste zadržali svoju korist - bez naplate do $date.';
+    return 'Vaš plan je postavljen da se otkaže $date.\nPrenazovite se sada kako biste zadržali svoju korist - bez naplate do $date.';
   }
 
   @override
@@ -5116,7 +5122,7 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get tasksEmptyStateMessage =>
-      'Zadaci iz vaših razgovora će se pojavljati ovdje.\\nDodirnite + da biste ručno kreirali jedan.';
+      'Zadaci iz vaših razgovora će se pojavljati ovdje.\nDodirnite + da biste ručno kreirali jedan.';
 
   @override
   String get clearChatAction => 'Očisti razgovor';
@@ -6557,7 +6563,7 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Postavi $appName kao zadanu aplikaciju za sažimanje?\\n\\nOva aplikacija će biti automatski korištena za sve budućne sažetke razgovora.';
+    return 'Postavi $appName kao zadanu aplikaciju za sažimanje?\n\nOva aplikacija će biti automatski korištena za sve budućne sažetke razgovora.';
   }
 
   @override
@@ -9258,4 +9264,10 @@ class AppLocalizationsHr extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Poništi odabir svih';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

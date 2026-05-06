@@ -64,6 +64,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get copySummary => 'Копіювати підсумок';
 
   @override
+  String get copyConversationId => 'Копіювати ID розмови';
+
+  @override
+  String get conversationIdCopied => 'ID розмови скопійовано в буфер обміну';
+
+  @override
   String get testPrompt => 'Тестовий запит';
 
   @override
@@ -4528,12 +4534,12 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Ваш план закінчився $date.\\nПідпишіться знову зараз - з вас буде негайно списано за новий розрахунковий період.';
+    return 'Ваш план закінчився $date.\nПідпишіться знову зараз - з вас буде негайно списано за новий розрахунковий період.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Ваш план налаштовано на скасування $date.\\nПідпишіться знову, щоб зберегти переваги - без оплати до $date.';
+    return 'Ваш план налаштовано на скасування $date.\nПідпишіться знову, щоб зберегти переваги - без оплати до $date.';
   }
 
   @override
@@ -6547,7 +6553,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Встановити $appName як додаток для підсумків за замовчуванням?\\n\\nЦей додаток буде автоматично використовуватися для всіх майбутніх підсумків розмов.';
+    return 'Встановити $appName як додаток для підсумків за замовчуванням?\n\nЦей додаток буде автоматично використовуватися для всіх майбутніх підсумків розмов.';
   }
 
   @override
@@ -9242,4 +9248,10 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Зняти виділення з усіх';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

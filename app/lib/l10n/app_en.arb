@@ -73,6 +73,14 @@
     "@copySummary": {
         "description": "Option to copy summary to clipboard"
     },
+    "copyConversationId": "Copy Conversation ID",
+    "@copyConversationId": {
+        "description": "Menu item to copy conversation ID to clipboard"
+    },
+    "conversationIdCopied": "Conversation ID copied to clipboard",
+    "@conversationIdCopied": {
+        "description": "Snackbar message when conversation ID is copied"
+    },
     "testPrompt": "Test Prompt",
     "@testPrompt": {
         "description": "Menu item for testing prompts"
@@ -5255,7 +5263,7 @@
     "@yourOmiUnleashed": {
         "description": "Marketing text for unlimited plan"
     },
-    "planEndedOn": "Your plan ended on {date}.\\nResubscribe now - you'll be charged immediately for a new billing period.",
+    "planEndedOn": "Your plan ended on {date}.\nResubscribe now - you'll be charged immediately for a new billing period.",
     "@planEndedOn": {
         "description": "Message when plan has ended",
         "placeholders": {
@@ -5265,7 +5273,7 @@
             }
         }
     },
-    "planSetToCancelOn": "Your plan is set to cancel on {date}.\\nResubscribe now to keep your benefits - no charge until {date}.",
+    "planSetToCancelOn": "Your plan is set to cancel on {date}.\nResubscribe now to keep your benefits - no charge until {date}.",
     "@planSetToCancelOn": {
         "description": "Message when plan is set to cancel",
         "placeholders": {
@@ -7996,7 +8004,7 @@
     "defaultLabel": "Default",
     "lastUsedLabel": "Last Used",
     "setDefaultApp": "Set Default App",
-    "setDefaultAppContent": "Set {appName} as your default summarization app?\\n\\nThis app will be automatically used for all future conversation summaries.",
+    "setDefaultAppContent": "Set {appName} as your default summarization app?\n\nThis app will be automatically used for all future conversation summaries.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {
@@ -11004,5 +11012,13 @@
     "deselectAllTasksMenu": "Deselect all",
     "@deselectAllTasksMenu": {
         "description": "Action menu entry that clears any current task selection while staying in selection mode"
+    },
+    "bulkExportAlreadyExported": "All selected tasks already exported",
+    "@bulkExportAlreadyExported": {
+        "description": "Snackbar shown when every selected task is already exported and Export is tapped"
+    },
+    "bulkDeleteFailed": "Could not delete tasks. Please try again.",
+    "@bulkDeleteFailed": {
+        "description": "Snackbar shown when the bulk delete request fails and the local list is restored"
     }
 }

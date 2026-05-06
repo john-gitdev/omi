@@ -64,6 +64,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get copySummary => 'Копировать сводку';
 
   @override
+  String get copyConversationId => 'Скопировать ID разговора';
+
+  @override
+  String get conversationIdCopied => 'ID разговора скопирован в буфер обмена';
+
+  @override
   String get testPrompt => 'Тестовый запрос';
 
   @override
@@ -4535,12 +4541,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Ваш план закончился $date.\\nПодпишитесь снова - с вас сразу спишется оплата за новый расчетный период.';
+    return 'Ваш план закончился $date.\nПодпишитесь снова - с вас сразу спишется оплата за новый расчетный период.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Ваш план будет отменен $date.\\nПодпишитесь снова, чтобы сохранить преимущества - без оплаты до $date.';
+    return 'Ваш план будет отменен $date.\nПодпишитесь снова, чтобы сохранить преимущества - без оплаты до $date.';
   }
 
   @override
@@ -6555,7 +6561,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'Установить $appName как приложение для сводок по умолчанию?\\n\\nЭто приложение будет автоматически использоваться для всех будущих сводок разговоров.';
+    return 'Установить $appName как приложение для сводок по умолчанию?\n\nЭто приложение будет автоматически использоваться для всех будущих сводок разговоров.';
   }
 
   @override
@@ -9257,4 +9263,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Снять выделение со всех';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

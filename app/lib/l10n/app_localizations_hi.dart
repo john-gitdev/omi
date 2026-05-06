@@ -64,6 +64,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get copySummary => 'सारांश कॉपी करें';
 
   @override
+  String get copyConversationId => 'बातचीत ID कॉपी करें';
+
+  @override
+  String get conversationIdCopied => 'बातचीत ID क्लिपबोर्ड पर कॉपी हो गई';
+
+  @override
   String get testPrompt => 'टेस्ट प्रॉम्प्ट';
 
   @override
@@ -4497,12 +4503,12 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'आपकी योजना $date को समाप्त हो गई।\\nअभी पुनः सदस्यता लें - नई बिलिंग अवधि के लिए तुरंत शुल्क लिया जाएगा।';
+    return 'आपकी योजना $date को समाप्त हो गई।\nअभी पुनः सदस्यता लें - नई बिलिंग अवधि के लिए तुरंत शुल्क लिया जाएगा।';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'आपकी योजना $date को रद्द होने के लिए सेट है।\\nअपने लाभ बनाए रखने के लिए अभी पुनः सदस्यता लें - $date तक कोई शुल्क नहीं।';
+    return 'आपकी योजना $date को रद्द होने के लिए सेट है।\nअपने लाभ बनाए रखने के लिए अभी पुनः सदस्यता लें - $date तक कोई शुल्क नहीं।';
   }
 
   @override
@@ -6515,7 +6521,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return 'क्या $appName को आपके डिफ़ॉल्ट सारांश ऐप के रूप में सेट करें?\\n\\nइस ऐप का उपयोग स्वचालित रूप से सभी भविष्य की बातचीत के सारांश के लिए किया जाएगा।';
+    return 'क्या $appName को आपके डिफ़ॉल्ट सारांश ऐप के रूप में सेट करें?\n\nइस ऐप का उपयोग स्वचालित रूप से सभी भविष्य की बातचीत के सारांश के लिए किया जाएगा।';
   }
 
   @override
@@ -9208,4 +9214,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'सभी का चयन हटाएं';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

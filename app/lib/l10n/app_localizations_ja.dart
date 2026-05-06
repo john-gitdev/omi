@@ -15,7 +15,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversationTab => '会話';
 
   @override
-  String get transcriptTab => 'トランスクリプト';
+  String get transcriptTab => '文字起こし';
 
   @override
   String get actionItemsTab => 'アクションアイテム';
@@ -61,6 +61,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get copySummary => '要約をコピー';
+
+  @override
+  String get copyConversationId => '会話IDをコピー';
+
+  @override
+  String get conversationIdCopied => '会話IDをクリップボードにコピーしました';
 
   @override
   String get testPrompt => 'プロンプトをテスト';
@@ -663,7 +669,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get docs => 'ドキュメント';
 
   @override
-  String get yourOmiInsights => 'Omiの分析情報';
+  String get yourOmiInsights => 'Omiのインサイト';
 
   @override
   String get today => '今日';
@@ -681,7 +687,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noActivityYet => 'アクティビティはまだありません';
 
   @override
-  String get startConversationToSeeInsights => 'Omiと会話を始めて\n分析情報をここに表示しましょう。';
+  String get startConversationToSeeInsights => 'Omiと会話を始めて\nインサイトをここに表示しましょう。';
 
   @override
   String get listening => 'リスニング';
@@ -901,7 +907,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get intervalSeconds => '間隔（秒）';
 
   @override
-  String get daySummary => '日次サマリー';
+  String get daySummary => '日次の要約';
 
   @override
   String get summaryGenerated => '要約が生成されました';
@@ -925,7 +931,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get understandingWords => '理解（語数）';
 
   @override
-  String get insights => '洞察';
+  String get insights => 'インサイト';
 
   @override
   String get memories => '記憶';
@@ -1648,7 +1654,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get perMonth => '/月';
 
   @override
-  String get tailoredConversationSummaries => 'カスタマイズされた会話サマリー';
+  String get tailoredConversationSummaries => 'カスタマイズされた会話の要約';
 
   @override
   String get customChatbotPersonality => 'カスタムチャットボットパーソナリティ';
@@ -1856,7 +1862,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get omiYourAiCompanion => 'Omi – あなたのAIコンパニオン';
 
   @override
-  String get captureEveryMoment => 'すべての瞬間を記録。AI搭載のサマリーで、もうメモを取る必要はありません。';
+  String get captureEveryMoment => 'すべての瞬間を記録。AI搭載の要約で、もうメモを取る必要はありません。';
 
   @override
   String get appleWatchSetup => 'Apple Watchのセットアップ';
@@ -2234,10 +2240,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get deleteFolder => 'フォルダを削除';
 
   @override
-  String get transcriptCopiedToClipboard => 'トランスクリプトをクリップボードにコピーしました';
+  String get transcriptCopiedToClipboard => '文字起こしをクリップボードにコピーしました';
 
   @override
-  String get summaryCopiedToClipboard => '概要をクリップボードにコピーしました';
+  String get summaryCopiedToClipboard => '要約をクリップボードにコピーしました';
 
   @override
   String get conversationUrlCouldNotBeShared => '会話URLを共有できませんでした。';
@@ -2246,10 +2252,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get urlCopiedToClipboard => 'URLをクリップボードにコピーしました';
 
   @override
-  String get exportTranscript => 'トランスクリプトをエクスポート';
+  String get exportTranscript => '文字起こしをエクスポート';
 
   @override
-  String get exportSummary => '概要をエクスポート';
+  String get exportSummary => '要約をエクスポート';
 
   @override
   String get exportButton => 'エクスポート';
@@ -2261,7 +2267,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get summarize => '要約';
 
   @override
-  String get generateSummary => 'サマリーを生成';
+  String get generateSummary => '要約を生成';
 
   @override
   String get conversationNotFoundOrDeleted => '会話が見つからないか、削除されました';
@@ -2428,13 +2434,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get useYourMcpApiKey => 'MCP APIキーを使用';
 
   @override
-  String get realTimeTranscript => 'リアルタイム転写';
+  String get realTimeTranscript => 'リアルタイム文字起こし';
 
   @override
   String get experimental => '実験的';
 
   @override
-  String get transcriptionDiagnostics => '転写診断';
+  String get transcriptionDiagnostics => '文字起こし診断';
 
   @override
   String get detailedDiagnosticMessages => '詳細な診断メッセージ';
@@ -2612,7 +2618,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversationsProcessedAutomatically => '会話は自動的に処理されます';
 
   @override
-  String get getInsightsInstantly => 'すぐに洞察と要約を取得できます';
+  String get getInsightsInstantly => 'すぐにインサイトと要約を取得できます';
 
   @override
   String get showAll => 'すべて表示 →';
@@ -2798,7 +2804,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversationPrompt => '会話プロンプト';
 
   @override
-  String get conversationPromptPlaceholder => 'あなたは素晴らしいアプリです。会話のトランスクリプトと要約が提供されます...';
+  String get conversationPromptPlaceholder => 'あなたは素晴らしいアプリです。会話の文字起こしと要約が提供されます...';
 
   @override
   String get notificationScopes => '通知スコープ';
@@ -3483,7 +3489,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get everyXSeconds => 'x秒ごと';
 
   @override
-  String get triggersWhenDaySummaryGenerated => '日次サマリーが生成されたときにトリガーされます。';
+  String get triggersWhenDaySummaryGenerated => '日次の要約が生成されたときにトリガーされます。';
 
   @override
   String get tryLatestExperimentalFeatures => 'Omiチームの最新の実験的機能をお試しください。';
@@ -3516,7 +3522,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncingDeveloperSettings => '開発者設定を同期中...';
 
   @override
-  String get summary => '概要';
+  String get summary => '要約';
 
   @override
   String get auto => '自動';
@@ -3542,10 +3548,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unknownApp => '不明なアプリ';
 
   @override
-  String get noSummaryAvailable => '概要がありません';
+  String get noSummaryAvailable => '要約がありません';
 
   @override
-  String get conversationNoSummaryYet => 'この会話にはまだ概要がありません。';
+  String get conversationNoSummaryYet => 'この会話にはまだ要約がありません。';
 
   @override
   String get chooseSummarizationApp => '要約アプリを選択';
@@ -3574,7 +3580,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversationLinkCopiedToClipboard => '会話のリンクがクリップボードにコピーされました';
 
   @override
-  String get conversationTranscriptCopiedToClipboard => '会話のトランスクリプトがクリップボードにコピーされました';
+  String get conversationTranscriptCopiedToClipboard => '会話の文字起こしをクリップボードにコピーしました';
 
   @override
   String get editConversationDialogTitle => '会話を編集';
@@ -3729,7 +3735,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get calendarIntegration => 'カレンダー統合';
 
   @override
-  String get dailySummary => 'デイリーサマリー';
+  String get dailySummary => '日次の要約';
 
   @override
   String get developer => '開発者';
@@ -3759,19 +3765,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enterWordsHint => '単語を入力（カンマ区切り）';
 
   @override
-  String get dailySummaryHeader => '日次サマリー';
+  String get dailySummaryHeader => '日次の要約';
 
   @override
-  String get dailySummaryTitle => '日次サマリー';
+  String get dailySummaryTitle => '日次の要約';
 
   @override
-  String get dailySummaryDescription => '1日の会話のパーソナライズされたサマリーを通知として受け取ります。';
+  String get dailySummaryDescription => '1日の会話のパーソナライズされた要約を通知として受け取ります。';
 
   @override
   String get deliveryTime => '配信時間';
 
   @override
-  String get deliveryTimeDescription => '日次サマリーを受け取る時刻';
+  String get deliveryTimeDescription => '日次の要約を受け取る時刻';
 
   @override
   String get subscription => 'サブスクリプション';
@@ -4442,12 +4448,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'プランは$dateに終了しました。\\n今すぐ再登録 - 新しい請求期間の料金が即座に請求されます。';
+    return 'プランは$dateに終了しました。\n今すぐ再登録 - 新しい請求期間の料金が即座に請求されます。';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'プランは$dateにキャンセル予定です。\\n特典を維持するために今すぐ再登録 - $dateまで請求はありません。';
+    return 'プランは$dateにキャンセル予定です。\n特典を維持するために今すぐ再登録 - $dateまで請求はありません。';
   }
 
   @override
@@ -4627,10 +4633,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String accessesAndTriggeredBy(
-    String accessDescription,
-    String triggerDescription,
-  ) {
+  String accessesAndTriggeredBy(String accessDescription, String triggerDescription) {
     return '$accessDescription、$triggerDescription。';
   }
 
@@ -4740,7 +4743,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get howItWorksTitle => '仕組みは？';
 
   @override
-  String get howPeopleWorks => '人物を作成したら、会話のトランスクリプトに移動して対応するセグメントを割り当てることで、Omiがその人の音声も認識できるようになります！';
+  String get howPeopleWorks => '人物を作成したら、会話の文字起こしに移動して対応するセグメントを割り当てることで、Omiがその人の音声も認識できるようになります！';
 
   @override
   String get tapToDelete => 'タップして削除';
@@ -5152,7 +5155,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enterWordsCommaSeparated => '単語を入力（カンマ区切り）';
 
   @override
-  String get whenToReceiveDailySummary => 'デイリーサマリーを受け取る時間';
+  String get whenToReceiveDailySummary => '日次の要約を受け取る時間';
 
   @override
   String get checkingNextSevenDays => '今後7日間を確認中';
@@ -5582,11 +5585,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String summaryGeneratedFor(String date) {
-    return '$dateのサマリーを生成しました';
+    return '$dateの要約を生成しました';
   }
 
   @override
-  String get failedToGenerateSummary => 'サマリーの生成に失敗しました。その日の会話があることを確認してください。';
+  String get failedToGenerateSummary => '要約の生成に失敗しました。その日の会話があることを確認してください。';
 
   @override
   String get recap => 'まとめ';
@@ -6427,7 +6430,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return '$appNameをデフォルトの要約アプリとして設定しますか？\\n\\nこのアプリは今後のすべての会話の要約に自動的に使用されます。';
+    return '$appNameをデフォルトの要約アプリとして設定しますか？\n\nこのアプリは今後のすべての会話の要約に自動的に使用されます。';
   }
 
   @override
@@ -7362,7 +7365,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get devModeInvalidConversationCreatedWebhookUrl => '会話作成のWebhook URLが無効です';
 
   @override
-  String get devModeInvalidDaySummaryWebhookUrl => '日次サマリーのWebhook URLが無効です';
+  String get devModeInvalidDaySummaryWebhookUrl => '日次の要約のWebhook URLが無効です';
 
   @override
   String get devModeSettingsSaved => '設定を保存しました！';
@@ -7515,10 +7518,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get resumeRecording => '録音を再開';
 
   @override
-  String get noDailyRecapsYet => 'まだ日次サマリーはありません';
+  String get noDailyRecapsYet => 'まだ日次の要約はありません';
 
   @override
-  String get dailyRecapsDescription => '日次サマリーは生成されるとここに表示されます';
+  String get dailyRecapsDescription => '日次の要約は生成されるとここに表示されます';
 
   @override
   String get chooseTransferMethod => '転送方法を選択';
@@ -7582,7 +7585,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get audioShareFailed => '共有に失敗しました';
 
   @override
-  String get dailyRecaps => 'デイリーレキャップ';
+  String get dailyRecaps => '日次の要約';
 
   @override
   String get removeFilter => 'フィルターを削除';
@@ -7651,7 +7654,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get triggerConversationCreation => '会話作成';
 
   @override
-  String get triggerTranscriptProcessed => 'トランスクリプト処理済み';
+  String get triggerTranscriptProcessed => '文字起こし処理済み';
 
   @override
   String get actionCreateConversations => '会話を作成';
@@ -7681,7 +7684,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scopeUserChat => 'ユーザーチャット';
 
   @override
-  String get capabilitySummary => 'サマリー';
+  String get capabilitySummary => '要約';
 
   @override
   String get capabilityFeatured => '注目';
@@ -9082,4 +9085,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'すべて選択解除';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

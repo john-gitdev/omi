@@ -18,6 +18,8 @@
     "clear": "Curăță",
     "copyTranscript": "Copiază transcrierea",
     "copySummary": "Copiază rezumatul",
+    "copyConversationId": "Copiază ID-ul conversației",
+    "conversationIdCopied": "ID-ul conversației a fost copiat în clipboard",
     "testPrompt": "Testează promptul",
     "reprocessConversation": "Reprocesează conversația",
     "deleteConversation": "Șterge conversația",
@@ -1389,8 +1391,8 @@
     "upgradeAlreadyScheduled": "Upgrade-ul dvs. la planul anual este deja programat",
     "youAreOnUnlimitedPlan": "Sunteți pe planul Nelimitat.",
     "yourOmiUnleashed": "Omi-ul dvs., dezlănțuit. Deveniți nelimitat pentru posibilități nesfârșite.",
-    "planEndedOn": "Planul dvs. s-a încheiat pe {date}.\\nReabonați-vă acum - veți fi taxat imediat pentru o nouă perioadă de facturare.",
-    "planSetToCancelOn": "Planul dvs. este setat să fie anulat pe {date}.\\nReabonați-vă acum pentru a vă păstra beneficiile - fără taxă până la {date}.",
+    "planEndedOn": "Planul dvs. s-a încheiat pe {date}.\nReabonați-vă acum - veți fi taxat imediat pentru o nouă perioadă de facturare.",
+    "planSetToCancelOn": "Planul dvs. este setat să fie anulat pe {date}.\nReabonați-vă acum pentru a vă păstra beneficiile - fără taxă până la {date}.",
     "annualPlanStartsAutomatically": "Planul dvs. anual va începe automat când planul lunar se încheie.",
     "planRenewsOn": "Planul dvs. se reînnoiește pe {date}.",
     "unlimitedConversations": "Conversații nelimitate",
@@ -2048,7 +2050,7 @@
     "defaultLabel": "Implicit",
     "lastUsedLabel": "Ultima utilizare",
     "setDefaultApp": "Setează aplicația implicită",
-    "setDefaultAppContent": "Setați {appName} ca aplicație implicită de rezumat?\\n\\nAceastă aplicație va fi utilizată automat pentru toate rezumatele conversațiilor viitoare.",
+    "setDefaultAppContent": "Setați {appName} ca aplicație implicită de rezumat?\n\nAceastă aplicație va fi utilizată automat pentru toate rezumatele conversațiilor viitoare.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

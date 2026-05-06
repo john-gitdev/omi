@@ -64,6 +64,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get copySummary => 'Özeti kopyala';
 
   @override
+  String get copyConversationId => 'Konuşma kimliğini kopyala';
+
+  @override
+  String get conversationIdCopied => 'Konuşma kimliği panoya kopyalandı';
+
+  @override
   String get testPrompt => 'İstemi Test Et';
 
   @override
@@ -4532,12 +4538,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return 'Planınız $date tarihinde sona erdi.\\nŞimdi yeniden abone olun - yeni fatura dönemi için hemen ücretlendirileceksiniz.';
+    return 'Planınız $date tarihinde sona erdi.\nŞimdi yeniden abone olun - yeni fatura dönemi için hemen ücretlendirileceksiniz.';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return 'Planınız $date tarihinde iptal edilecek şekilde ayarlandı.\\nAvantajlarınızı korumak için şimdi yeniden abone olun - $date tarihine kadar ücret yok.';
+    return 'Planınız $date tarihinde iptal edilecek şekilde ayarlandı.\nAvantajlarınızı korumak için şimdi yeniden abone olun - $date tarihine kadar ücret yok.';
   }
 
   @override
@@ -6550,7 +6556,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return '$appName varsayılan özet uygulamanız olarak ayarlansın mı?\\n\\nBu uygulama gelecekteki tüm konuşma özetleri için otomatik olarak kullanılacaktır.';
+    return '$appName varsayılan özet uygulamanız olarak ayarlansın mı?\n\nBu uygulama gelecekteki tüm konuşma özetleri için otomatik olarak kullanılacaktır.';
   }
 
   @override
@@ -9241,4 +9247,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => 'Tümünün seçimini kaldır';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

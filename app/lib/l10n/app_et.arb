@@ -18,6 +18,8 @@
     "clear": "Tühjenda",
     "copyTranscript": "Kopeeri transkriptsioon",
     "copySummary": "Kopeeri kokkuvõte",
+    "copyConversationId": "Kopeeri vestluse ID",
+    "conversationIdCopied": "Vestluse ID kopeeriti lõikelauale",
     "testPrompt": "Testi käsku",
     "reprocessConversation": "Töötle vestlust uuesti",
     "deleteConversation": "Kustuta vestlus",
@@ -1389,8 +1391,8 @@
     "upgradeAlreadyScheduled": "Teie täiendus aastasele plaanile on juba planeeritud",
     "youAreOnUnlimitedPlan": "Olete Piiramatul plaanil.",
     "yourOmiUnleashed": "Teie Omi, vabastatud. Minge piiramatu juurde lõputute võimaluste jaoks.",
-    "planEndedOn": "Teie plaan lõppes {date}.\\nTellige uuesti kohe - teilt võetakse kohe tasu uue arveldusperioodi eest.",
-    "planSetToCancelOn": "Teie plaan on seatud tühistuma {date}.\\nTellige uuesti kohe, et säilitada oma eelised - tasu ei võeta kuni {date}.",
+    "planEndedOn": "Teie plaan lõppes {date}.\nTellige uuesti kohe - teilt võetakse kohe tasu uue arveldusperioodi eest.",
+    "planSetToCancelOn": "Teie plaan on seatud tühistuma {date}.\nTellige uuesti kohe, et säilitada oma eelised - tasu ei võeta kuni {date}.",
     "annualPlanStartsAutomatically": "Teie aastane plaan algab automaatselt, kui teie kuuplaan lõpeb.",
     "planRenewsOn": "Teie plaan uueneb {date}.",
     "unlimitedConversations": "Piiramatult vestlusi",
@@ -2048,7 +2050,7 @@
     "defaultLabel": "Vaikimisi",
     "lastUsedLabel": "Viimati kasutatud",
     "setDefaultApp": "Määra vaikerakendus",
-    "setDefaultAppContent": "Kas määrata {appName} vaikimisi kokkuvõtte rakenduseks?\\n\\nSeda rakendust kasutatakse automaatselt kõigi tulevaste vestluste kokkuvõtete jaoks.",
+    "setDefaultAppContent": "Kas määrata {appName} vaikimisi kokkuvõtte rakenduseks?\n\nSeda rakendust kasutatakse automaatselt kõigi tulevaste vestluste kokkuvõtete jaoks.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {

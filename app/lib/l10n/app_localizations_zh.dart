@@ -63,6 +63,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get copySummary => '复制摘要';
 
   @override
+  String get copyConversationId => '复制对话 ID';
+
+  @override
+  String get conversationIdCopied => '对话 ID 已复制到剪贴板';
+
+  @override
   String get testPrompt => '测试提示词';
 
   @override
@@ -4436,12 +4442,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String planEndedOn(String date) {
-    return '您的计划于$date结束。\\n立即重新订阅 - 您将立即被收取新计费周期的费用。';
+    return '您的计划于$date结束。\n立即重新订阅 - 您将立即被收取新计费周期的费用。';
   }
 
   @override
   String planSetToCancelOn(String date) {
-    return '您的计划将于$date取消。\\n立即重新订阅以保留您的权益 - $date之前不收费。';
+    return '您的计划将于$date取消。\n立即重新订阅以保留您的权益 - $date之前不收费。';
   }
 
   @override
@@ -6415,7 +6421,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String setDefaultAppContent(String appName) {
-    return '将 $appName 设为您的默认摘要应用？\\n\\n此应用将自动用于所有未来的对话摘要。';
+    return '将 $appName 设为您的默认摘要应用？\n\n此应用将自动用于所有未来的对话摘要。';
   }
 
   @override
@@ -9065,4 +9071,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deselectAllTasksMenu => '取消全选';
+
+  @override
+  String get bulkExportAlreadyExported => 'All selected tasks already exported';
+
+  @override
+  String get bulkDeleteFailed => 'Could not delete tasks. Please try again.';
 }

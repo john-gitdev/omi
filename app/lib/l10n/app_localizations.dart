@@ -297,6 +297,18 @@ abstract class AppLocalizations {
   /// **'Copy Summary'**
   String get copySummary;
 
+  /// Menu item to copy conversation ID to clipboard
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Conversation ID'**
+  String get copyConversationId;
+
+  /// Snackbar message when conversation ID is copied
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation ID copied to clipboard'**
+  String get conversationIdCopied;
+
   /// Menu item for testing prompts
   ///
   /// In en, this message translates to:
@@ -8622,13 +8634,13 @@ abstract class AppLocalizations {
   /// Message when plan has ended
   ///
   /// In en, this message translates to:
-  /// **'Your plan ended on {date}.\\nResubscribe now - you\'ll be charged immediately for a new billing period.'**
+  /// **'Your plan ended on {date}.\nResubscribe now - you\'ll be charged immediately for a new billing period.'**
   String planEndedOn(String date);
 
   /// Message when plan is set to cancel
   ///
   /// In en, this message translates to:
-  /// **'Your plan is set to cancel on {date}.\\nResubscribe now to keep your benefits - no charge until {date}.'**
+  /// **'Your plan is set to cancel on {date}.\nResubscribe now to keep your benefits - no charge until {date}.'**
   String planSetToCancelOn(String date);
 
   /// Info that annual plan starts automatically
@@ -12366,7 +12378,7 @@ abstract class AppLocalizations {
   /// No description provided for @setDefaultAppContent.
   ///
   /// In en, this message translates to:
-  /// **'Set {appName} as your default summarization app?\\n\\nThis app will be automatically used for all future conversation summaries.'**
+  /// **'Set {appName} as your default summarization app?\n\nThis app will be automatically used for all future conversation summaries.'**
   String setDefaultAppContent(String appName);
 
   /// No description provided for @setDefaultButton.
@@ -17222,6 +17234,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deselect all'**
   String get deselectAllTasksMenu;
+
+  /// Snackbar shown when every selected task is already exported and Export is tapped
+  ///
+  /// In en, this message translates to:
+  /// **'All selected tasks already exported'**
+  String get bulkExportAlreadyExported;
+
+  /// Snackbar shown when the bulk delete request fails and the local list is restored
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete tasks. Please try again.'**
+  String get bulkDeleteFailed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

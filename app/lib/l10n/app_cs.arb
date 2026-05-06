@@ -18,6 +18,8 @@
     "clear": "Vymazat",
     "copyTranscript": "Kopírovat přepis",
     "copySummary": "Kopírovat shrnutí",
+    "copyConversationId": "Kopírovat ID konverzace",
+    "conversationIdCopied": "ID konverzace zkopírováno do schránky",
     "testPrompt": "Testovat výzvu",
     "reprocessConversation": "Znovu zpracovat konverzaci",
     "deleteConversation": "Smazat konverzaci",
@@ -1391,8 +1393,8 @@
     "upgradeAlreadyScheduled": "Váš upgrade na roční plán je již naplánován",
     "youAreOnUnlimitedPlan": "Jste na plánu Unlimited.",
     "yourOmiUnleashed": "Váš Omi, uvolněný. Přejděte na neomezený pro nekonečné možnosti.",
-    "planEndedOn": "Váš plán skončil {date}.\\nZnovu se přihlaste nyní - budete okamžitě účtováni za nové fakturační období.",
-    "planSetToCancelOn": "Váš plán je nastaven na zrušení {date}.\\nZnovu se přihlaste nyní, abyste si zachovali výhody - bez poplatku do {date}.",
+    "planEndedOn": "Váš plán skončil {date}.\nZnovu se přihlaste nyní - budete okamžitě účtováni za nové fakturační období.",
+    "planSetToCancelOn": "Váš plán je nastaven na zrušení {date}.\nZnovu se přihlaste nyní, abyste si zachovali výhody - bez poplatku do {date}.",
     "annualPlanStartsAutomatically": "Váš roční plán začne automaticky, když skončí váš měsíční plán.",
     "planRenewsOn": "Váš plán se obnovuje {date}.",
     "unlimitedConversations": "Neomezené konverzace",
@@ -2008,7 +2010,7 @@
     "defaultLabel": "Výchozí",
     "lastUsedLabel": "Naposledy použito",
     "setDefaultApp": "Nastavit výchozí aplikaci",
-    "setDefaultAppContent": "Nastavit {appName} jako výchozí aplikaci pro shrnutí?\\n\\nTato aplikace bude automaticky použita pro všechna budoucí shrnutí konverzací.",
+    "setDefaultAppContent": "Nastavit {appName} jako výchozí aplikaci pro shrnutí?\n\nTato aplikace bude automaticky použita pro všechna budoucí shrnutí konverzací.",
     "@setDefaultAppContent": {
         "placeholders": {
             "appName": {
