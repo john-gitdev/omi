@@ -273,7 +273,7 @@ async def _stream_handler(
         await websocket.close(code=1008, reason="Bad uid")
         return
 
-    user_has_credits = True if use_custom_stt else has_transcription_credits(uid)
+    user_has_credits = True if use_custom_stt else has_transcription_credits(uid, source=source)
     if not user_has_credits:
         try:
             await send_credit_limit_notification(uid)
@@ -409,6 +409,21 @@ async def _stream_handler(
     current_conversation_id = None
 
     freemium_threshold_sent = False  # Track if we've sent the freemium threshold notification
+
+    # Push the freemium threshold event upfront for already-exhausted users so
+    # the desktop popup appears immediately on connect, instead of waiting for
+    # the periodic loop's first 60s tick (typical desktop session is shorter).
+    if not user_has_credits:
+        try:
+            await websocket.send_json(
+                FreemiumThresholdReachedEvent(
+                    remaining_seconds=0,
+                    action=FREEMIUM_ACTION_SETUP_ON_DEVICE_STT,
+                ).to_json()
+            )
+            freemium_threshold_sent = True
+        except Exception as e:
+            logger.error(f"Error sending freemium threshold event on connect: {e} {uid} {session_id}")
 
     # Credit cache: avoid querying ~720 Firestore docs every 60s per stream (#5439 sub-task 1)
     CREDITS_REFRESH_SECONDS = 900  # 15 min
@@ -549,7 +564,7 @@ async def _stream_handler(
                 )
             )
             if needs_refresh:
-                remaining_seconds_cache = get_remaining_transcription_seconds(uid)
+                remaining_seconds_cache = get_remaining_transcription_seconds(uid, source=source)
                 remaining_seconds_cache_ts = now
                 remaining_seconds_cache_initialized = True
             elif remaining_seconds_cache is not None and transcription_seconds > 0:
@@ -2109,7 +2124,10 @@ async def _stream_handler(
                     # Fallback: trigger realtime integrations directly when pusher is disabled
                     try:
                         await trigger_realtime_integrations(
-                            uid, [s.dict() for s in transcript_segments], current_conversation_id
+                            uid,
+                            [s.dict() for s in transcript_segments],
+                            current_conversation_id,
+                            source=source,
                         )
                     except Exception as e:
                         logger.error(f"Error triggering realtime integrations: {e} {uid} {session_id}")
