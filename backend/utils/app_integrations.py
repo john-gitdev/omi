@@ -13,7 +13,8 @@ from utils.http_client import (
     latest_wins_start,
     latest_wins_check,
 )
-from utils.executors import critical_executor
+from utils.executors import db_executor, run_blocking
+from utils.async_tasks import gather_safe
 
 import database.notifications as notification_db
 from database import mem_db
@@ -180,7 +181,7 @@ async def trigger_external_integrations(uid: str, conversation: Conversation) ->
             logger.error(f"Plugin integration error: {e}")
             return
 
-    await asyncio.gather(*[_single(app) for app in filtered_apps], return_exceptions=True)
+    await gather_safe(*[_single(app) for app in filtered_apps], label="trigger_integrations", max_concurrency=10)
 
     messages = []
     for key, message in results.items():
@@ -534,14 +535,12 @@ async def _async_trigger_realtime_audio_bytes(uid: str, sample_rate: int, data: 
             cb.record_failure()
             logger.error(f"Plugin integration error: {e}")
 
-    # Cap per-call concurrency: only fan out to 8 apps at a time to limit memory pressure
-    # from concurrent webhook calls holding references to the audio data
     chunk_size = 8
     for i in range(0, len(filtered_apps), chunk_size):
         chunk = filtered_apps[i : i + chunk_size]
-        await asyncio.gather(*[_single(app) for app in chunk], return_exceptions=True)
+        await gather_safe(*[_single(app) for app in chunk], label="realtime_audio_bytes", max_concurrency=8)
         if not latest_wins_check(uid, version):
-            break  # Newer data arrived, stop sending stale chunks
+            break
     return {}
 
 
@@ -559,8 +558,7 @@ async def _async_trigger_realtime_integrations(
 
     # Process mentor notification first (built-in feature) — sync, runs in thread
     mentor_results = {}
-    loop = asyncio.get_running_loop()
-    conversation_messages = await loop.run_in_executor(critical_executor, process_mentor_notification, uid, segments)
+    conversation_messages = await run_blocking(db_executor, process_mentor_notification, uid, segments)
     if conversation_messages:
         with track_usage(uid, Features.REALTIME_INTEGRATIONS):
             mentor_message = _process_mentor_proactive_notification(uid, conversation_messages)
@@ -640,7 +638,7 @@ async def _async_trigger_realtime_integrations(
             logger.error(f"App integration error: {e}")
             return
 
-    await asyncio.gather(*[_single(app) for app in filtered_apps], return_exceptions=True)
+    await gather_safe(*[_single(app) for app in filtered_apps], label="realtime_integrations", max_concurrency=10)
 
     # Merge mentor results with app results
     all_results = {**mentor_results, **results}

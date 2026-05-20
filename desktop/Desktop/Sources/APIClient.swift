@@ -3843,6 +3843,27 @@ struct CustomerPortalResponse: Codable {
   let url: String
 }
 
+/// Trial metadata from `/v1/users/me/trial` (Python backend) — timing info for countdown UI
+struct TrialMetadataResponse: Codable {
+  let trialStartedAt: Int?
+  let trialEndsAt: Int?
+  let trialRemainingSeconds: Int
+  let trialExpired: Bool
+  let trialDurationSeconds: Int
+  let trialFeatures: [String]
+  let planAfterTrial: String
+
+  enum CodingKeys: String, CodingKey {
+    case trialStartedAt = "trial_started_at"
+    case trialEndsAt = "trial_ends_at"
+    case trialRemainingSeconds = "trial_remaining_seconds"
+    case trialExpired = "trial_expired"
+    case trialDurationSeconds = "trial_duration_seconds"
+    case trialFeatures = "trial_features"
+    case planAfterTrial = "plan_after_trial"
+  }
+}
+
 /// User profile response
 struct UserProfileResponse: Codable {
   let uid: String
@@ -4118,11 +4139,72 @@ extension APIClient {
     return try await post("v2/messages/share", body: body)
   }
 
+  /// Upload one or more files to be attached to a chat message.
+  /// Mirrors the Flutter app's `uploadFilesServer` (lib/backend/http/api/messages.dart) —
+  /// same `/v2/files` multipart endpoint, same response shape.
+  func uploadChatFiles(
+    _ uploads: [(data: Data, fileName: String, mimeType: String)],
+    appId: String? = nil
+  ) async throws -> [ChatFileResponse] {
+    var endpoint = "v2/files"
+    if let appId = appId, !appId.isEmpty, appId != "no_selected" {
+      endpoint += "?app_id=\(appId)"
+    }
+    let url = URL(string: baseURL + endpoint)!
+
+    let boundary = "Boundary-\(UUID().uuidString)"
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.allHTTPHeaderFields = try await buildHeaders(requireAuth: true)
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+    var body = Data()
+    let lineBreak = "\r\n"
+    for upload in uploads {
+      body.append("--\(boundary)\(lineBreak)".data(using: .utf8)!)
+      body.append(
+        "Content-Disposition: form-data; name=\"files\"; filename=\"\(upload.fileName)\"\(lineBreak)"
+          .data(using: .utf8)!)
+      body.append("Content-Type: \(upload.mimeType)\(lineBreak)\(lineBreak)".data(using: .utf8)!)
+      body.append(upload.data)
+      body.append(lineBreak.data(using: .utf8)!)
+    }
+    body.append("--\(boundary)--\(lineBreak)".data(using: .utf8)!)
+    request.httpBody = body
+
+    let (data, response) = try await session.data(for: request)
+    guard let http = response as? HTTPURLResponse else { throw APIError.invalidResponse }
+    if http.statusCode == 401 { throw APIError.unauthorized }
+    guard (200...299).contains(http.statusCode) else {
+      throw APIError.httpError(statusCode: http.statusCode)
+    }
+    return try decoder.decode([ChatFileResponse].self, from: data)
+  }
+
 }
 
 /// Response from rating a message
 struct MessageStatusResponse: Codable {
   let status: String
+}
+
+/// Response shape for `POST /v2/files` — mirrors backend `FileChat` model.
+struct ChatFileResponse: Codable {
+  let id: String
+  let name: String?
+  let mimeType: String?
+  let thumbnail: String?
+  let thumbName: String?
+  let openaiFileId: String?
+
+  enum CodingKeys: String, CodingKey {
+    case id
+    case name
+    case thumbnail
+    case mimeType = "mime_type"
+    case thumbName = "thumb_name"
+    case openaiFileId = "openai_file_id"
+  }
 }
 
 /// Response from sharing chat messages
@@ -4274,9 +4356,11 @@ struct ChatMessageDB: Codable, Identifiable {
   let sessionId: String?
   let rating: Int?
   let reported: Bool
+  /// JSON string with extra info (attachments, etc.); see ChatMessage.decodeAttachments.
+  let metadata: String?
 
   enum CodingKeys: String, CodingKey {
-    case id, text, sender, rating, reported
+    case id, text, sender, rating, reported, metadata
     case createdAt = "created_at"
     case appId = "app_id"
     case sessionId = "session_id"
@@ -4292,6 +4376,7 @@ struct ChatMessageDB: Codable, Identifiable {
     sessionId = try container.decodeIfPresent(String.self, forKey: .sessionId)
     rating = try container.decodeIfPresent(Int.self, forKey: .rating)
     reported = try container.decodeIfPresent(Bool.self, forKey: .reported) ?? false
+    metadata = try container.decodeIfPresent(String.self, forKey: .metadata)
   }
 }
 
@@ -4401,6 +4486,10 @@ extension APIClient {
 
   func getUserSubscription() async throws -> UserSubscriptionResponse {
     return try await get("v1/users/me/subscription")
+  }
+
+  func getTrialMetadata() async throws -> TrialMetadataResponse {
+    return try await get("v1/users/me/trial")
   }
 
   func getAvailablePlans() async throws -> AvailablePlansResponse {

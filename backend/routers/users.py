@@ -35,7 +35,11 @@ from database.redis_db import (
     set_user_data_protection_level,
     get_generic_cache,
     set_generic_cache,
+    get_daily_summary_uid,
+    store_daily_summary_to_uid,
+    remove_daily_summary_to_uid,
 )
+
 from database.users import (
     get_user_transcription_preferences,
     set_user_transcription_preferences,
@@ -61,6 +65,7 @@ from models.users import (
     PlanType,
     PricingOption,
     PhoneCallQuota,
+    TrialMetadata,
 )
 from utils.phone_calls import get_quota_snapshot as get_phone_call_quota_snapshot
 from utils.apps import get_available_app_by_id
@@ -71,11 +76,14 @@ from utils.subscription import (
     get_plan_limits,
     get_plan_features,
     get_monthly_usage_for_subscription,
+    is_trial_paywalled,
     reconcile_basic_plan_with_stripe,
     filter_plans_for_user,
     should_show_new_plans,
     adapt_plans_for_legacy_client,
     legacy_plan_features,
+    clear_trial_paywall_cache,
+    get_trial_metadata,
 )
 from database import user_usage as user_usage_db
 from utils import stripe as stripe_utils
@@ -796,6 +804,7 @@ def activate_byok_endpoint(data: BYOKActivateRequest, uid: str = Depends(auth.ge
             )
     users_db.set_byok_active(uid, data.fingerprints)
     invalidate_byok_state_cache(uid)
+    clear_trial_paywall_cache(uid)
     return {"active": True}
 
 
@@ -804,6 +813,7 @@ def deactivate_byok_endpoint(uid: str = Depends(auth.get_current_user_uid_no_byo
     """Drop the user off the BYOK free plan (keys were cleared client-side)."""
     users_db.clear_byok_active(uid)
     invalidate_byok_state_cache(uid)
+    clear_trial_paywall_cache(uid)
     return {"active": False}
 
 
@@ -1079,6 +1089,46 @@ def get_user_chat_usage_quota(
     )
 
 
+class PaywallStatusResponse(BaseModel):
+    paywalled: bool
+
+
+@router.get('/v1/users/me/paywall', tags=['users'], response_model=PaywallStatusResponse)
+def get_user_paywall_status(
+    uid: str = Depends(auth.get_current_user_uid),
+    x_app_platform: Optional[str] = Header(None, alias='X-App-Platform'),
+    platform: Optional[str] = Query(None),
+):
+    """Trial-paywall status for the calling user on the given platform.
+
+    Used by the Rust desktop-backend middleware to decide whether to proxy
+    paid LLM / TTS / Pinecone traffic. Mirrors the exact semantics of
+    `is_trial_paywalled`: basic plan + no active BYOK + Firebase Auth
+    account >3d old + platform in {macos, desktop}. Mobile platforms always
+    return `paywalled=false`.
+
+    Platform comes from `X-App-Platform` header (preferred) or `platform`
+    query param (fallback). Unknown / missing platforms are never paywalled.
+    """
+    resolved_platform = x_app_platform or platform
+    return PaywallStatusResponse(paywalled=is_trial_paywalled(uid, resolved_platform))
+
+
+@router.get('/v1/users/me/trial', tags=['users'], response_model=TrialMetadata)
+def get_user_trial_status(uid: str = Depends(auth.get_current_user_uid)):
+    """Structured trial metadata for the calling user.
+
+    Returns trial timing info (start, end, remaining seconds, expired flag)
+    plus the list of features available during trial and the plan the user
+    falls to after trial expiry. Used by desktop clients to render countdown
+    banners and pre-expiry upgrade nudges.
+
+    Paid-plan and BYOK users get `trial_expired=False` with zeroed timing
+    (trial is irrelevant to them — they have full access).
+    """
+    return get_trial_metadata(uid)
+
+
 # **************************************
 # ****** Daily Summary Settings ********
 # **************************************
@@ -1276,18 +1326,63 @@ def get_daily_summary(summary_id: str, uid: str = Depends(auth.get_current_user_
     return summary
 
 
+@router.patch('/v1/users/daily-summaries/{summary_id}/visibility', tags=['v1'])
+def set_daily_summary_visibility(summary_id: str, value: str, uid: str = Depends(auth.get_current_user_uid)):
+    """
+    Set the visibility of a daily summary. Use value='shared' to make it shareable.
+    """
+    if value not in ('shared', 'private'):
+        raise HTTPException(status_code=400, detail="Invalid visibility value. Must be 'shared' or 'private'")
+    summary = daily_summaries_db.get_daily_summary(uid, summary_id)
+    if not summary:
+        raise HTTPException(status_code=404, detail='Daily summary not found')
+    daily_summaries_db.set_daily_summary_visibility(uid, summary_id, value)
+    if value == 'private':
+        remove_daily_summary_to_uid(summary_id)
+    else:
+        store_daily_summary_to_uid(summary_id, uid)
+    return {'status': 'Ok'}
+
+
 @router.delete('/v1/users/daily-summaries/{summary_id}', tags=['v1'])
 def delete_daily_summary(summary_id: str, uid: str = Depends(auth.get_current_user_uid)):
     """
     Delete a daily summary by ID.
     """
-    # Verify it exists first
     summary = daily_summaries_db.get_daily_summary(uid, summary_id)
     if not summary:
         raise HTTPException(status_code=404, detail='Daily summary not found')
 
     daily_summaries_db.delete_daily_summary(uid, summary_id)
     return {'status': 'ok'}
+
+
+@router.get('/v1/daily-summaries/{summary_id}/shared', tags=['v1'])
+def get_shared_daily_summary(summary_id: str):
+    """
+    Public endpoint to retrieve a daily summary for sharing. No auth required.
+    """
+    uid = get_daily_summary_uid(summary_id)
+    if not uid:
+        raise HTTPException(status_code=404, detail='Daily summary not found')
+
+    summary = daily_summaries_db.get_daily_summary(uid, summary_id)
+    if not summary or summary.get('visibility') != 'shared':
+        raise HTTPException(status_code=404, detail='Daily summary not found')
+
+    _PUBLIC_FIELDS = {
+        'id',
+        'date',
+        'headline',
+        'overview',
+        'day_emoji',
+        'stats',
+        'highlights',
+        'action_items',
+        'decisions_made',
+        'knowledge_nuggets',
+    }
+    return {k: v for k, v in summary.items() if k in _PUBLIC_FIELDS}
 
 
 # ***********************************
@@ -1385,7 +1480,7 @@ def _json_default(obj):
 
 
 @router.get('/v1/users/export', tags=['v1'])
-async def export_all_user_data(uid: str = Depends(auth.get_current_user_uid)):
+def export_all_user_data(uid: str = Depends(auth.get_current_user_uid)):
     """Export all user data for GDPR/CCPA compliance. Streams response to avoid timeouts."""
 
     def generate():
