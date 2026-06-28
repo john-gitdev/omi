@@ -131,7 +131,9 @@ class ConversationProvider extends ChangeNotifier {
   }
 
   void updateSpecificGroupedConvo(ServerConversation convo, DateTime date, int idx) {
-    groupedConversations[date]![idx] = convo;
+    final group = groupedConversations[date];
+    if (group == null || idx < 0 || idx >= group.length) return;
+    group[idx] = convo;
     notifyListeners();
   }
 
@@ -408,7 +410,7 @@ class ConversationProvider extends ChangeNotifier {
       // so the list self-heals without the user having to pull-to-refresh.
       conversationsLoadFailed = true;
       if (conversations.isEmpty && selectedFolderId == null) {
-        conversations = SharedPreferencesUtil().cachedConversations;
+        conversations = _filterPendingDeletes(SharedPreferencesUtil().cachedConversations);
       }
       if (searchedConversations.isEmpty) {
         searchedConversations = conversations;
@@ -422,7 +424,7 @@ class ConversationProvider extends ChangeNotifier {
     conversationsLoadFailed = false;
     _initialFetchRetryTimer?.cancel();
     _initialFetchRetryCount = 0;
-    conversations = result.items;
+    conversations = _filterPendingDeletes(result.items);
 
     // processing convos
     processingConversations = conversations.where((m) => m.status == ConversationStatus.processing).toList();
@@ -432,7 +434,7 @@ class ConversationProvider extends ChangeNotifier {
 
     // Only use cache when no folder filter is applied
     if (conversations.isEmpty && selectedFolderId == null) {
-      conversations = SharedPreferencesUtil().cachedConversations;
+      conversations = _filterPendingDeletes(SharedPreferencesUtil().cachedConversations);
     } else if (selectedFolderId == null) {
       // Only cache when viewing all folders
       SharedPreferencesUtil().cachedConversations = conversations;
@@ -550,37 +552,40 @@ class ConversationProvider extends ChangeNotifier {
   }
 
   void _groupSearchConvosByDateWithoutNotify() {
-    groupedConversations = {};
-    for (var conversation in _filterOutConvos(searchedConversations)) {
-      var effectiveDate = conversation.startedAt ?? conversation.createdAt;
-      var date = DateTime(effectiveDate.year, effectiveDate.month, effectiveDate.day);
-      if (!groupedConversations.containsKey(date)) {
-        groupedConversations[date] = [];
-      }
-      groupedConversations[date]?.add(conversation);
-    }
-
-    // Sort
-    for (final date in groupedConversations.keys) {
-      groupedConversations[date]?.sort((a, b) => (b.startedAt ?? b.createdAt).compareTo(a.startedAt ?? a.createdAt));
-    }
+    groupedConversations = _buildGroupedByDate(_filterOutConvos(searchedConversations));
   }
 
   void _groupConversationsByDateWithoutNotify() {
-    groupedConversations = {};
-    for (var conversation in _filterOutConvos(conversations)) {
-      var effectiveDate = conversation.startedAt ?? conversation.createdAt;
-      var date = DateTime(effectiveDate.year, effectiveDate.month, effectiveDate.day);
-      if (!groupedConversations.containsKey(date)) {
-        groupedConversations[date] = [];
-      }
-      groupedConversations[date]?.add(conversation);
+    groupedConversations = _buildGroupedByDate(_filterOutConvos(conversations));
+  }
+
+  /// Buckets conversations into day-keyed groups, sorted newest-first both
+  /// at the day-group level and within each day.
+  ///
+  /// Why the explicit re-ordering at the end matters: the backend returns
+  /// conversations ordered by `created_at` DESC, but we bucket by
+  /// `started_at` (falling back to `created_at`). For re-processed or
+  /// merged conversations these two timestamps diverge — a conversation
+  /// merged today with the original recording date of, say, May 9 lands
+  /// at the top of the API response (newest `created_at`) and creates
+  /// the `May 9` day-bucket first. Dart's default Map iterates in
+  /// insertion order, so without this sort step the UI would render
+  /// `May 9` above today/yesterday. Rebuilding the map in descending
+  /// key order fixes the day-group display order.
+  Map<DateTime, List<ServerConversation>> _buildGroupedByDate(Iterable<ServerConversation> source) {
+    final grouped = <DateTime, List<ServerConversation>>{};
+    for (final conversation in source) {
+      final effectiveDate = conversation.startedAt ?? conversation.createdAt;
+      final date = DateTime(effectiveDate.year, effectiveDate.month, effectiveDate.day);
+      grouped.putIfAbsent(date, () => []).add(conversation);
     }
 
-    // Sort
-    for (final date in groupedConversations.keys) {
-      groupedConversations[date]?.sort((a, b) => (b.startedAt ?? b.createdAt).compareTo(a.startedAt ?? a.createdAt));
+    for (final list in grouped.values) {
+      list.sort((a, b) => (b.startedAt ?? b.createdAt).compareTo(a.startedAt ?? a.createdAt));
     }
+
+    final sortedKeys = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
+    return {for (final k in sortedKeys) k: grouped[k]!};
   }
 
   void groupConversationsByDate() {
@@ -623,7 +628,12 @@ class ConversationProvider extends ChangeNotifier {
   }
 
   Future getMoreConversationsFromServer() async {
-    if (conversations.length % 50 != 0) return;
+    // Use server-equivalent length so the load-more gate and offset stay aligned
+    // with what the server has — pending-delete IDs are still present server-side
+    // until the 3-second undo timer fires the actual DELETE. Without this, a
+    // delete leaves the local length non-multiple-of-50 and load-more never fires.
+    final serverEquivalentLength = conversations.length + memoriesToDelete.length;
+    if (serverEquivalentLength % 50 != 0) return;
     if (isLoadingConversations) return;
     setLoadingConversations(true);
 
@@ -631,14 +641,14 @@ class ConversationProvider extends ChangeNotifier {
     final (startDate, endDate) = _getDateFilterRange();
 
     var newConversations = await getConversations(
-      offset: conversations.length,
+      offset: serverEquivalentLength,
       includeDiscarded: showDiscardedConversations,
       startDate: startDate,
       endDate: endDate,
       folderId: selectedFolderId,
       starred: showStarredOnly ? true : null,
     );
-    conversations.addAll(newConversations);
+    conversations.addAll(_filterPendingDeletes(newConversations));
     conversations.sort((a, b) => (b.startedAt ?? b.createdAt).compareTo(a.startedAt ?? a.createdAt));
     _groupConversationsByDateWithoutNotify();
     setLoadingConversations(false);
@@ -758,7 +768,15 @@ class ConversationProvider extends ChangeNotifier {
   String? lastDeletedConversationId;
   Map<String, DateTime> deleteTimestamps = {};
 
-  void deleteConversationLocally(ServerConversation conversation, int index, DateTime date) {
+  // Hide conversations whose server-side DELETE is still pending (3s undo window
+  // or in-flight HTTP). Without this, a pull-to-refresh during that window
+  // re-surfaces the just-deleted conversation, which users read as "delete didn't work".
+  List<ServerConversation> _filterPendingDeletes(List<ServerConversation> items) {
+    if (memoriesToDelete.isEmpty) return items;
+    return items.where((c) => !memoriesToDelete.containsKey(c.id)).toList();
+  }
+
+  void deleteConversationLocally(ServerConversation conversation, DateTime date) {
     if (lastDeletedConversationId != null &&
         memoriesToDelete.containsKey(lastDeletedConversationId) &&
         DateTime.now().difference(deleteTimestamps[lastDeletedConversationId]!) < const Duration(seconds: 3)) {
@@ -769,9 +787,12 @@ class ConversationProvider extends ChangeNotifier {
     lastDeletedConversationId = conversation.id;
     deleteTimestamps[conversation.id] = DateTime.now();
     conversations.removeWhere((element) => element.id == conversation.id);
-    groupedConversations[date]!.removeAt(index);
-    if (groupedConversations[date]!.isEmpty) {
-      groupedConversations.remove(date);
+    final group = groupedConversations[date];
+    if (group != null) {
+      group.removeWhere((e) => e.id == conversation.id);
+      if (group.isEmpty) {
+        groupedConversations.remove(date);
+      }
     }
     notifyListeners();
     Future.delayed(const Duration(seconds: 3), () {

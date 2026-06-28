@@ -429,6 +429,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get offlineSync => 'همگام‌سازی آفلاین';
 
   @override
+  String get autoSync => 'همگام‌سازی خودکار';
+
+  @override
+  String get autoSyncDescription => 'هنگام اتصال دستگاه، ضبط‌های آفلاین به‌طور خودکار همگام‌سازی شوند';
+
+  @override
   String get deviceSettings => 'تنظیمات دستگاه';
 
   @override
@@ -965,11 +971,6 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String memoriesUsedThisMonth(String used, String limit) {
-    return '$used از $limit یادداشت این ماه ایجاد‌شده است';
-  }
-
-  @override
   String get visibility => 'دید';
 
   @override
@@ -1464,7 +1465,7 @@ class AppLocalizationsFa extends AppLocalizations {
       'آزادانه از omi استفاده کنید. شما فقط مستقیماً ارائه‌دهنده STT خود را پرداخت می‌کنید.';
 
   @override
-  String get freeMinutesMonth => '1200 دقیقه رایگان/ماه شامل است. نامحدود با ';
+  String get freeMinutesMonth => '600 دقیقه رایگان/ماه شامل است. نامحدود با ';
 
   @override
   String get omiUnlimited => 'Omi Unlimited';
@@ -1713,12 +1714,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String devicesFoundNearby(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'DEVICES',
-      one: 'DEVICE',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'DEVICES', one: 'DEVICE');
     return '$count $_temp0 FOUND NEARBY';
   }
 
@@ -4633,41 +4629,13 @@ class AppLocalizationsFa extends AppLocalizations {
       'از اینکه کاربر ارزشمندی از Omi هستید تشکر می‌کنیم. اگر سؤالات یا نگرانی‌ای دارید، لطفا با ما تماس بگیرید team@basedhardware.com.';
 
   @override
-  String get wifiSyncSettings => 'تنظیمات نقطه اتصال Wi-Fi';
-
-  @override
-  String get enterHotspotCredentials => 'اطلاعات اعتباری نقطه اتصال تلفن خود را وارد کنید';
-
-  @override
-  String get wifiSyncUsesHotspot =>
-      'هم‌راه‌سازی Wi-Fi از تلفن شما به‌عنوان نقطه اتصال استفاده می‌کند. نام نقطه اتصال و رمز عبور خود را در تنظیمات > Personal Hotspot بیابید.';
-
-  @override
-  String get hotspotNameSsid => 'نام نقطه اتصال (SSID)';
-
-  @override
-  String get exampleIphoneHotspot => 'مثال: iPhone Hotspot';
-
-  @override
   String get password => 'رمز عبور';
-
-  @override
-  String get enterHotspotPassword => 'رمز عبور نقطه اتصال را وارد کنید';
 
   @override
   String get saveCredentials => 'ذخیره اطلاعات اعتباری';
 
   @override
   String get clearCredentials => 'پاک‌کردن اطلاعات اعتباری';
-
-  @override
-  String get pleaseEnterHotspotName => 'لطفا نام نقطه اتصال را وارد کنید';
-
-  @override
-  String get wifiCredentialsSaved => 'اطلاعات اعتباری Wi-Fi ذخیره شد';
-
-  @override
-  String get wifiCredentialsCleared => 'اطلاعات اعتباری Wi-Fi پاک‌شد';
 
   @override
   String summaryGeneratedForDate(String date) {
@@ -4736,7 +4704,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get noSpecificDataAccessConfigured => 'هیچ دسترسی داده خاصی تنظیم‌نشده است.';
 
   @override
-  String get basicPlanDescription => '1,200 دقیقه حرفه‌ای + نامحدود روی‌دستگاه';
+  String get basicPlanDescription => '600 دقیقه حرفه‌ای + نامحدود روی‌دستگاه';
 
   @override
   String get minutes => 'دقیقه';
@@ -5813,9 +5781,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get limitless => 'بی محدود';
 
   @override
-  String get fastTransfer => 'انتقال سریع';
-
-  @override
   String get syncingStatus => 'هماهنگ سازی';
 
   @override
@@ -5825,15 +5790,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String etaLabel(String time) {
     return 'ETA: $time';
   }
-
-  @override
-  String get transferMethod => 'روش انتقال';
-
-  @override
-  String get fast => 'سریع';
-
-  @override
-  String get ble => 'BLE';
 
   @override
   String get phone => 'تلفن';
@@ -5854,26 +5810,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get processedFilesDeleted => 'فایل های پردازش شده حذف شدند';
 
   @override
-  String get wifiEnableFailed => 'فعال کردن WiFi در دستگاه ناموفق بود. لطفاً دوباره تلاش کنید.';
-
-  @override
-  String get deviceNoFastTransfer =>
-      'دستگاه شما از Fast Transfer پشتیبانی نمی کند. به جای آن از Bluetooth استفاده کنید.';
-
-  @override
-  String get enableHotspotMessage => 'لطفاً hotspot تلفن خود را فعال کنید و دوباره تلاش کنید.';
-
-  @override
-  String get transferStartFailed => 'شروع انتقال ناموفق بود. لطفاً دوباره تلاش کنید.';
-
-  @override
   String get deviceNotResponding => 'دستگاه پاسخ نداد. لطفاً دوباره تلاش کنید.';
-
-  @override
-  String get invalidWifiCredentials => 'اعتبارات WiFi نامعتبر است. تنظیمات hotspot خود را بررسی کنید.';
-
-  @override
-  String get wifiConnectionFailed => 'اتصال WiFi ناموفق بود. لطفاً دوباره تلاش کنید.';
 
   @override
   String get sdCardProcessing => 'پردازش کارت SD';
@@ -5885,9 +5822,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get process => 'پردازش';
-
-  @override
-  String get wifiSyncFailed => 'هماهنگ سازی WiFi ناموفق بود';
 
   @override
   String get processingFailed => 'پردازش ناموفق بود';
@@ -6061,7 +5995,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cloudProvider => 'ارائه دهنده ابری';
 
   @override
-  String get premiumMinutesInfo => '1,200 دقیقه premium/ماه. برگه On-Device رونویسی رایگان نامحدود را ارائه می دهد.';
+  String get premiumMinutesInfo => '600 دقیقه premium/ماه. برگه On-Device رونویسی رایگان نامحدود را ارائه می دهد.';
 
   @override
   String get viewUsage => 'مشاهده استفاده';
@@ -6141,7 +6075,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get batteryDrainSignificantly => 'تخلیه باتری به طور قابل توجهی افزایش خواهد یافت.';
 
   @override
-  String get premiumMinutesMonth => '1,200 دقیقه premium/ماه. برگه On-Device رونویسی رایگان نامحدود را ارائه می دهد.';
+  String get premiumMinutesMonth => '600 دقیقه premium/ماه. برگه On-Device رونویسی رایگان نامحدود را ارائه می دهد.';
 
   @override
   String get audioProcessedLocally =>
@@ -6664,24 +6598,13 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get wifiSync => 'هماهنگ سازی WiFi';
-
-  @override
   String itemCopiedToClipboard(String item) {
     return '$item در کلیپ بورد کپی شد';
   }
 
   @override
-  String get wifiConnectionFailedTitle => 'اتصال ناموفق';
-
-  @override
   String connectingToDeviceName(String deviceName) {
     return 'اتصال به $deviceName';
-  }
-
-  @override
-  String enableDeviceWifi(String deviceName) {
-    return 'فعال کردن WiFi $deviceName';
   }
 
   @override
@@ -6778,9 +6701,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get statusUnprocessed => 'پردازش‌نشده';
 
   @override
-  String get switchedToFastTransfer => 'به انتقال سریع تغییر یافت';
-
-  @override
   String get transferCompleteMessage => 'انتقال تکمیل شد! اکنون می‌توانید این ضبط را پخش کنید.';
 
   @override
@@ -6792,33 +6712,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get transferCancelled => 'انتقال لغو شد';
 
   @override
-  String get fastTransferEnabled => 'انتقال سریع فعال شد';
-
-  @override
   String get bluetoothSyncEnabled => 'هماهنگ‌سازی Bluetooth فعال شد';
-
-  @override
-  String get enableFastTransfer => 'فعال‌کردن انتقال سریع';
-
-  @override
-  String get fastTransferDescription =>
-      'انتقال سریع از Wi-Fi برای سرعت تقریباً 5 برابر سریع‌تر استفاده می‌کند. تلفن شما به‌طور موقت در طی انتقال به شبکه Wi-Fi دستگاه Omi متصل خواهد شد.';
-
-  @override
-  String get internetAccessPausedDuringTransfer => 'دسترسی به اینترنت در طی انتقال متوقف است';
-
-  @override
-  String get chooseTransferMethodDescription => 'نحوه انتقال ضبط‌شده‌ها از دستگاه Omi به تلفن خود را انتخاب کنید.';
-
-  @override
-  String get wifiSpeed => 'تقریباً 150 کیلوبایت بر ثانیه از طریق Wi-Fi';
-
-  @override
-  String get fiveTimesFaster => '5 برابر سریع‌تر';
-
-  @override
-  String get fastTransferMethodDescription =>
-      'اتصال مستقیم Wi-Fi را به دستگاه Omi ایجاد می‌کند. تلفن شما به‌طور موقت از Wi-Fi معمولی خود در طی انتقال قطع می‌شود.';
 
   @override
   String get bluetooth => 'Bluetooth';
@@ -7518,13 +7412,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get voiceFailedToTranscribe => 'رونوشت صدا ناموفق بود';
 
   @override
-  String get locationPermissionRequired => 'اجازهِ مکان مورد نیاز است';
-
-  @override
-  String get locationPermissionContent =>
-      'انتقال سریع برای تأیید اتصال Wi-Fi به اجازهِ مکان نیاز دارد. لطفاً برای ادامه اجازهِ مکان را اعطا کنید.';
-
-  @override
   String get pdfTranscriptExport => 'صادرات رونوشت';
 
   @override
@@ -7669,12 +7556,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get dailyRecapsDescription => 'خلاصه‌های روزانهِ شما پس از تولید در اینجا ظاهر خواهد شد';
 
   @override
-  String get chooseTransferMethod => 'انتخاب روش انتقال';
-
-  @override
-  String get fastTransferSpeed => 'تقریباً 150 کیلوبایت بر ثانیه از طریق Wi-Fi';
-
-  @override
   String largeTimeGapDetected(String gap) {
     return 'فاصلهِ زمانیِ بزرگ تشخیص داده شد ($gap)';
   }
@@ -7683,10 +7564,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String largeTimeGapsDetected(String gaps) {
     return 'فاصله‌های زمانیِ بزرگ تشخیص داده شدند ($gaps)';
   }
-
-  @override
-  String get deviceDoesNotSupportWifiSwitchingToBle =>
-      'دستگاه از هماهنگ‌سازی Wi-Fi پشتیبانی نمی‌کند، تغییر به Bluetooth';
 
   @override
   String get appleHealthNotAvailable => 'Apple Health در این دستگاه در دسترس نیست';
@@ -7885,6 +7762,9 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get viewAll => 'مشاهده همه';
+
+  @override
+  String get expand => 'گسترش';
 
   @override
   String get addTask => 'افزودن کار';
@@ -8573,12 +8453,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String nConversationsCreated(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 's',
-      one: '',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 's', one: '');
     return '$count conversation$_temp0 created';
   }
 
@@ -9275,7 +9150,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncStatusBackedUp => 'پشتیبان‌گیری شد';
 
   @override
-  String get syncStatusBackingUp => 'در حال پشتیبان‌گیری…';
+  String get syncStatusBackingUp => 'در حال هماهنگ‌سازی…';
 
   @override
   String get syncStatusWaiting => 'در انتظار همگام‌سازی';
@@ -9338,7 +9213,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get syncFlowIntro =>
-      'ضبط‌ها از دستگاه Omi شما به این تلفن منتقل و به‌صورت محلی ذخیره می‌شوند، سپس به سرور Omi بارگذاری می‌شوند تا متن‌برداری شده و به مکالمه تبدیل شوند.';
+      'ضبط‌ها از دستگاه شما به این تلفن منتقل و به‌صورت محلی ذخیره می‌شوند، سپس به سرور Omi بارگذاری می‌شوند تا رونویسی و به گفت‌وگو تبدیل شوند.';
 
   @override
   String get syncStepUpload => 'همگام‌سازی';
@@ -9369,7 +9244,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get syncCardUploadingTitle => 'در حال بارگذاری در Omi';
 
   @override
-  String get syncCardDownloadingTitle => 'در حال دانلود از Omi';
+  String get syncCardDownloadingTitle => 'در حال دانلود از دستگاه شما';
 
   @override
   String syncCardProgressOf(int current, int total) {
@@ -9377,10 +9252,10 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get syncStatusOnDevice => 'در انتظار Omi';
+  String get syncStatusOnDevice => 'روی دستگاه شما';
 
   @override
-  String get syncStatusDownloadingFromDevice => 'در حال دانلود از Omi';
+  String get syncStatusDownloadingFromDevice => 'در حال دانلود از دستگاه شما';
 
   @override
   String get newestFirst => 'ابتدا جدیدترین‌ها';
@@ -9390,4 +9265,199 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get morePaymentMethodsComingSoon => 'روش‌های پرداخت بیشتر به‌زودی';
+
+  @override
+  String get syncProcessingBackgroundHint => 'این کار در پس‌زمینه ادامه می‌یابد — می‌توانید این صفحه را ترک کنید.';
+
+  @override
+  String get syncCardRateLimited =>
+      'محدودیت استفاده منصفانه به پایان رسید — همگام‌سازی به‌طور خودکار از سر گرفته می‌شود';
+
+  @override
+  String get syncCardBackendBusy => 'سرورهای Omi شلوغ هستند — ضبط‌های شما به‌محض آزاد شدن ظرفیت همگام‌سازی می‌شوند';
+
+  @override
+  String get unableToDetermineFirmwareVersion => 'تعیین نسخه فعلی سفت‌افزار امکان‌پذیر نیست';
+
+  @override
+  String get promoCode => 'کد تخفیف';
+
+  @override
+  String get enterPromoCode => 'کد تخفیف را وارد کنید';
+
+  @override
+  String get invalidPromotionCode => 'کد تخفیف نامعتبر.';
+
+  @override
+  String get backgroundModeTitle => 'حالت پس‌زمینه';
+
+  @override
+  String get backgroundModeDescription => 'حتی وقتی برنامه کاملاً بسته است، ضبط Omi شما را ادامه دهید.';
+
+  @override
+  String get backgroundModeNote => 'فعلاً فقط با دستگاه‌های Omi کار می‌کند و به‌طور مداوم در حال بهبود است.';
+
+  @override
+  String get backgroundModeUnavailable =>
+      'حالت پس‌زمینه در دسترس نیست چون هیچ دستگاه سازگاری متصل نیست. برای استفاده از این ویژگی، یک دستگاه Omi، OpenGlass یا Friend Pendant وصل کنید.';
+
+  @override
+  String get regenerateRecap => 'بازسازی خلاصه';
+
+  @override
+  String get recapRegeneratedSnackbar => 'خلاصه دوباره ساخته شد';
+
+  @override
+  String get recapRegenerateFailed => 'بازسازی خلاصه ممکن نشد. بعداً دوباره تلاش کنید.';
+
+  @override
+  String get recapRegenerateCooldown => 'لطفاً چند ثانیه قبل از بازسازی مجدد صبر کنید.';
+
+  @override
+  String get recapRegenerateNoConversations => 'هیچ مکالمه‌ای برای خلاصه‌سازی این روز وجود ندارد.';
+
+  @override
+  String get syncCustomSttWarningTitle => 'همگام‌سازی از رونویسی Omi استفاده می‌کند';
+
+  @override
+  String get syncCustomSttWarningMessage =>
+      'شما از سرویس رونویسی خودتان استفاده می‌کنید. همگام‌سازی این ضبط‌ها آن‌ها را روی سرورهای Omi رونویسی می‌کند و در سقف رونویسی پلن شما محاسبه می‌شوند.';
+
+  @override
+  String get transcribeLaterTitle => 'رونویسی در زمان دلخواه';
+
+  @override
+  String get transcribeLaterDescription =>
+      'صدا را همین حالا ضبط کنید و به‌جای رونویسی زنده، هر وقت خواستید آن را رونویسی کنید. ضبط‌ها روی گوشی شما ذخیره می‌شوند و سپس با بارگذاری آن‌ها گفت‌وگوها ساخته می‌شوند.';
+
+  @override
+  String get transcribeLaterNote =>
+      'فعلاً فقط با دستگاه‌های Omi کار می‌کند. صدا تا زمانی که خودتان بارگذاری را انتخاب نکنید، روی گوشی شما باقی می‌ماند.';
+
+  @override
+  String get transcribeLaterStorageFull =>
+      'فضای ذخیره‌سازی گوشی شما کم است، بنابراین ضبط متوقف شده است. کمی فضا خالی کنید یا ضبط‌هایتان را بارگذاری کنید تا به‌طور خودکار از سر گرفته شود.';
+
+  @override
+  String get recordingMode => 'حالت ضبط';
+
+  @override
+  String get captureModeLater => 'بعداً';
+
+  @override
+  String get captureModeLiveDescription => 'رونویسی همزمان هنگام صحبت کردن.';
+
+  @override
+  String get captureModeLaterDescription => 'صدا را اکنون ذخیره کنید و هر وقت خواستید رونویسی کنید.';
+
+  @override
+  String get unmute => 'باصدا کردن';
+
+  @override
+  String get newRecording => 'ضبط جدید';
+
+  @override
+  String get transcribeLaterPaused => 'متوقف شد — صدا ضبط نمی‌شود';
+
+  @override
+  String get deviceTutorial => 'نحوه استفاده از Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionTitle => 'با Omi خود صحبت کنید';
+
+  @override
+  String get deviceOnboardingTranscriptionSubtitle => 'چند کلمه بگویید و ظاهر شدن آن‌ها را به‌صورت لحظه‌ای ببینید';
+
+  @override
+  String get deviceOnboardingGoodJob => 'آفرین!';
+
+  @override
+  String get deviceOnboardingStartSpeaking => 'شروع به صحبت کنید...';
+
+  @override
+  String get deviceOnboardingAskQuestionTitle => 'از Omi سؤالی بپرسید';
+
+  @override
+  String get deviceOnboardingAskQuestionSubtitle =>
+      'یک‌بار دکمه را فشار دهید، سؤالتان را بگویید و پس از پایان دوباره فشار دهید';
+
+  @override
+  String get deviceOnboardingProcessingQuestion => 'در حال پردازش سؤال شما...';
+
+  @override
+  String get deviceOnboardingListening => 'در حال شنیدن...';
+
+  @override
+  String get deviceOnboardingTurnOffTitle => 'خاموش کردن';
+
+  @override
+  String get deviceOnboardingTurnOnTitle => 'روشن کردن';
+
+  @override
+  String get deviceOnboardingTurnOffSubtitle => 'دکمه را ۳ ثانیه نگه دارید';
+
+  @override
+  String get deviceOnboardingTurnOnSubtitle => 'برای روشن کردن دوباره، دکمه را فشار دهید';
+
+  @override
+  String get deviceOnboardingHoldButtonHint => 'دکمه را محکم نگه دارید تا چراغ خاموش شود';
+
+  @override
+  String get deviceOnboardingStatusConnected => 'متصل';
+
+  @override
+  String get deviceOnboardingStatusConnectedDone => 'متصل شد!';
+
+  @override
+  String get deviceOnboardingStatusDisconnected => 'قطع شد';
+
+  @override
+  String get deviceOnboardingStatusTurningOff => 'در حال خاموش شدن...';
+
+  @override
+  String get deviceOnboardingDoubleTapTitle => 'سفارشی‌سازی دو ضربه';
+
+  @override
+  String get deviceOnboardingEndConversation => 'پایان گفتگو';
+
+  @override
+  String get deviceOnboardingEndConversationDesc => 'ذخیره و پایان گفتگوی فعلی';
+
+  @override
+  String get deviceOnboardingMuteUnmute => 'بی‌صدا / باصدا';
+
+  @override
+  String get deviceOnboardingMuteUnmuteDesc => 'روشن یا خاموش کردن میکروفون';
+
+  @override
+  String get deviceOnboardingStarConversation => 'ستاره‌دار کردن گفتگوی جاری';
+
+  @override
+  String get deviceOnboardingStarConversationDesc => 'علامت‌گذاری گفتگو به‌عنوان مهم';
+
+  @override
+  String get deviceOnboardingSingleTapHint => 'آن یک ضربه بود — دو بار سریع ضربه بزنید!';
+
+  @override
+  String get deviceOnboardingTryDoubleTap => 'همین حالا امتحان کنید! روی Omi خود دو ضربه بزنید';
+
+  @override
+  String get deviceOnboardingContinue => 'ادامه';
+
+  @override
+  String get deviceOnboardingFinish => 'پایان';
+
+  @override
+  String get deviceOnboardingIntroTitle => 'با Omi خود آشنا شوید';
+
+  @override
+  String get deviceOnboardingIntroSubtitle => 'یک گشت سریع و کاربردی در همه‌ی کارهایی که Omi شما می‌تواند انجام دهد.';
+
+  @override
+  String get deviceOnboardingIntroDuration => 'حدود ۱ دقیقه';
+  @override
+  String get jumpToLatestMessage => 'پرش به آخرین پیام';
+
+  @override
+  String get latest => 'آخرین';
 }

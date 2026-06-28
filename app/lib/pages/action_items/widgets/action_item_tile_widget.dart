@@ -8,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'package:omi/backend/http/api/action_items.dart';
-import 'package:omi/backend/preferences.dart';
 import 'package:omi/backend/schema/schema.dart';
 import 'package:omi/pages/settings/task_integrations_page.dart';
 import 'package:omi/pages/settings/usage_page.dart';
@@ -848,7 +847,6 @@ class _ActionItemTileWidgetState extends State<ActionItemTileWidget> {
       title: widget.actionItem.description,
       notes: 'From Omi',
       dueDate: widget.actionItem.dueAt,
-      listName: 'Reminders',
     );
 
     final success = calendarItemId != null;

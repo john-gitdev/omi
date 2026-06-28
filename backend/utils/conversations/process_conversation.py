@@ -11,12 +11,12 @@ from typing import Union, Tuple, List, Optional
 from fastapi import HTTPException
 
 from database import redis_db
+from database.auth import get_user_name
 import database.memories as memories_db
 import database.conversations as conversations_db
 import database.notifications as notification_db
 import database.users as users_db
 import database.tasks as tasks_db
-import database.trends as trends_db
 import database.action_items as action_items_db
 import database.folders as folders_db
 import database.calendar_meetings as calendar_db
@@ -30,7 +30,8 @@ from database.vector_db import (
 )
 from utils.llm.memories import resolve_memory_conflict
 from database.apps import record_app_usage, get_omi_personas_by_uid_db, get_app_by_id_db
-from database.vector_db import upsert_vector2, update_vector_metadata
+from database.vector_db import upsert_vector2, update_vector_metadata, upsert_transcript_chunk_vectors
+from utils.conversations.transcript_chunks import build_transcript_chunks
 from models.app import App, UsageHistoryType
 from models.memories import MemoryDB, Memory
 from models.calendar_context import CalendarMeetingContext
@@ -42,14 +43,13 @@ from models.conversation import (
 )
 from models.conversation_enums import ConversationSource, ConversationStatus, ExternalIntegrationConversationSource
 from utils.conversations.factory import deserialize_conversation
-from utils.subscription import is_trial_paywalled
+from utils.subscription import is_trial_paywalled, should_defer_desktop_processing
 from models.other import Person
 from models.structured import Structured
 from utils.notifications import send_important_conversation_message
 from models.task import Task, TaskStatus, TaskAction, TaskActionProvider
-from models.trend import Trend
 from models.notification_message import NotificationMessage
-from utils.apps import get_available_apps, update_personas_async, update_persona_prompt
+from utils.apps import get_available_apps, update_persona_prompt
 from utils.executors import db_executor, llm_executor, postprocess_executor, submit_with_context
 from utils.llm.conversation_processing import (
     get_transcript_structure,
@@ -64,7 +64,6 @@ from utils.analytics import record_usage
 from utils.llm.usage_tracker import track_usage, Features
 from utils.llm.memories import extract_memories_from_text, new_memories_extractor
 from utils.llm.external_integrations import summarize_experience_text
-from utils.llm.trends import trends_extractor
 from utils.llm.goals import extract_and_update_goal_progress
 from utils.llm.chat import (
     retrieve_metadata_from_text,
@@ -80,6 +79,10 @@ from utils.retrieval.rag import retrieve_rag_conversation_context
 from utils.webhooks import conversation_created_webhook
 from utils.notifications import send_action_item_data_message
 from utils.task_sync import auto_sync_action_items_batch
+from utils.conversations.calendar_linking import (
+    get_overlapping_calendar_event,
+    write_conversation_link_to_calendar_event,
+)
 from utils.other.storage import precache_conversation_audio
 
 logger = logging.getLogger(__name__)
@@ -188,7 +191,8 @@ def _get_structured(
             # not supported conversation source
             raise HTTPException(status_code=400, detail=f'Invalid conversation source: {conversation.text_source}')
 
-        transcript_text = conversation.get_transcript(False, people=people)
+        user_name = get_user_name(uid, use_default=False)
+        transcript_text = conversation.get_transcript(False, people=people, user_name=user_name)
 
         # For re-processing, we don't discard, just re-structure.
         if force_process:
@@ -466,17 +470,27 @@ def _extract_memories_inner(uid: str, conversation: Conversation):
 
     is_locked = conversation.is_locked
     parsed_memories = []
-    memories_to_delete = []
+    # (old_memory_id, new_memory_id) pairs to invalidate after the new memories are saved.
+    invalidations = []
+    # Cheap exact-duplicate guard within this batch (avoids redundant conflict LLM calls).
+    seen_norm = set()
 
     for memory in new_memories:
-        # Find similar existing memories
-        similar_matches = find_similar_memories(uid, memory.content, threshold=0.7, limit=3)
+        norm = ' '.join((memory.content or '').lower().split())
+        if not norm or norm in seen_norm:
+            continue
+        seen_norm.add(norm)
 
-        # Fetch content for each similar memory
+        # Wider net (lower threshold, more candidates) than before so cross-phrasing
+        # contradictions are caught — "loves ice cream" vs "hates ice cream",
+        # "lives in NYC" vs "lives in LA" — then let the LLM decide what's outdated.
+        similar_matches = find_similar_memories(uid, memory.content, threshold=0.6, limit=8)
+
+        # Only compare against currently-active memories (never resurface superseded ones).
         similar_memories = []
         for match in similar_matches:
             memory_data = memories_db.get_memory(uid, match['memory_id'])
-            if memory_data:
+            if memory_data and memory_data.get('invalid_at') is None:
                 similar_memories.append(
                     {
                         'memory_id': match['memory_id'],
@@ -486,28 +500,30 @@ def _extract_memories_inner(uid: str, conversation: Conversation):
                     }
                 )
 
+        supersede_ids = []
         if similar_memories:
             resolution = resolve_memory_conflict(memory.content, similar_memories, language=language)
 
-            if resolution.action == 'keep_existing':
+            if resolution.action == 'skip':
                 continue
 
-            elif resolution.action == 'merge':
-                # Replace existing memory with merged version
-                if resolution.merged_content:
-                    memories_to_delete.append(similar_memories[0]['memory_id'])
-                    memory.content = resolution.merged_content
+            if resolution.action == 'merge' and resolution.merged_content:
+                memory.content = resolution.merged_content
 
-            elif resolution.action == 'keep_both':
-                pass
+            if resolution.action in ('update', 'merge'):
+                for idx in resolution.supersedes or []:
+                    if isinstance(idx, int) and 1 <= idx <= len(similar_memories):
+                        supersede_ids.append(similar_memories[idx - 1]['memory_id'])
 
         memory_db_obj = MemoryDB.from_memory(memory, uid, conversation.id, False)
         memory_db_obj.is_locked = is_locked
         parsed_memories.append(memory_db_obj)
 
-    for memory_id in memories_to_delete:
-        delete_memory_vector(uid, memory_id)
-        memories_db.delete_memory(uid, memory_id)
+        for old_id in supersede_ids:
+            # Guard against superseding the very memory we're about to (re)write — the
+            # merged content can hash to an existing id.
+            if old_id and old_id != memory_db_obj.id:
+                invalidations.append((old_id, memory_db_obj.id))
 
     if len(parsed_memories) == 0:
         logger.info(f"No memories extracted for conversation {conversation.id}")
@@ -519,12 +535,21 @@ def _extract_memories_inner(uid: str, conversation: Conversation):
     for memory_db_obj in parsed_memories:
         upsert_memory_vector(uid, memory_db_obj.id, memory_db_obj.content, memory_db_obj.category.value)
 
+    # Invalidate (not delete) superseded memories: keep them as history but drop them from
+    # every retrieval path. Removing the vector also pulls them out of semantic search.
+    for old_id, new_id in invalidations:
+        try:
+            memories_db.invalidate_memory(uid, old_id, superseded_by=new_id)
+            delete_memory_vector(uid, old_id)
+            logger.info(f"Invalidated superseded memory {old_id} -> {new_id}")
+        except Exception:
+            logger.exception(f"Failed to invalidate superseded memory {old_id}")
+
     if len(parsed_memories) > 0:
         record_usage(uid, memories_created=len(parsed_memories))
 
         try:
             from utils.llm.knowledge_graph import extract_knowledge_from_memory
-            from database.auth import get_user_name
 
             user_name = get_user_name(uid)
 
@@ -555,13 +580,6 @@ def send_new_memories_notification(user_id: str, memories: [MemoryDB]):
     )
 
     send_notification(user_id, "omi" + ' says', message, NotificationMessage.get_message_as_dict(ai_message))
-
-
-def _extract_trends(uid: str, conversation: Conversation):
-    with track_usage(uid, Features.TRENDS):
-        extracted_items = trends_extractor(uid, conversation.transcript_segments, conversation.get_person_ids())
-        parsed = [Trend(category=item.category, topics=[item.topic], type=item.type) for item in extracted_items]
-        trends_db.save_trends(conversation.id, parsed)
 
 
 def _save_action_items(uid: str, conversation: Conversation):
@@ -628,6 +646,18 @@ def _save_action_items(uid: str, conversation: Conversation):
         )
 
 
+# Verbatim transcript-chunk indexing (ns_tchunks). Off by default: enables semantic
+# retrieval over raw transcript text, which the summary-only conversation vectors miss.
+TRANSCRIPT_CHUNK_INDEXING_ENABLED = os.getenv('TRANSCRIPT_CHUNK_INDEXING_ENABLED', 'false').lower() == 'true'
+
+
+def save_transcript_chunk_vectors(uid: str, conversation: Conversation):
+    segments = [s.dict() if hasattr(s, 'dict') else s for s in (conversation.transcript_segments or [])]
+    chunks = build_transcript_chunks(segments, conversation.started_at or conversation.created_at)
+    if chunks:
+        upsert_transcript_chunk_vectors(uid, conversation.id, chunks)
+
+
 def save_structured_vector(uid: str, conversation: Conversation, update_only: bool = False):
     vector = generate_embedding(str(conversation.structured)) if not update_only else None
     tz = notification_db.get_user_time_zone(uid)
@@ -680,6 +710,40 @@ def _update_personas_async(uid: str):
         logger.info(f"[PERSONAS] Finished persona updates in background thread for uid={uid}")
 
 
+def _build_deferred_structured(conversation) -> Structured:
+    """A cheap, no-LLM placeholder Structured for a lazily-deferred conversation. The title is
+    the first few words of the transcript so the conversation list stays usable until the user
+    opens it (which triggers the real enrichment). A non-empty title is required — an empty one
+    marks the conversation discarded in `_get_conversation_obj`."""
+    text = ''
+    for seg in getattr(conversation, 'transcript_segments', None) or []:
+        seg_text = (getattr(seg, 'text', '') or '').strip()
+        if seg_text:
+            text = seg_text
+            break
+    words = text.split()
+    title = ' '.join(words[:8]).strip() if words else ''
+    return Structured(title=title or 'Recording')
+
+
+def _store_deferred_conversation(uid: str, conversation):
+    """Persist a desktop conversation with a cheap (no-LLM) title and `deferred=True`, skipping
+    all enrichment. Mirrors the tail of process_conversation's persistence (cheap structured →
+    `_get_conversation_obj` → upsert) without any LLM / Pinecone / app work. The enrichment runs
+    later via the lazy trigger in `get_conversation_by_id`."""
+    structured = _build_deferred_structured(conversation)
+    conversation = _get_conversation_obj(uid, structured, conversation)
+    conversation.deferred = True
+    # `processing` (not completed) is the user-facing "awaiting enrichment" state. Unlike the
+    # `deferred` flag it survives the desktop's local conversation cache, so the client shows a
+    # processing indicator and re-fetches on open to trigger enrichment. The lazy enrich sets it
+    # back to `completed`.
+    conversation.status = ConversationStatus.processing
+    conversations_db.upsert_conversation(uid, conversation.dict())
+    logger.info("lazy: stored deferred desktop conversation uid=%s conv=%s", uid, conversation.id)
+    return conversation
+
+
 def process_conversation(
     uid: str,
     language_code: str,
@@ -716,6 +780,22 @@ def process_conversation(
                 pass
         return conversation
 
+    # Lazy desktop processing (freemium cost cut): desktop users without a desktop-entitled
+    # paid plan (basic / Neo) get ONLY the raw transcript on capture. The expensive LLM
+    # enrichment (summary, action items, memories, embeddings, app results) is deferred until
+    # they first OPEN the conversation (get_conversation_by_id reprocesses it with
+    # force_process=True). Paid desktop plans (Operator / Architect), BYOK users, and all
+    # non-desktop sources are processed normally here. force_process / is_reprocess — the lazy
+    # trigger and manual reprocess — bypass this so the enrichment actually runs.
+    if (
+        not force_process
+        and not is_reprocess
+        and hasattr(conversation, 'source')
+        and conversation.source == ConversationSource.desktop
+        and should_defer_desktop_processing(uid)
+    ):
+        return _store_deferred_conversation(uid, conversation)
+
     # Fetch meeting context from Firestore if meeting_id is associated with this conversation
     if hasattr(conversation, 'id') and conversation.id:
         meeting_id = redis_db.get_conversation_meeting_id(conversation.id)
@@ -741,6 +821,23 @@ def process_conversation(
 
     structured, discarded = _get_structured(uid, language_code, conversation, force_process, people=people)
     conversation = _get_conversation_obj(uid, structured, conversation)
+
+    # Check for overlapping calendar events and auto-write conversation link to the event description
+    if not discarded and conversation.started_at and conversation.finished_at and conversation.calendar_event is None:
+        try:
+            calendar_event = asyncio.run(
+                get_overlapping_calendar_event(
+                    uid,
+                    conversation.started_at,
+                    conversation.finished_at,
+                )
+            )
+            if calendar_event:
+                conversation.calendar_event = calendar_event
+                asyncio.run(write_conversation_link_to_calendar_event(uid, calendar_event.event_id, conversation.id))
+        except Exception as e:
+            logger.error(f"Error during calendar event linking: {e}")
+            pass
 
     # AI-based folder assignment
     assigned_folder_id = None
@@ -802,8 +899,9 @@ def process_conversation(
         )
         if not is_reprocess:
             submit_with_context(postprocess_executor, save_structured_vector, uid, conversation)
+            if TRANSCRIPT_CHUNK_INDEXING_ENABLED:
+                submit_with_context(postprocess_executor, save_transcript_chunk_vectors, uid, conversation)
         submit_with_context(postprocess_executor, _extract_memories, uid, conversation)
-        submit_with_context(postprocess_executor, _extract_trends, uid, conversation)
         submit_with_context(postprocess_executor, _save_action_items, uid, conversation)
         submit_with_context(postprocess_executor, _update_goal_progress, uid, conversation)
 
@@ -834,7 +932,6 @@ def process_conversation(
             asyncio.run(conversation_created_webhook(uid, conversation))
 
         submit_with_context(postprocess_executor, _run_webhook)
-        submit_with_context(postprocess_executor, update_personas_async, uid)
 
         # Disable important conversation for now
         # Send important conversation notification for long conversations (>30 minutes)

@@ -8,7 +8,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:share_plus/share_plus.dart';
 
 import 'package:omi/backend/http/api/conversations.dart' as conversations_api;
-import 'package:omi/backend/http/api/users.dart' show deleteDailySummary, getDailySummary, setDailySummaryVisibility;
+import 'package:omi/backend/http/api/users.dart'
+    show deleteDailySummary, getDailySummary, regenerateDailySummary, setDailySummaryVisibility;
 import 'package:omi/backend/schema/daily_summary.dart';
 import 'package:omi/pages/conversation_detail/maps_util.dart';
 import 'package:omi/pages/conversation_detail/page.dart';
@@ -31,6 +32,7 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
   bool _isLoading = true;
   bool _isSharing = false;
   bool _isDeleting = false;
+  bool _isRegenerating = false;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -89,8 +91,8 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.white))
           : _summary == null
-              ? _buildNotFound()
-              : _buildContent(),
+          ? _buildNotFound()
+          : _buildContent(),
     );
   }
 
@@ -145,6 +147,7 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
     } catch (e) {
       if (!mounted) return;
       Navigator.pop(context); // Dismiss loading
+      AppSnackbar.showSnackbarError(context.l10n.somethingWentWrong);
     }
   }
 
@@ -178,9 +181,7 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
     }
   }
 
-  /// Bottom sheet menu opened by the SliverAppBar's 3-dot icon. Today only
-  /// "delete" lives here — keeping the sheet pattern so future actions
-  /// (share, regenerate, etc.) plug in without restructuring.
+  /// Bottom sheet menu opened by the SliverAppBar's 3-dot icon.
   Future<void> _showActionsSheet() async {
     if (_summary == null) return;
 
@@ -189,6 +190,13 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
         context: context,
         builder: (sheetCtx) => CupertinoActionSheet(
           actions: [
+            CupertinoActionSheetAction(
+              onPressed: () {
+                Navigator.pop(sheetCtx);
+                _regenerateRecap();
+              },
+              child: Text(context.l10n.regenerateRecap),
+            ),
             CupertinoActionSheetAction(
               isDestructiveAction: true,
               onPressed: () {
@@ -216,6 +224,17 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
+              leading: const Icon(Icons.refresh, color: Colors.white),
+              title: Text(
+                context.l10n.regenerateRecap,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+              ),
+              onTap: () {
+                Navigator.pop(sheetCtx);
+                _regenerateRecap();
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.delete_outline, color: Color(0xFFFF6B6B)),
               title: Text(
                 context.l10n.deleteRecap,
@@ -234,6 +253,53 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
         ),
       ),
     );
+  }
+
+  /// Re-runs LLM generation server-side and overwrites the same doc in place.
+  /// Shows a blocking spinner because the call can take several seconds and
+  /// the user is staring at stale content until it returns.
+  Future<void> _regenerateRecap() async {
+    if (_isRegenerating || _summary == null) return;
+    setState(() => _isRegenerating = true);
+
+    // Capture the navigator BEFORE the await so we can dismiss the spinner
+    // unconditionally — even if the widget unmounts mid-flight (route
+    // popped from outside, OS kills the activity), the navigator is still
+    // alive and pop() works without needing a valid widget context.
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+
+    // Fullscreen blocking spinner — barrierDismissible=false so the user
+    // can't half-cancel and get into a torn state.
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.white)),
+    );
+
+    final result = await regenerateDailySummary(widget.summaryId);
+
+    // Dismiss spinner first, then bail if widget is gone. Order matters:
+    // mounted check before pop would orphan the dialog on dispose.
+    if (rootNavigator.canPop()) {
+      rootNavigator.pop();
+    }
+    if (!mounted) return;
+
+    if (result.success && result.summary != null) {
+      setState(() {
+        _summary = result.summary;
+        _isRegenerating = false;
+      });
+      AppSnackbar.showSnackbar(context.l10n.recapRegeneratedSnackbar);
+    } else {
+      setState(() => _isRegenerating = false);
+      final message = result.statusCode == 429
+          ? (result.errorDetail ?? context.l10n.recapRegenerateCooldown)
+          : result.statusCode == 400
+          ? (result.errorDetail ?? context.l10n.recapRegenerateNoConversations)
+          : context.l10n.recapRegenerateFailed;
+      AppSnackbar.showSnackbarError(message);
+    }
   }
 
   Future<void> _confirmDelete() async {
@@ -323,14 +389,15 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
                     )
                   : const Icon(Icons.share_outlined, color: Colors.white, size: 20),
             ),
           ),
         ),
         IconButton(
-          tooltip: context.l10n.deleteRecap,
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.3), shape: BoxShape.circle),
@@ -446,15 +513,6 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
     return parts.first.trim();
   }
 
-  // Get truly unique location count (by short name)
-  int _getUniqueLocationCount(List<LocationPin> locations) {
-    final uniqueNames = <String>{};
-    for (final loc in locations) {
-      uniqueNames.add(_getShortLocationName(loc.address));
-    }
-    return uniqueNames.length;
-  }
-
   // Parse time string to minutes for comparison (e.g., "14:42" -> 882)
   int _parseTimeToMinutes(String? timeStr) {
     if (timeStr == null || timeStr.isEmpty) return 0;
@@ -499,7 +557,6 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
         // New location (different from previous)
         current = _TimelineLocation(
           shortName: shortName,
-          fullAddress: loc.address,
           latitude: loc.latitude,
           longitude: loc.longitude,
           startTime: loc.time,
@@ -569,8 +626,9 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
                     initialCenter: singleLocation ? points.first : LatLng(centerLat, centerLng),
                     initialZoom: singleLocation ? 14 : 12,
                     // Use bounds fitting for multiple locations
-                    initialCameraFit:
-                        singleLocation ? null : CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
+                    initialCameraFit: singleLocation
+                        ? null
+                        : CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50)),
                     interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
                   ),
                   children: [
@@ -717,17 +775,6 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
     );
   }
 
-  Color _getPriorityColor(String priority) {
-    switch (priority.toLowerCase()) {
-      case 'high':
-        return const Color(0xFFFF6B6B);
-      case 'medium':
-        return const Color(0xFFFFB347);
-      default:
-        return const Color(0xFF6BCB77);
-    }
-  }
-
   Widget _buildUnresolvedQuestionsSection(DailySummary summary) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -824,8 +871,8 @@ class _DailySummaryDetailPageState extends State<DailySummaryDetailPage> with Si
     final endFormatted = _formatTimeTo12Hour(location.endTime);
     final timeText = startFormatted.isNotEmpty
         ? (endFormatted.isNotEmpty && startFormatted != endFormatted
-            ? '$startFormatted - $endFormatted'
-            : startFormatted)
+              ? '$startFormatted - $endFormatted'
+              : startFormatted)
         : '';
 
     return GestureDetector(
@@ -924,15 +971,9 @@ Future<bool?> showDeleteRecapConfirmDialog(BuildContext context) {
       context: context,
       builder: (dialogCtx) => CupertinoAlertDialog(
         title: Text(l10n.deleteRecapConfirmTitle),
-        content: Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: Text(l10n.deleteRecapConfirmBody),
-        ),
+        content: Padding(padding: const EdgeInsets.only(top: 8), child: Text(l10n.deleteRecapConfirmBody)),
         actions: [
-          CupertinoDialogAction(
-            onPressed: () => Navigator.pop(dialogCtx, false),
-            child: Text(l10n.cancel),
-          ),
+          CupertinoDialogAction(onPressed: () => Navigator.pop(dialogCtx, false), child: Text(l10n.cancel)),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () => Navigator.pop(dialogCtx, true),
@@ -948,10 +989,7 @@ Future<bool?> showDeleteRecapConfirmDialog(BuildContext context) {
       title: Text(l10n.deleteRecapConfirmTitle),
       content: Text(l10n.deleteRecapConfirmBody),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(dialogCtx, false),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => Navigator.pop(dialogCtx, false), child: Text(l10n.cancel)),
         TextButton(
           onPressed: () => Navigator.pop(dialogCtx, true),
           style: TextButton.styleFrom(foregroundColor: const Color(0xFFFF6B6B)),
@@ -965,7 +1003,6 @@ Future<bool?> showDeleteRecapConfirmDialog(BuildContext context) {
 // Helper class for timeline locations
 class _TimelineLocation {
   final String shortName;
-  final String? fullAddress;
   final double latitude;
   final double longitude;
   final String? startTime;
@@ -973,7 +1010,6 @@ class _TimelineLocation {
 
   _TimelineLocation({
     required this.shortName,
-    this.fullAddress,
     required this.latitude,
     required this.longitude,
     this.startTime,

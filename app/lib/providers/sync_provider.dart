@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:omi/backend/preferences.dart';
 import 'package:omi/backend/schema/conversation.dart';
 import 'package:omi/services/services.dart';
 import 'package:omi/services/wals.dart';
@@ -27,6 +28,10 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   bool _isLoadingWals = false;
   bool get isLoadingWals => _isLoadingWals;
 
+  // Memoization cache for displaySortedWals — see getter below.
+  List<Wal>? _sortedCache;
+  int _sortedCacheStamp = 0;
+
   // Storage filter
   WalStorage? _storageFilter;
   WalStorage? get storageFilter => _storageFilter;
@@ -43,20 +48,82 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   // `uploaded` is not yet backed up (the server job is still processing), so
   // it counts as pending — keeps it visible in the legacy SyncPage and in
   // pending counts until the reconciler confirms it `synced`.
-  List<Wal> get pendingWals => _allWals
-      .where((w) =>
-          w.status == WalStatus.miss ||
-          w.status == WalStatus.uploaded ||
-          w.status == WalStatus.corrupted ||
-          w.isSyncing)
-      .toList();
+  bool _isPending(Wal w) =>
+      w.status == WalStatus.miss || w.status == WalStatus.uploaded || w.status == WalStatus.corrupted || w.isSyncing;
+
+  // Memoized status-filtered partitions of _allWals. Returning a stable
+  // List<Wal> reference between rebuilds is load-bearing — downstream the
+  // legacy SyncPage's OptimizedWalsListWidget stamps its grouped-flatten
+  // cache off the input list's identity, so without stable refs here the
+  // widget-level cache misses every rebuild and recomputes the sort.
+  //
+  // Invalidation: stamp = identityHashCode(_allWals) ^ _allWals.length.
+  // This works because every wal-status mutation path in the codebase
+  // (sdcard, flash, storage, local) flips state in place, then notifies
+  // the provider, which calls refreshWals() to reassign _allWals from
+  // the wal service (see refreshWals at the bottom of this class). The
+  // new list has a new identityHashCode → stamp changes → cache invalidates.
+  // In-place flips that don't go through refreshWals would not invalidate
+  // — but there are none today; if any are added, route them through
+  // refreshWals or bump a version counter here.
+  //
+  // Both partitions are computed in a single pass to avoid two iterations
+  // over a potentially 50k-item list. Both caches share the same stamp.
+  List<Wal>? _pendingWalsCache;
+  List<Wal>? _syncedWalsCache;
+  int _filteredWalsCacheStamp = 0;
+
+  void _ensureFilteredCaches() {
+    final stamp = identityHashCode(_allWals) ^ _allWals.length;
+    if (_pendingWalsCache != null && _filteredWalsCacheStamp == stamp) return;
+    final pending = <Wal>[];
+    final synced = <Wal>[];
+    for (final w in _allWals) {
+      if (w.status == WalStatus.synced) {
+        synced.add(w);
+      } else if (_isPending(w)) {
+        pending.add(w);
+      }
+    }
+    _pendingWalsCache = pending;
+    _syncedWalsCache = synced;
+    _filteredWalsCacheStamp = stamp;
+  }
+
+  List<Wal> get pendingWals {
+    _ensureFilteredCaches();
+    return _pendingWalsCache!;
+  }
+
+  List<Wal> get syncedWals {
+    _ensureFilteredCaches();
+    return _syncedWalsCache!;
+  }
 
   List<Wal> get uploadedWals => _allWals.where((w) => w.status == WalStatus.uploaded).toList();
 
   List<Wal> get pendingDeletableWals =>
       _allWals.where((w) => !w.isSyncing && (w.status == WalStatus.miss || w.status == WalStatus.corrupted)).toList();
 
-  List<Wal> get syncedWals => _allWals.where((w) => w.status == WalStatus.synced).toList();
+  // Count-only accessors for status-chip badges. Read length from the
+  // shared cached partitions so the chips don't trigger an extra iteration
+  // when the cache is already warm. Names disambiguate from the existing
+  // `syncedWalsCount` / `syncingWalsCount` getters further down which key
+  // off `syncDisplayState` (different semantic, auto-sync page surface).
+  int get pendingStatusCount {
+    _ensureFilteredCaches();
+    return _pendingWalsCache!.length;
+  }
+
+  int get syncedStatusCount {
+    _ensureFilteredCaches();
+    return _syncedWalsCache!.length;
+  }
+
+  /// True while a fair-use (429) cooldown is active — uploads are paused.
+  bool get isRateLimited => SyncRateLimiter.instance.isLimited;
+  DateTime? get rateLimitedUntil => SyncRateLimiter.instance.until;
+  RateLimitReason? get rateLimitReason => SyncRateLimiter.instance.reason;
 
   List<Wal> get filteredByStatusWals {
     if (_statusFilter == WalStatusFilter.pending) {
@@ -73,9 +140,20 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   /// All recordings, newest first. The redesigned list shows synced and
   /// unsynced recordings together so backed-up work is never hidden behind a
   /// tab the user has to discover.
+  ///
+  /// Memoized: re-sorts only when the underlying list reference or length
+  /// changes. Sort key is `timerStart`, which is immutable per Wal, so
+  /// in-place status mutations don't invalidate the order. With tens of
+  /// thousands of wals and frequent `notifyListeners()` during active sync
+  /// this avoids 5–15ms of redundant sort work per rebuild.
   List<Wal> get displaySortedWals {
+    final stamp = identityHashCode(_allWals) ^ _allWals.length;
+    final cached = _sortedCache;
+    if (cached != null && _sortedCacheStamp == stamp) return cached;
     final list = List<Wal>.from(_allWals);
     list.sort((a, b) => b.timerStart.compareTo(a.timerStart));
+    _sortedCache = list;
+    _sortedCacheStamp = stamp;
     return list;
   }
 
@@ -171,7 +249,12 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   bool get isFetchingConversations => _syncState.isFetchingConversations;
   double get walsSyncedProgress => _syncState.progress;
   double? get syncSpeedKBps => _syncState.speedKBps;
-  List<SyncedConversationPointer> get syncedConversationsPointers => _syncState.syncedConversations;
+  List<SyncedConversationPointer> get syncedConversationsPointers {
+    final sorted = List<SyncedConversationPointer>.from(_syncState.syncedConversations);
+    sorted.sort((a, b) => (b.conversation.createdAt).compareTo(a.conversation.createdAt));
+    return sorted;
+  }
+
   String? get syncError => _syncState.errorMessage;
   Wal? get failedWal => _syncState.failedWal;
   SyncMethod? get currentSyncMethod => _syncState.syncMethod;
@@ -200,6 +283,7 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   SyncProvider() {
     _walService.subscribe(this, this);
     _audioPlayerUtils.addListener(_onAudioPlayerStateChanged);
+    SyncRateLimiter.instance.addListener(notifyListeners);
     _initializeProvider();
   }
 
@@ -254,6 +338,10 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
 
   void _autoUploadPendingPhoneFiles() async {
     if (_isDisposed) return;
+    // Custom STT users sync manually (with confirmation) — never auto-upload.
+    if (SharedPreferencesUtil().useCustomStt) return;
+    // Respect the user's auto-sync opt-out (device settings). Defaults to on.
+    if (!SharedPreferencesUtil().autoSyncOfflineRecordings) return;
     if (_syncState.isProcessing) return;
     if (_walService.getSyncs().isStorageSyncing || _walService.getSyncs().isSdCardSyncing) return;
     final phoneWals = _allWals
@@ -317,22 +405,30 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
     await refreshWals();
   }
 
-  Future<void> syncWals({IWifiConnectionListener? connectionListener}) async {
+  Future<void> syncWals() async {
+    if (SyncRateLimiter.instance.isLimited) {
+      notifyListeners();
+      return;
+    }
     _cancelAutoUploadIfNeeded();
     _updateSyncState(_syncState.toIdle());
     _totalWalsToProcess = missingWals.length;
     _walsProcessedCount = 0;
     await _performSync(
-      operation: () => _walService.getSyncs().syncAll(progress: this, connectionListener: connectionListener),
+      operation: () => _walService.getSyncs().syncAll(progress: this),
       context: 'sync all WALs',
     );
   }
 
-  Future<void> syncWal(Wal wal, {IWifiConnectionListener? connectionListener}) async {
+  Future<void> syncWal(Wal wal) async {
+    if (SyncRateLimiter.instance.isLimited) {
+      notifyListeners();
+      return;
+    }
     _cancelAutoUploadIfNeeded();
     _updateSyncState(_syncState.toIdle());
     await _performSync(
-      operation: () => _walService.getSyncs().syncWal(wal: wal, progress: this, connectionListener: connectionListener),
+      operation: () => _walService.getSyncs().syncWal(wal: wal, progress: this),
       context: 'sync WAL ${wal.id}',
       failedWal: wal,
     );
@@ -398,18 +494,9 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   }
 
   String _formatSyncError(dynamic error, Wal? wal) {
-    var baseMessage = error.toString().replaceAll('Exception: ', '').replaceAll('WifiSyncException: ', '');
+    var baseMessage = error.toString().replaceAll('Exception: ', '');
 
-    // Convert technical WiFi errors to user-friendly messages
-    if (baseMessage.toLowerCase().contains('internal error') ||
-        baseMessage.toLowerCase().contains('invalidpacketlength') ||
-        baseMessage.toLowerCase().contains('packet length')) {
-      baseMessage = 'Failed to enable WiFi on device';
-    } else if (baseMessage.toLowerCase().contains('wifi') && baseMessage.toLowerCase().contains('setup')) {
-      baseMessage = 'Failed to enable WiFi on device';
-    } else if (baseMessage.toLowerCase().contains('tcp') || baseMessage.toLowerCase().contains('socket')) {
-      baseMessage = 'Connection interrupted';
-    } else if (baseMessage.toLowerCase().contains('timeout')) {
+    if (baseMessage.toLowerCase().contains('timeout')) {
       baseMessage = 'Device did not respond';
     } else if (baseMessage.toLowerCase().contains('could not be processed')) {
       baseMessage = 'Audio file could not be processed';
@@ -584,16 +671,15 @@ class SyncProvider extends ChangeNotifier implements IWalServiceListener, IWalSy
   }
 
   /// Transfer a single WAL from device storage (SD card or flash page) to phone storage
-  Future<void> transferWalToPhone(Wal wal, {IWifiConnectionListener? connectionListener}) async {
+  Future<void> transferWalToPhone(Wal wal) async {
     if (wal.storage != WalStorage.sdcard && wal.storage != WalStorage.flashPage) {
       throw Exception('This recording is already on phone');
     }
 
-    // Set sync state to syncing so progress updates are processed
     _updateSyncState(_syncState.toSyncing());
 
     try {
-      await _walService.getSyncs().syncWal(wal: wal, progress: this, connectionListener: connectionListener);
+      await _walService.getSyncs().syncWal(wal: wal, progress: this);
       await refreshWals();
       _updateSyncState(_syncState.toIdle());
     } catch (e) {

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from models.audio_file import AudioFile
 from models.calendar_context import CalendarMeetingContext
@@ -25,6 +25,7 @@ from models.transcript_segment import TranscriptSegment
 __all__ = [
     'AppResult',
     'BulkAssignSegmentsRequest',
+    'CalendarEventLink',
     'Conversation',
     'ConversationPostProcessing',
     'CreateConversation',
@@ -60,6 +61,18 @@ class PluginResult(BaseModel):
 class AppResult(BaseModel):
     app_id: Optional[str]
     content: str
+
+
+class CalendarEventLink(BaseModel):
+    """Links a conversation to a Google Calendar event."""
+
+    event_id: str = Field(description="Google Calendar event ID")
+    title: str = Field(description="Calendar event title")
+    attendees: List[str] = Field(default=[], description="List of attendee display names for UI")
+    attendee_emails: List[str] = Field(default=[], description="List of attendee email addresses")
+    start_time: datetime = Field(description="Event start time")
+    end_time: datetime = Field(description="Event end time")
+    html_link: Optional[str] = Field(default=None, description="Direct link to open event in Google Calendar")
 
 
 class ConversationPostProcessing(BaseModel):
@@ -105,9 +118,16 @@ class Conversation(BaseModel):
 
     status: Optional[ConversationStatus] = ConversationStatus.completed
     is_locked: bool = False
+    # Lazy processing (freemium cost cut): True when this desktop conversation was stored as a
+    # raw transcript with no LLM enrichment yet — enrichment runs on first open
+    # (get_conversation_by_id → process_conversation). Cleared once enriched.
+    deferred: bool = False
     data_protection_level: Optional[str] = None
     folder_id: Optional[str] = Field(default=None, description="ID of the folder this conversation belongs to")
     call_id: Optional[str] = Field(default=None, description="Twilio call SID for phone call conversations")
+
+    # Calendar event link - set when conversation overlaps with a Google Calendar event
+    calendar_event: Optional[CalendarEventLink] = None
 
     def __init__(self, **data):
         super().__init__(**data)
@@ -208,10 +228,22 @@ class SetConversationEventsStateRequest(BaseModel):
     events_idx: List[int]
     values: List[bool]
 
+    @model_validator(mode='after')
+    def validate_parallel_arrays(self):
+        if len(self.events_idx) != len(self.values):
+            raise ValueError('events_idx and values must have the same length')
+        return self
+
 
 class SetConversationActionItemsStateRequest(BaseModel):
     items_idx: List[int]
     values: List[bool]
+
+    @model_validator(mode='after')
+    def validate_parallel_arrays(self):
+        if len(self.items_idx) != len(self.values):
+            raise ValueError('items_idx and values must have the same length')
+        return self
 
 
 class BulkAssignSegmentsRequest(BaseModel):

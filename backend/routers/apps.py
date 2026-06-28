@@ -1,8 +1,11 @@
 import json
+import logging
 import os
 import asyncio
 import time
 from datetime import datetime, timezone
+
+import httpx
 from typing import List, Optional
 from urllib.parse import urlparse
 from pydantic import BaseModel as PydanticBaseModel, ValidationError
@@ -49,6 +52,7 @@ from database.apps import (
     set_app_popular_db,
     search_apps_db,
 )
+from database.webhook_health import clear_app_webhook_health
 from database.auth import get_user_from_uid
 from database.redis_db import (
     delete_generic_cache,
@@ -102,6 +106,7 @@ from utils.apps import (
     build_capability_groups_response,
     group_capability_apps_by_category,
     build_capability_category_groups_response,
+    validate_app_endpoints_for_reenable,
 )
 
 from database.memories import migrate_memories
@@ -111,6 +116,11 @@ from utils.llm.app_generator import generate_description
 from utils.llm.usage_tracker import track_usage, Features
 from utils.notifications import send_notification, send_app_review_reply_notification, send_new_app_review_notification
 from utils.other import endpoints as auth
+from utils.request_validation import (
+    backfill_app_home_url_from_auth_steps,
+    normalize_required_webhook_url,
+    parse_form_json,
+)
 from models.app import App, ActionType, AppCreate, AppUpdate, AppBaseModel
 from utils.other.storage import upload_app_logo, delete_app_logo, upload_app_thumbnail, get_app_thumbnail_url
 from utils.social import (
@@ -462,16 +472,18 @@ def get_popular_apps_endpoint(uid: str = Depends(auth.get_current_user_uid)):
 
 @router.post('/v1/apps', tags=['v1'])
 def create_app(app_data: str = Form(...), file: UploadFile = File(...), uid=Depends(auth.get_current_user_uid)):
-    data = json.loads(app_data)
+    data = parse_form_json(dict, app_data, 'app_data')
     data['approved'] = False
     data['status'] = 'under-review'
     data['name'] = (data.get('name') or '').strip()
     data['id'] = str(ULID())
     data['uid'] = uid
     if not data.get('author') and not data.get('email'):
-        user = get_user_from_uid(uid)
-        data['author'] = user.get('display_name', '')
-        data['email'] = user['email']
+        user = get_user_from_uid(uid) or {}
+        email = user.get('email')
+        # author is required + non-null on AppCreate; display_name/email can both be null.
+        data['author'] = user.get('display_name') or (email.split('@')[0] if email else None) or 'Anonymous'
+        data['email'] = email
     if not data.get('is_paid'):
         data['is_paid'] = False
     else:
@@ -488,7 +500,7 @@ def create_app(app_data: str = Form(...), file: UploadFile = File(...), uid=Depe
             raise HTTPException(status_code=422, detail='Triggers on or actions is required')
         # Trigger on
         if external_integration.get('triggers_on'):
-            external_integration['webhook_url'] = external_integration['webhook_url'].strip()
+            normalize_required_webhook_url(external_integration)
             if external_integration.get('setup_instructions_file_path'):
                 external_integration['setup_instructions_file_path'] = external_integration[
                     'setup_instructions_file_path'
@@ -517,9 +529,7 @@ def create_app(app_data: str = Form(...), file: UploadFile = File(...), uid=Depe
     data['created_at'] = datetime.now(timezone.utc)
     # Backward compatibility: Set app_home_url from first auth step if not provided
     if 'external_integration' in data:
-        ext_int = data['external_integration']
-        if not ext_int.get('app_home_url') and ext_int.get('auth_steps') and len(ext_int['auth_steps']) == 1:
-            ext_int['app_home_url'] = ext_int['auth_steps'][0]['url']
+        backfill_app_home_url_from_auth_steps(data['external_integration'])
 
     try:
         app = AppCreate.model_validate(data)
@@ -545,7 +555,7 @@ def create_app(app_data: str = Form(...), file: UploadFile = File(...), uid=Depe
 async def create_persona(
     persona_data: str = Form(...), file: UploadFile = File(...), uid=Depends(auth.get_current_user_uid)
 ):
-    data = json.loads(persona_data)
+    data = parse_form_json(dict, persona_data, 'persona_data')
     data['approved'] = False
     data['status'] = 'under-review'
     data['category'] = 'personality-emulation'
@@ -553,9 +563,9 @@ async def create_persona(
     data['id'] = str(ULID())
     data['uid'] = uid
     data['capabilities'] = ['persona']
-    user = await run_blocking(db_executor, get_user_from_uid, uid)
+    user = await run_blocking(db_executor, get_user_from_uid, uid) or {}
     data['author'] = user.get('display_name', '')
-    data['email'] = user['email']
+    data['email'] = user.get('email')
 
     if 'username' not in data or data['username'] == '' or data['username'] is None:
         data['username'] = data['name'].replace(' ', '').lower()
@@ -591,7 +601,7 @@ async def update_persona(
     file: UploadFile = File(None),
     uid=Depends(auth.get_current_user_uid),
 ):
-    data = json.loads(persona_data)
+    data = parse_form_json(dict, persona_data, 'persona_data')
     persona = await run_blocking(db_executor, get_available_app_by_id, persona_id, uid)
     if not persona:
         raise HTTPException(status_code=404, detail='Persona not found')
@@ -711,7 +721,7 @@ async def get_or_create_user_persona(uid: str = Depends(auth.get_current_user_ui
 def update_app(
     app_id: str, app_data: str = Form(...), file: UploadFile = File(None), uid=Depends(auth.get_current_user_uid)
 ):
-    data = json.loads(app_data)
+    data = parse_form_json(dict, app_data, 'app_data')
     app = get_available_app_by_id(app_id, uid)
     if not app:
         raise HTTPException(status_code=404, detail='App not found')
@@ -730,9 +740,7 @@ def update_app(
 
     # Backward compatibility: Set app_home_url from first auth step if not provided
     if 'external_integration' in data:
-        ext_int = data['external_integration']
-        if not ext_int.get('app_home_url') and ext_int.get('auth_steps') and len(ext_int['auth_steps']) == 1:
-            ext_int['app_home_url'] = ext_int['auth_steps'][0]['url']
+        backfill_app_home_url_from_auth_steps(data['external_integration'])
 
     try:
         update_app = AppUpdate.model_validate(data)
@@ -745,6 +753,14 @@ def update_app(
     # Fetch chat tools from manifest URL (only way to add/update chat tools)
     if external_integration := data.get('external_integration'):
         update_dict = _process_chat_tools_manifest(external_integration, update_dict)
+
+    if update_dict.get('disabled') is False and app.get('disabled'):
+        validate_app_endpoints_for_reenable(app, update_dict, app_id)
+        clear_app_webhook_health(app_id)
+        update_dict.setdefault('disabled_reason', '')
+        update_dict.setdefault('disabled_error', '')
+        update_dict.setdefault('disabled_at', '')
+        update_dict.setdefault('disabled_failure_duration_hours', 0)
 
     update_app_in_db(update_dict)
 
@@ -984,11 +1000,15 @@ def reply_to_review(app_id: str, data: dict, uid: str = Depends(auth.get_current
     if not reviewer_uid:
         raise HTTPException(status_code=422, detail='Reviewer UID is required')
 
+    response = data.get('response')
+    if not isinstance(response, str) or not response.strip():
+        raise HTTPException(status_code=422, detail='Response is required')
+
     review = get_specific_user_review(app_id, reviewer_uid)
     if not review:
         raise HTTPException(status_code=404, detail='Review not found')
 
-    review['response'] = data['response']
+    review['response'] = response
     review['responded_at'] = datetime.now(timezone.utc).isoformat()
     set_app_review(app_id, reviewer_uid, review)
 
@@ -996,7 +1016,7 @@ def reply_to_review(app_id: str, data: dict, uid: str = Depends(auth.get_current
     send_app_review_reply_notification(
         reviewer_uid,
         app.uid,
-        data['response'],
+        response,
         app_id,
         app.name,
     )
@@ -1735,6 +1755,11 @@ async def enable_app_endpoint(app_id: str, uid: str = Depends(auth.get_current_u
     app = App(**app) if app else None
     if not app:
         raise HTTPException(status_code=404, detail='App not found')
+    if app.disabled:
+        raise HTTPException(
+            status_code=400,
+            detail='This app is currently unavailable due to connectivity issues. The developer has been notified.',
+        )
     if app.private is not None:
         if app.private and app.uid != uid and not await run_blocking(db_executor, is_tester, uid):
             raise HTTPException(status_code=403, detail='You are not authorized to perform this action')

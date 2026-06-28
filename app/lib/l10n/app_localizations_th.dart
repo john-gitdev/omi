@@ -427,6 +427,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get offlineSync => 'ซิงค์ออฟไลน์';
 
   @override
+  String get autoSync => 'ซิงค์อัตโนมัติ';
+
+  @override
+  String get autoSyncDescription => 'ซิงค์การบันทึกแบบออฟไลน์โดยอัตโนมัติเมื่ออุปกรณ์ของคุณเชื่อมต่อ';
+
+  @override
   String get deviceSettings => 'การตั้งค่าอุปกรณ์';
 
   @override
@@ -961,11 +967,6 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String memoriesUsedThisMonth(String used, String limit) {
-    return 'สร้างความทรงจำ $used จาก $limit รายการในเดือนนี้';
-  }
-
-  @override
   String get visibility => 'การมองเห็น';
 
   @override
@@ -1455,7 +1456,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get payYourSttProvider => 'ใช้ Omi ได้อย่างอิสระ คุณจ่ายเฉพาะผู้ให้บริการ STT ของคุณโดยตรง';
 
   @override
-  String get freeMinutesMonth => 'รวม 1,200 นาทีฟรี/เดือน ไม่จำกัดด้วย ';
+  String get freeMinutesMonth => 'รวม 600 นาทีฟรี/เดือน ไม่จำกัดด้วย ';
 
   @override
   String get omiUnlimited => 'Omi Unlimited';
@@ -1704,12 +1705,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String devicesFoundNearby(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'อุปกรณ์',
-      one: 'อุปกรณ์',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'อุปกรณ์', one: 'อุปกรณ์');
     return 'พบ $count $_temp0 ในบริเวณใกล้เคียง';
   }
 
@@ -4606,41 +4602,13 @@ class AppLocalizationsTh extends AppLocalizations {
       'ขอบคุณที่เป็นผู้ใช้ที่มีคุณค่าของ Omi หากคุณมีคำถามหรือข้อกังวลใดๆ โปรดติดต่อเราที่ team@basedhardware.com';
 
   @override
-  String get wifiSyncSettings => 'การตั้งค่าการซิงค์ WiFi';
-
-  @override
-  String get enterHotspotCredentials => 'ป้อนข้อมูลรับรองฮอตสปอตของโทรศัพท์';
-
-  @override
-  String get wifiSyncUsesHotspot =>
-      'การซิงค์ WiFi ใช้โทรศัพท์ของคุณเป็นฮอตสปอต ค้นหาชื่อและรหัสผ่านในการตั้งค่า > ฮอตสปอตส่วนตัว';
-
-  @override
-  String get hotspotNameSsid => 'ชื่อฮอตสปอต (SSID)';
-
-  @override
-  String get exampleIphoneHotspot => 'เช่น iPhone Hotspot';
-
-  @override
   String get password => 'รหัสผ่าน';
-
-  @override
-  String get enterHotspotPassword => 'ป้อนรหัสผ่านฮอตสปอต';
 
   @override
   String get saveCredentials => 'บันทึกข้อมูลรับรอง';
 
   @override
   String get clearCredentials => 'ล้างข้อมูลรับรอง';
-
-  @override
-  String get pleaseEnterHotspotName => 'กรุณาป้อนชื่อฮอตสปอต';
-
-  @override
-  String get wifiCredentialsSaved => 'บันทึกข้อมูลรับรอง WiFi แล้ว';
-
-  @override
-  String get wifiCredentialsCleared => 'ล้างข้อมูลรับรอง WiFi แล้ว';
 
   @override
   String summaryGeneratedForDate(String date) {
@@ -4709,7 +4677,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get noSpecificDataAccessConfigured => 'ไม่มีการกำหนดค่าการเข้าถึงข้อมูลเฉพาะ';
 
   @override
-  String get basicPlanDescription => '1,200 นาทีพรีเมียม + ไม่จำกัดบนอุปกรณ์';
+  String get basicPlanDescription => '600 นาทีพรีเมียม + ไม่จำกัดบนอุปกรณ์';
 
   @override
   String get minutes => 'นาที';
@@ -5780,9 +5748,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get limitless => 'Limitless';
 
   @override
-  String get fastTransfer => 'การถ่ายโอนเร็ว';
-
-  @override
   String get syncingStatus => 'กำลังซิงค์';
 
   @override
@@ -5792,15 +5757,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String etaLabel(String time) {
     return 'ETA: $time';
   }
-
-  @override
-  String get transferMethod => 'วิธีการถ่ายโอน';
-
-  @override
-  String get fast => 'เร็ว';
-
-  @override
-  String get ble => 'BLE';
 
   @override
   String get phone => 'โทรศัพท์';
@@ -5821,25 +5777,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get processedFilesDeleted => 'ลบไฟล์ที่ประมวลผลแล้ว';
 
   @override
-  String get wifiEnableFailed => 'ไม่สามารถเปิด WiFi บนอุปกรณ์ได้ กรุณาลองอีกครั้ง';
-
-  @override
-  String get deviceNoFastTransfer => 'อุปกรณ์ของคุณไม่รองรับการถ่ายโอนเร็ว ใช้ Bluetooth แทน';
-
-  @override
-  String get enableHotspotMessage => 'กรุณาเปิดฮอตสปอตของโทรศัพท์แล้วลองอีกครั้ง';
-
-  @override
-  String get transferStartFailed => 'ไม่สามารถเริ่มการถ่ายโอนได้ กรุณาลองอีกครั้ง';
-
-  @override
   String get deviceNotResponding => 'อุปกรณ์ไม่ตอบสนอง กรุณาลองอีกครั้ง';
-
-  @override
-  String get invalidWifiCredentials => 'ข้อมูลรับรอง WiFi ไม่ถูกต้อง ตรวจสอบการตั้งค่าฮอตสปอต';
-
-  @override
-  String get wifiConnectionFailed => 'การเชื่อมต่อ WiFi ล้มเหลว กรุณาลองอีกครั้ง';
 
   @override
   String get sdCardProcessing => 'กำลังประมวลผล SD Card';
@@ -5851,9 +5789,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get process => 'ประมวลผล';
-
-  @override
-  String get wifiSyncFailed => 'การซิงค์ WiFi ล้มเหลว';
 
   @override
   String get processingFailed => 'การประมวลผลล้มเหลว';
@@ -6025,7 +5960,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get cloudProvider => 'ผู้ให้บริการคลาวด์';
 
   @override
-  String get premiumMinutesInfo => '1,200 นาทีพรีเมียม/เดือน แท็บบนอุปกรณ์มีการถอดเสียงฟรีไม่จำกัด';
+  String get premiumMinutesInfo => '600 นาทีพรีเมียม/เดือน แท็บบนอุปกรณ์มีการถอดเสียงฟรีไม่จำกัด';
 
   @override
   String get viewUsage => 'ดูการใช้งาน';
@@ -6105,7 +6040,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get batteryDrainSignificantly => 'การใช้แบตเตอรี่จะเพิ่มขึ้นอย่างมาก';
 
   @override
-  String get premiumMinutesMonth => '1,200 นาทีพรีเมียม/เดือน แท็บบนอุปกรณ์ให้การถอดความฟรีไม่จำกัด ';
+  String get premiumMinutesMonth => '600 นาทีพรีเมียม/เดือน แท็บบนอุปกรณ์ให้การถอดความฟรีไม่จำกัด ';
 
   @override
   String get audioProcessedLocally =>
@@ -6627,24 +6562,13 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get wifiSync => 'การซิงค์ WiFi';
-
-  @override
   String itemCopiedToClipboard(String item) {
     return 'คัดลอก $item ไปยังคลิปบอร์ดแล้ว';
   }
 
   @override
-  String get wifiConnectionFailedTitle => 'การเชื่อมต่อล้มเหลว';
-
-  @override
   String connectingToDeviceName(String deviceName) {
     return 'กำลังเชื่อมต่อกับ $deviceName';
-  }
-
-  @override
-  String enableDeviceWifi(String deviceName) {
-    return 'เปิด WiFi ของ $deviceName';
   }
 
   @override
@@ -6741,9 +6665,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get statusUnprocessed => 'ยังไม่ประมวลผล';
 
   @override
-  String get switchedToFastTransfer => 'เปลี่ยนเป็นการถ่ายโอนเร็ว';
-
-  @override
   String get transferCompleteMessage => 'การถ่ายโอนเสร็จสมบูรณ์! คุณสามารถเล่นการบันทึกนี้ได้แล้ว';
 
   @override
@@ -6755,33 +6676,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get transferCancelled => 'ยกเลิกการถ่ายโอนแล้ว';
 
   @override
-  String get fastTransferEnabled => 'เปิดใช้งานการถ่ายโอนเร็วแล้ว';
-
-  @override
   String get bluetoothSyncEnabled => 'เปิดใช้งานการซิงค์บลูทูธแล้ว';
-
-  @override
-  String get enableFastTransfer => 'เปิดใช้งานการถ่ายโอนเร็ว';
-
-  @override
-  String get fastTransferDescription =>
-      'การถ่ายโอนเร็วใช้ WiFi สำหรับความเร็ว ~5 เท่า โทรศัพท์ของคุณจะเชื่อมต่อกับเครือข่าย WiFi ของอุปกรณ์ Omi ชั่วคราวระหว่างการถ่ายโอน';
-
-  @override
-  String get internetAccessPausedDuringTransfer => 'การเข้าถึงอินเทอร์เน็ตถูกหยุดชั่วคราวระหว่างการถ่ายโอน';
-
-  @override
-  String get chooseTransferMethodDescription => 'เลือกวิธีการถ่ายโอนการบันทึกจากอุปกรณ์ Omi ไปยังโทรศัพท์ของคุณ';
-
-  @override
-  String get wifiSpeed => '~150 KB/s ผ่าน WiFi';
-
-  @override
-  String get fiveTimesFaster => 'เร็วกว่า 5 เท่า';
-
-  @override
-  String get fastTransferMethodDescription =>
-      'สร้างการเชื่อมต่อ WiFi โดยตรงไปยังอุปกรณ์ Omi โทรศัพท์ของคุณจะตัดการเชื่อมต่อ WiFi ปกติชั่วคราวระหว่างการถ่ายโอน';
 
   @override
   String get bluetooth => 'บลูทูธ';
@@ -7477,13 +7372,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get voiceFailedToTranscribe => 'ไม่สามารถถอดเสียงได้';
 
   @override
-  String get locationPermissionRequired => 'ต้องได้รับอนุญาตตำแหน่ง';
-
-  @override
-  String get locationPermissionContent =>
-      'การถ่ายโอนเร็วต้องได้รับอนุญาตตำแหน่งเพื่อตรวจสอบการเชื่อมต่อ WiFi โปรดให้สิทธิ์ตำแหน่งเพื่อดำเนินการต่อ';
-
-  @override
   String get pdfTranscriptExport => 'ส่งออกบทถอดเสียง';
 
   @override
@@ -7628,12 +7516,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get dailyRecapsDescription => 'สรุปรายวันของคุณจะปรากฏที่นี่เมื่อสร้างเสร็จ';
 
   @override
-  String get chooseTransferMethod => 'เลือกวิธีการถ่ายโอน';
-
-  @override
-  String get fastTransferSpeed => '~150 KB/s ผ่าน WiFi';
-
-  @override
   String largeTimeGapDetected(String gap) {
     return 'ตรวจพบช่วงเวลาห่างมาก ($gap)';
   }
@@ -7642,9 +7524,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String largeTimeGapsDetected(String gaps) {
     return 'ตรวจพบช่วงเวลาห่างมากหลายช่วง ($gaps)';
   }
-
-  @override
-  String get deviceDoesNotSupportWifiSwitchingToBle => 'อุปกรณ์ไม่รองรับการซิงค์ WiFi กำลังเปลี่ยนไปใช้ Bluetooth';
 
   @override
   String get appleHealthNotAvailable => 'Apple Health ไม่พร้อมใช้งานบนอุปกรณ์นี้';
@@ -7843,6 +7722,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get viewAll => 'ดูทั้งหมด';
+
+  @override
+  String get expand => 'ขยาย';
 
   @override
   String get addTask => 'เพิ่มงาน';
@@ -9225,7 +9107,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get syncStatusBackedUp => 'สำรองข้อมูลแล้ว';
 
   @override
-  String get syncStatusBackingUp => 'กำลังสำรองข้อมูล…';
+  String get syncStatusBackingUp => 'กำลังซิงค์…';
 
   @override
   String get syncStatusWaiting => 'รอการซิงค์';
@@ -9260,11 +9142,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String syncCardReadyCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'การบันทึก $count รายการพร้อมซิงค์',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'การบันทึก $count รายการพร้อมซิงค์');
     return '$_temp0';
   }
 
@@ -9276,17 +9154,13 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String syncCardNeedsAttention(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'การบันทึก $count รายการต้องการความสนใจ',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'การบันทึก $count รายการต้องการความสนใจ');
     return '$_temp0';
   }
 
   @override
   String get syncFlowIntro =>
-      'การบันทึกจะถูกถ่ายโอนจากอุปกรณ์ Omi ของคุณมายังโทรศัพท์เครื่องนี้และจัดเก็บไว้ในเครื่อง จากนั้นอัปโหลดไปยังเซิร์ฟเวอร์ของ Omi เพื่อถอดเสียงและแปลงเป็นบทสนทนา';
+      'การบันทึกจะถูกถ่ายโอนจากอุปกรณ์ของคุณมายังโทรศัพท์เครื่องนี้และจัดเก็บไว้ในเครื่อง จากนั้นอัปโหลดไปยังเซิร์ฟเวอร์ของ Omi ซึ่งจะถอดความและแปลงเป็นบทสนทนา';
 
   @override
   String get syncStepUpload => 'ซิงค์';
@@ -9316,7 +9190,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get syncCardUploadingTitle => 'กำลังอัปโหลดไปยัง Omi';
 
   @override
-  String get syncCardDownloadingTitle => 'กำลังดาวน์โหลดจาก Omi';
+  String get syncCardDownloadingTitle => 'กำลังดาวน์โหลดจากอุปกรณ์ของคุณ';
 
   @override
   String syncCardProgressOf(int current, int total) {
@@ -9324,10 +9198,10 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get syncStatusOnDevice => 'รอที่ Omi';
+  String get syncStatusOnDevice => 'อยู่บนอุปกรณ์ของคุณ';
 
   @override
-  String get syncStatusDownloadingFromDevice => 'กำลังดาวน์โหลดจาก Omi';
+  String get syncStatusDownloadingFromDevice => 'กำลังดาวน์โหลดจากอุปกรณ์ของคุณ';
 
   @override
   String get newestFirst => 'ใหม่สุดก่อน';
@@ -9337,4 +9211,196 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get morePaymentMethodsComingSoon => 'วิธีการชำระเงินอื่นๆ เร็วๆ นี้';
+
+  @override
+  String get syncProcessingBackgroundHint => 'การทำงานนี้ดำเนินต่อในเบื้องหลัง — คุณออกจากหน้าจอนี้ได้.';
+
+  @override
+  String get syncCardRateLimited => 'ถึงขีดจำกัดการใช้งานที่เป็นธรรมแล้ว — การซิงค์จะดำเนินต่อโดยอัตโนมัติ';
+
+  @override
+  String get syncCardBackendBusy => 'เซิร์ฟเวอร์ของ Omi กำลังคับคั่ง — การบันทึกของคุณจะซิงค์เมื่อมีพื้นที่ว่างกลับมา';
+
+  @override
+  String get unableToDetermineFirmwareVersion => 'ไม่สามารถระบุเวอร์ชันเฟิร์มแวร์ปัจจุบันได้';
+
+  @override
+  String get promoCode => 'รหัสโปรโมชัน';
+
+  @override
+  String get enterPromoCode => 'กรอกรหัสโปรโมชัน';
+
+  @override
+  String get invalidPromotionCode => 'รหัสโปรโมชันไม่ถูกต้อง';
+
+  @override
+  String get backgroundModeTitle => 'โหมดเบื้องหลัง';
+
+  @override
+  String get backgroundModeDescription => 'ให้ Omi ของคุณบันทึกต่อไปแม้ปิดแอปไปทั้งหมดแล้ว';
+
+  @override
+  String get backgroundModeNote => 'ขณะนี้ใช้ได้กับอุปกรณ์ Omi เท่านั้น และกำลังพัฒนาอย่างต่อเนื่อง';
+
+  @override
+  String get backgroundModeUnavailable =>
+      'โหมดพื้นหลังไม่พร้อมใช้งานเนื่องจากไม่มีอุปกรณ์ที่รองรับเชื่อมต่ออยู่ เชื่อมต่ออุปกรณ์ Omi, OpenGlass หรือ Friend Pendant เพื่อใช้ฟีเจอร์นี้';
+
+  @override
+  String get regenerateRecap => 'สร้างสรุปใหม่';
+
+  @override
+  String get recapRegeneratedSnackbar => 'สร้างสรุปใหม่แล้ว';
+
+  @override
+  String get recapRegenerateFailed => 'ไม่สามารถสร้างสรุปใหม่ได้ ลองอีกครั้งในภายหลัง';
+
+  @override
+  String get recapRegenerateCooldown => 'โปรดรอสักครู่ก่อนสร้างใหม่อีกครั้ง';
+
+  @override
+  String get recapRegenerateNoConversations => 'ไม่มีการสนทนาที่จะสรุปสำหรับวันนี้';
+
+  @override
+  String get syncCustomSttWarningTitle => 'การซิงค์ใช้การถอดเสียงของ Omi';
+
+  @override
+  String get syncCustomSttWarningMessage =>
+      'คุณใช้ผู้ให้บริการถอดเสียงของคุณเอง การซิงค์การบันทึกเหล่านี้จะถอดเสียงบนเซิร์ฟเวอร์ของ Omi และจะนับรวมในขีดจำกัดการถอดเสียงของแพ็กเกจของคุณ';
+
+  @override
+  String get transcribeLaterTitle => 'ถอดเสียงภายหลัง';
+
+  @override
+  String get transcribeLaterDescription =>
+      'บันทึกเสียงไว้ก่อนแล้วค่อยถอดเสียงเมื่อต้องการ แทนที่จะถอดแบบเรียลไทม์ ไฟล์บันทึกจะถูกเก็บไว้ในเครื่องของคุณ จากนั้นคุณค่อยอัปโหลดเพื่อสร้างบทสนทนา';
+
+  @override
+  String get transcribeLaterNote => 'ขณะนี้รองรับเฉพาะอุปกรณ์ Omi เสียงจะอยู่ในเครื่องของคุณจนกว่าคุณจะเลือกอัปโหลด';
+
+  @override
+  String get transcribeLaterStorageFull =>
+      'พื้นที่จัดเก็บในเครื่องของคุณเหลือน้อย จึงหยุดการบันทึกชั่วคราว กรุณาเพิ่มพื้นที่ว่างหรืออัปโหลดไฟล์บันทึกของคุณ แล้วการบันทึกจะดำเนินต่อโดยอัตโนมัติ';
+
+  @override
+  String get recordingMode => 'โหมดการบันทึก';
+
+  @override
+  String get captureModeLater => 'ภายหลัง';
+
+  @override
+  String get captureModeLiveDescription => 'ถอดเสียงแบบเรียลไทม์ขณะที่คุณพูด';
+
+  @override
+  String get captureModeLaterDescription => 'บันทึกเสียงตอนนี้แล้วถอดเสียงเมื่อใดก็ได้ที่ต้องการ';
+
+  @override
+  String get unmute => 'เปิดเสียง';
+
+  @override
+  String get newRecording => 'การบันทึกใหม่';
+
+  @override
+  String get transcribeLaterPaused => 'หยุดชั่วคราว — ไม่ได้กำลังบันทึกเสียง';
+
+  @override
+  String get deviceTutorial => 'วิธีใช้ Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionTitle => 'พูดใส่ Omi ของคุณ';
+
+  @override
+  String get deviceOnboardingTranscriptionSubtitle => 'พูดสักสองสามคำแล้วดูข้อความปรากฏแบบเรียลไทม์';
+
+  @override
+  String get deviceOnboardingGoodJob => 'เยี่ยมมาก!';
+
+  @override
+  String get deviceOnboardingStartSpeaking => 'เริ่มพูดได้เลย...';
+
+  @override
+  String get deviceOnboardingAskQuestionTitle => 'ถามคำถามกับ Omi';
+
+  @override
+  String get deviceOnboardingAskQuestionSubtitle => 'กดปุ่มหนึ่งครั้ง พูดคำถามของคุณ แล้วกดอีกครั้งเมื่อพูดเสร็จ';
+
+  @override
+  String get deviceOnboardingProcessingQuestion => 'กำลังประมวลผลคำถามของคุณ...';
+
+  @override
+  String get deviceOnboardingListening => 'กำลังฟัง...';
+
+  @override
+  String get deviceOnboardingTurnOffTitle => 'ปิดเครื่อง';
+
+  @override
+  String get deviceOnboardingTurnOnTitle => 'เปิดเครื่อง';
+
+  @override
+  String get deviceOnboardingTurnOffSubtitle => 'กดปุ่มค้างไว้ 3 วินาที';
+
+  @override
+  String get deviceOnboardingTurnOnSubtitle => 'กดปุ่มเพื่อเปิดเครื่องอีกครั้ง';
+
+  @override
+  String get deviceOnboardingHoldButtonHint => 'กดปุ่มค้างไว้ให้แน่นจนไฟดับ';
+
+  @override
+  String get deviceOnboardingStatusConnected => 'เชื่อมต่อแล้ว';
+
+  @override
+  String get deviceOnboardingStatusConnectedDone => 'เชื่อมต่อแล้ว!';
+
+  @override
+  String get deviceOnboardingStatusDisconnected => 'ตัดการเชื่อมต่อแล้ว';
+
+  @override
+  String get deviceOnboardingStatusTurningOff => 'กำลังปิดเครื่อง...';
+
+  @override
+  String get deviceOnboardingDoubleTapTitle => 'ตั้งค่าการแตะสองครั้ง';
+
+  @override
+  String get deviceOnboardingEndConversation => 'จบบทสนทนา';
+
+  @override
+  String get deviceOnboardingEndConversationDesc => 'บันทึกและจบบทสนทนาปัจจุบัน';
+
+  @override
+  String get deviceOnboardingMuteUnmute => 'ปิดเสียง / เปิดเสียง';
+
+  @override
+  String get deviceOnboardingMuteUnmuteDesc => 'เปิดหรือปิดไมโครโฟน';
+
+  @override
+  String get deviceOnboardingStarConversation => 'ติดดาวบทสนทนาที่กำลังดำเนินอยู่';
+
+  @override
+  String get deviceOnboardingStarConversationDesc => 'ทำเครื่องหมายบทสนทนาว่าสำคัญ';
+
+  @override
+  String get deviceOnboardingSingleTapHint => 'นั่นคือการแตะครั้งเดียว — ลองแตะสองครั้งเร็วๆ ดูสิ!';
+
+  @override
+  String get deviceOnboardingTryDoubleTap => 'ลองเลย! แตะ Omi ของคุณสองครั้ง';
+
+  @override
+  String get deviceOnboardingContinue => 'ดำเนินการต่อ';
+
+  @override
+  String get deviceOnboardingFinish => 'เสร็จสิ้น';
+
+  @override
+  String get deviceOnboardingIntroTitle => 'ทำความรู้จักกับ Omi ของคุณ';
+
+  @override
+  String get deviceOnboardingIntroSubtitle => 'ทัวร์สั้น ๆ แบบลงมือทำจริงเกี่ยวกับทุกสิ่งที่ Omi ของคุณทำได้';
+
+  @override
+  String get deviceOnboardingIntroDuration => 'ประมาณ 1 นาที';
+  @override
+  String get jumpToLatestMessage => 'ไปยังข้อความล่าสุด';
+
+  @override
+  String get latest => 'ล่าสุด';
 }

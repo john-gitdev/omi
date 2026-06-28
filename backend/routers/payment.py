@@ -30,6 +30,7 @@ from utils.subscription import (
     should_show_new_plans,
     adapt_plans_for_legacy_client,
     clear_trial_paywall_cache,
+    find_active_paid_subscription_for_user,
 )
 from database.users import (
     get_stripe_connect_account_id,
@@ -65,10 +66,12 @@ router = APIRouter()
 
 class CreateCheckoutRequest(BaseModel):
     price_id: str
+    promotion_code: Optional[str] = None
 
 
 class UpgradeSubscriptionRequest(BaseModel):
     price_id: str
+    promotion_code: Optional[str] = None
 
 
 class PricingOption(BaseModel):
@@ -99,6 +102,7 @@ def _build_subscription_from_stripe_object(stripe_sub: dict) -> Subscription | N
             plan=PlanType.basic,
             status=SubscriptionStatus.active,
             current_period_end=stripe_sub.get('current_period_end'),
+            current_period_start=stripe_sub.get('current_period_start'),
             stripe_subscription_id=stripe_sub['id'],
             cancel_at_period_end=False,
             limits=get_basic_plan_limits(),
@@ -119,10 +123,34 @@ def _build_subscription_from_stripe_object(stripe_sub: dict) -> Subscription | N
         plan=plan,
         status=SubscriptionStatus.active,
         current_period_end=stripe_sub.get('current_period_end'),
+        current_period_start=stripe_sub.get('current_period_start'),
         stripe_subscription_id=stripe_sub['id'],
         cancel_at_period_end=stripe_sub.get('cancel_at_period_end', False),
         limits=get_plan_limits(plan),
     )
+
+
+def _has_current_paid_subscription_for_different_stripe_sub(
+    current_subscription: Subscription | None, event_subscription_id: str | None, now: int | None = None
+) -> bool:
+    """True when a stale inactive event should not overwrite stored paid access."""
+    if not current_subscription or not event_subscription_id:
+        return False
+    if current_subscription.stripe_subscription_id == event_subscription_id:
+        return False
+    if current_subscription.status != SubscriptionStatus.active or not is_paid_plan(current_subscription.plan):
+        return False
+    # Require a valid, unexpired period end before preserving paid access.
+    # A missing or zero current_period_end means the stored paid row is not
+    # provably valid, so we do NOT let it shield a downgrade from a stale
+    # inactive event. This mirrors reconcile_basic_plan_with_stripe, which
+    # only treats a paid subscription as usable when current_period_end is
+    # present and still in the future.
+    if not current_subscription.current_period_end:
+        return False
+    if current_subscription.current_period_end < (now or int(time.time())):
+        return False
+    return True
 
 
 def _update_subscription_from_session(uid: str, session: stripe.checkout.Session):
@@ -265,8 +293,11 @@ def get_available_plans_endpoint(
                 scheduled_price_id = price_map.get(scheduled_price_id, scheduled_price_id)
 
         current_plan = current_subscription.plan if current_subscription else PlanType.basic
+        ever_purchased = subscription_utils.has_ever_purchased(uid, current_subscription)
         pricing_options: List[PricingOption] = []
-        for definition in filter_plans_for_user(all_definitions, current_plan, platform=x_app_platform):
+        for definition in filter_plans_for_user(
+            all_definitions, current_plan, platform=x_app_platform, ever_purchased=ever_purchased
+        ):
             monthly_price_id = definition["monthly_price_id"]
             annual_price_id = definition["annual_price_id"]
             if monthly_price_id:
@@ -381,6 +412,14 @@ def create_checkout_session_endpoint(request: CreateCheckoutRequest, uid: str = 
     if not can_pay:
         raise HTTPException(status_code=400, detail=reason)
 
+    # Validate promotion code early — reject invalid codes before any subscription changes
+    resolved_checkout_promo_id = None
+    if request.promotion_code:
+        promo_list = stripe.PromotionCode.list(code=request.promotion_code, active=True, limit=1)
+        if not promo_list.data:
+            raise HTTPException(status_code=400, detail="Invalid or expired promotion code.")
+        resolved_checkout_promo_id = promo_list.data[0].id
+
     # Try to reactivate canceled subscription (Scenario A)
     reactivation_result = _try_reactivate_subscription(uid, request.price_id)
     if reactivation_result:
@@ -389,12 +428,49 @@ def create_checkout_session_endpoint(request: CreateCheckoutRequest, uid: str = 
     # Normal checkout flow for new subscriptions (Scenario B or first-time subscribers)
     idempotency_key = str(uuid.uuid4())
     existing_customer_id = users_db.get_stripe_customer_id(uid)
-    session = stripe_utils.create_subscription_checkout_session(
-        uid, request.price_id, idempotency_key, customer_id=existing_customer_id
-    )
+    try:
+        session = stripe_utils.create_subscription_checkout_session(
+            uid,
+            request.price_id,
+            idempotency_key,
+            customer_id=existing_customer_id,
+            promotion_code_id=resolved_checkout_promo_id,
+        )
+    except stripe.error.InvalidRequestError as e:
+        detail = str(e.user_message) if hasattr(e, 'user_message') and e.user_message else str(e)
+        raise HTTPException(status_code=400, detail=detail)
     if not session:
         raise HTTPException(status_code=500, detail="Could not create checkout session.")
     return {"url": session.url, "session_id": session.id}
+
+
+def _release_attached_schedules(stripe_sub: dict) -> None:
+    """Detach any active/not-started SubscriptionSchedule from this subscription.
+
+    Stripe rejects both Subscription.modify() and SubscriptionSchedule.create()
+    with "You cannot migrate a subscription that is already attached to a
+    schedule" once a schedule is attached — e.g. a user who earlier scheduled a
+    monthly→annual change. That left those users unable to change plans at all.
+    Releasing detaches the schedule without canceling the subscription (billing
+    continues on the current phase), which unblocks the new change. Mirrors the
+    release pattern already used by the cancel-subscription endpoint.
+    """
+    customer_id = stripe_sub.get('customer')
+    sub_id = stripe_sub.get('id')
+    if not customer_id or not sub_id:
+        return
+    try:
+        schedules = stripe.SubscriptionSchedule.list(customer=customer_id, limit=10)
+    except Exception as e:
+        logger.error(f"Error listing subscription schedules before plan change: {sanitize(str(e))}")
+        return
+    for schedule in schedules.data:
+        if schedule.status in ('active', 'not_started') and getattr(schedule, 'subscription', None) == sub_id:
+            try:
+                stripe.SubscriptionSchedule.release(schedule.id)
+                logger.info(f"Released subscription schedule {schedule.id} for {sub_id} before plan change")
+            except Exception as e:
+                logger.error(f"Error releasing subscription schedule {schedule.id}: {sanitize(str(e))}")
 
 
 @router.post('/v1/payments/upgrade-subscription')
@@ -439,14 +515,30 @@ def upgrade_subscription_endpoint(request: UpgradeSubscriptionRequest, uid: str 
                 detail="Downgrading from Architect to Unlimited is not available. Please contact support if you need to change your plan.",
             )
 
+        # Validate and resolve promotion code if provided
+        resolved_promo_id = None
+        if request.promotion_code:
+            promo_list = stripe.PromotionCode.list(code=request.promotion_code, active=True, limit=1)
+            if not promo_list.data:
+                raise HTTPException(status_code=400, detail="Invalid or expired promotion code.")
+            resolved_promo_id = promo_list.data[0].id
+
+        # A previously-scheduled change (e.g. monthly→annual) leaves a schedule
+        # attached to the subscription, which Stripe then refuses to modify or
+        # re-schedule. Release it first so the user can switch plans again.
+        _release_attached_schedules(stripe_sub)
+
         # Cross-plan change (e.g. Unlimited→Architect): immediate swap with proration
         if current_plan != target_plan:
-            updated_sub = stripe.Subscription.modify(
-                stripe_sub['id'],
-                items=[{'id': current_item_id, 'price': request.price_id}],
-                proration_behavior='always_invoice',
-                metadata={'uid': uid, 'sub_type': target_plan.value},
-            )
+            modify_params = {
+                'items': [{'id': current_item_id, 'price': request.price_id}],
+                'proration_behavior': 'always_invoice',
+                'metadata': {'uid': uid, 'sub_type': target_plan.value},
+            }
+            if resolved_promo_id:
+                modify_params['discounts'] = [{'promotion_code': resolved_promo_id}]
+
+            updated_sub = stripe.Subscription.modify(stripe_sub['id'], **modify_params)
 
             # Update our database immediately
             new_subscription = _build_subscription_from_stripe_object(updated_sub.to_dict())
@@ -494,6 +586,7 @@ def upgrade_subscription_endpoint(request: UpgradeSubscriptionRequest, uid: str 
                             'price': request.price_id,
                         }
                     ],
+                    **({'discounts': [{'promotion_code': resolved_promo_id}]} if resolved_promo_id else {}),
                 },
             ],
             metadata={'uid': uid, 'upgrade_type': f'{current_plan.value}_{target_interval}'},
@@ -514,6 +607,10 @@ def upgrade_subscription_endpoint(request: UpgradeSubscriptionRequest, uid: str 
 
     except HTTPException:
         raise
+    except stripe.error.InvalidRequestError as e:
+        logger.error(f"Stripe rejected subscription change: {sanitize(str(e))}")
+        detail = str(e.user_message) if hasattr(e, 'user_message') and e.user_message else str(e)
+        raise HTTPException(status_code=400, detail=detail)
     except Exception as e:
         logger.error(f"Error processing subscription change: {sanitize(str(e))}")
         raise HTTPException(status_code=500, detail="Failed to process subscription change. Please try again.")
@@ -651,9 +748,18 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
                 )
                 return {"status": "success"}
 
-            # Check if user already has an active subscription to prevent duplicates
+            # Check if user already has an active *paid* subscription to prevent duplicates.
+            # Stripe sends customer.subscription.created while Checkout subscriptions are still
+            # incomplete; our subscription event handler represents those as Basic with a Stripe
+            # subscription id. Do not treat that transient Basic record as a duplicate checkout,
+            # otherwise checkout.session.completed returns before persisting the real paid
+            # subscription/customer id and later stale incomplete_expired events can clobber access.
             existing_subscription = await run_blocking(db_executor, users_db.get_user_valid_subscription, uid)
-            if existing_subscription and existing_subscription.stripe_subscription_id:
+            if (
+                existing_subscription
+                and existing_subscription.stripe_subscription_id
+                and is_paid_plan(existing_subscription.plan)
+            ):
                 # If user already has a Stripe subscription, verify it's not the same one
                 if existing_subscription.stripe_subscription_id == session.get('subscription'):
                     logger.warning(f"Duplicate webhook event for existing subscription: {session.get('subscription')}")
@@ -742,8 +848,45 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
         if uid:
             new_subscription = _build_subscription_from_stripe_object(subscription_obj)
             if new_subscription:
+                # Guard against a stale/old subscription's cancellation clobbering an
+                # active plan. If this event downgrades the user to a non-paid plan
+                # (e.g. an old sub got canceled) but they still have a *different*
+                # active paid subscription — they canceled one sub and started
+                # another near-simultaneously, possibly on a new Stripe customer —
+                # don't overwrite their plan with basic. Adopt the active paid sub.
+                adopted_active_paid = False
+                if not is_paid_plan(new_subscription.plan):
+                    event_sub_id = subscription_obj.get('id')
+                    current_subscription = await run_blocking(db_executor, users_db.get_existing_user_subscription, uid)
+                    if _has_current_paid_subscription_for_different_stripe_sub(current_subscription, event_sub_id):
+                        logger.info(
+                            f"Ignoring downgrade from {event['type']} (sub {event_sub_id}) for user {uid}: "
+                            f"stored paid sub {current_subscription.stripe_subscription_id} is still valid."
+                        )
+                        return {"status": "success"}
+                    active_paid = await run_blocking(stripe_executor, find_active_paid_subscription_for_user, uid)
+                    if active_paid and active_paid.stripe_subscription_id != event_sub_id:
+                        logger.info(
+                            f"Ignoring downgrade from {event['type']} (sub {event_sub_id}) for user {uid}: "
+                            f"a different active paid sub {active_paid.stripe_subscription_id} exists."
+                        )
+                        new_subscription = active_paid
+                        adopted_active_paid = True
                 try:
                     if new_subscription.status == SubscriptionStatus.active and is_paid_plan(new_subscription.plan):
+                        # Only persist the customer id from the incoming event when we
+                        # did NOT adopt a different active paid subscription. When the
+                        # stale-downgrade guard adopted active_paid, the event's
+                        # subscription_obj['customer'] belongs to the canceled/stale
+                        # subscription (possibly a different Stripe customer), so
+                        # writing it would clobber the correct customer id that
+                        # find_active_paid_subscription_for_user used to locate
+                        # active_paid — a later reconciliation could then query the
+                        # wrong customer and miss the paid sub.
+                        if not adopted_active_paid:
+                            customer_id = subscription_obj.get('customer')
+                            if customer_id:
+                                await run_blocking(db_executor, users_db.set_stripe_customer_id, uid, customer_id)
                         await run_blocking(db_executor, conversations_db.unlock_all_conversations, uid)
                         await run_blocking(db_executor, memories_db.unlock_all_memories, uid)
                         await run_blocking(db_executor, action_items_db.unlock_all_action_items, uid)

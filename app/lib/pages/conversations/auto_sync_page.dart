@@ -12,6 +12,7 @@ import 'package:omi/services/wals.dart';
 import 'package:omi/ui/molecules/omi_confirm_dialog.dart';
 import 'package:omi/utils/l10n_extensions.dart';
 import 'package:omi/utils/other/temp.dart';
+import 'package:omi/utils/sync_confirmation.dart';
 import 'synced_conversations_page.dart';
 import 'wal_item_detail/wal_item_detail_page.dart';
 
@@ -23,7 +24,12 @@ class AutoSyncPage extends StatefulWidget {
 }
 
 class _AutoSyncPageState extends State<AutoSyncPage> {
-  WalDisplayFilter _filter = WalDisplayFilter.all;
+  // Default to Pending instead of All. With thousands of synced recordings,
+  // landing on All would force the whole list to mount up-front; landing on
+  // Pending shows the small actionable set (or a calm empty state when the
+  // user is up to date). All is still one tap away — and the list below is
+  // sliver-lazy, so visiting it is safe even with thousands of items.
+  WalDisplayFilter _filter = WalDisplayFilter.pending;
 
   @override
   void initState() {
@@ -41,6 +47,11 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
         final syncState = syncProvider.syncState;
         final pendingWals = syncProvider.pendingWals;
         final syncedWals = syncProvider.syncedWals;
+        final hasAnyRecording = syncProvider.allWals.isNotEmpty;
+        // Compute the filtered list once per build and pass it down — the
+        // SliverList.builder uses it via index, so calling it again inside
+        // itemBuilder would re-sort+re-filter on every visible row.
+        final filteredWals = hasAnyRecording ? syncProvider.walsForDisplayFilter(_filter) : const <Wal>[];
 
         return Scaffold(
           backgroundColor: const Color(0xFF0D0D0D),
@@ -66,30 +77,36 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
                 ),
             ],
           ),
-          body: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            children: [
-              const SizedBox(height: 8),
-              _buildOverallStatusCard(syncProvider, syncState),
-              if (syncProvider.syncCompleted && syncProvider.syncedConversationsPointers.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _buildConversationsCard(syncProvider),
-              ],
-              if (syncState.hasError) ...[
-                const SizedBox(height: 16),
-                _buildErrorCard(syncState, syncProvider),
-              ],
-              const SizedBox(height: 32),
-              _buildStorageSettings(userProvider),
-              if (syncProvider.displaySortedWals.isNotEmpty) ...[
-                const SizedBox(height: 32),
-                _buildRecordingsHeader(syncProvider),
-                const SizedBox(height: 10),
-                _buildFilterChips(syncProvider),
-                const SizedBox(height: 12),
-                _buildUnifiedWalList(syncProvider),
-              ],
-              const SizedBox(height: 48),
+          body: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate.fixed([
+                    const SizedBox(height: 8),
+                    _buildOverallStatusCard(syncProvider, syncState),
+                    if (syncProvider.syncCompleted && syncProvider.syncedConversationsPointers.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      _buildConversationsCard(syncProvider),
+                    ],
+                    if (syncState.hasError) ...[
+                      const SizedBox(height: 16),
+                      _buildErrorCard(syncState, syncProvider),
+                    ],
+                    const SizedBox(height: 32),
+                    _buildStorageSettings(userProvider),
+                    if (hasAnyRecording) ...[
+                      const SizedBox(height: 32),
+                      _buildRecordingsHeader(filteredWals.length),
+                      const SizedBox(height: 10),
+                      _buildFilterChips(),
+                      const SizedBox(height: 12),
+                    ],
+                  ]),
+                ),
+              ),
+              if (hasAnyRecording) _buildWalListSliver(syncProvider, filteredWals),
+              const SliverToBoxAdapter(child: SizedBox(height: 48)),
             ],
           ),
         );
@@ -109,10 +126,10 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
         .where((w) =>
             w.syncDisplayState == WalSyncDisplayState.waiting || w.syncDisplayState == WalSyncDisplayState.retrying)
         .length;
-    final hasAnyRecording = p.displaySortedWals.isNotEmpty;
+    final hasAnyRecording = p.allWals.isNotEmpty;
 
     final isActive = s.isSyncing || s.isFetchingConversations;
-    final bool showSpinner = isActive || uploaded > 0;
+    final bool showSpinner = (isActive || uploaded > 0) && !p.isRateLimited;
 
     String title;
     String? progressText;
@@ -144,16 +161,23 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
           title = s.isFetchingConversations ? l.syncCardProcessing : l.syncCardUploadingTitle;
       }
       action = _statusActionPill(l.cancel, Colors.redAccent, () => _confirmCancel(context, p));
+    } else if (p.isRateLimited) {
+      title = p.rateLimitReason == RateLimitReason.backendBusy ? l.syncCardBackendBusy : l.syncCardRateLimited;
+      titleColor = Colors.orangeAccent;
     } else if (uploaded > 0) {
       // Uploads finished, reconciler is resolving jobs in the background.
       title = l.syncCardProcessing;
     } else if (attention > 0) {
       title = l.syncCardNeedsAttention(attention);
       titleColor = Colors.orangeAccent;
-      action = _statusActionPill(l.sync, Colors.deepPurpleAccent, () => p.syncWals());
+      action = _statusActionPill(l.sync, Colors.deepPurpleAccent, () async {
+        if (await confirmSyncForCustomStt(context) && context.mounted) p.syncWals();
+      });
     } else if (readyToBackUp > 0) {
       title = l.syncCardReadyCount(readyToBackUp);
-      action = _statusActionPill(l.sync, Colors.deepPurpleAccent, () => p.syncWals());
+      action = _statusActionPill(l.sync, Colors.deepPurpleAccent, () async {
+        if (await confirmSyncForCustomStt(context) && context.mounted) p.syncWals();
+      });
     } else if (hasAnyRecording) {
       title = l.syncCardAllBackedUp;
       titleColor = Colors.grey.shade400;
@@ -373,8 +397,7 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
   // Filter chips + WAL list
   // ─────────────────────────────────────────
 
-  Widget _buildRecordingsHeader(SyncProvider p) {
-    final total = p.walsForDisplayFilter(_filter).length;
+  Widget _buildRecordingsHeader(int total) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 2),
       child: Row(
@@ -395,7 +418,7 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
     );
   }
 
-  Widget _buildFilterChips(SyncProvider p) {
+  Widget _buildFilterChips() {
     Widget chip(WalDisplayFilter f, String label) {
       final selected = _filter == f;
       return Expanded(
@@ -439,58 +462,86 @@ class _AutoSyncPageState extends State<AutoSyncPage> {
     );
   }
 
-  Widget _buildUnifiedWalList(SyncProvider syncProvider) {
-    final wals = syncProvider.walsForDisplayFilter(_filter);
-
+  /// Sliver-based wal list. SliverList.builder mounts only the rows currently
+  /// near the viewport, so navigating to a filter with thousands of items no
+  /// longer instantiates thousands of Dismissibles in one frame.
+  ///
+  /// The visual "rounded card" wrapper is achieved per-row: the first item gets
+  /// rounded top corners, the last gets rounded bottom corners. Dividers are
+  /// drawn between rows. This preserves the design while staying lazy.
+  Widget _buildWalListSliver(SyncProvider syncProvider, List<Wal> wals) {
     if (wals.isEmpty) {
       final emptyMsg = switch (_filter) {
         WalDisplayFilter.synced => context.l10n.noSyncedRecordingsYet,
         WalDisplayFilter.pending => context.l10n.noPendingRecordings,
         _ => context.l10n.noRecordingsYet,
       };
-      return Container(
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(color: const Color(0xFF1C1C1E), borderRadius: BorderRadius.circular(20)),
-        child: Center(
-          child: Text(emptyMsg, style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+      return SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        sliver: SliverToBoxAdapter(
+          child: Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(color: const Color(0xFF1C1C1E), borderRadius: BorderRadius.circular(20)),
+            child: Center(
+              child: Text(emptyMsg, style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+            ),
+          ),
         ),
       );
     }
 
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      sliver: SliverList.builder(
+        itemCount: wals.length,
+        itemBuilder: (context, i) => _buildWalListItem(syncProvider, wals, i),
+      ),
+    );
+  }
+
+  Widget _buildWalListItem(SyncProvider syncProvider, List<Wal> wals, int i) {
+    final wal = wals[i];
+    final isFirst = i == 0;
+    final isLast = i == wals.length - 1;
     return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1C1C1E),
+        borderRadius: BorderRadius.vertical(
+          top: isFirst ? const Radius.circular(20) : Radius.zero,
+          bottom: isLast ? const Radius.circular(20) : Radius.zero,
+        ),
+      ),
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(color: const Color(0xFF1C1C1E), borderRadius: BorderRadius.circular(20)),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          for (int i = 0; i < wals.length; i++) ...[
-            Dismissible(
-              // Index suffix because `wal.id` (device_timerStart) is not
-              // unique across SD-card + on-phone copies of the same recording.
-              key: ValueKey('${wals[i].id}#$i'),
-              direction: wals[i].isSyncing ? DismissDirection.none : DismissDirection.endToStart,
-              confirmDismiss: (direction) {
-                final uploading = wals[i].syncDisplayState == WalSyncDisplayState.uploaded;
-                return OmiConfirmDialog.show(
-                  context,
-                  title: uploading ? context.l10n.deleteWhileProcessingTitle : context.l10n.deleteRecording,
-                  message: uploading ? context.l10n.deleteWhileProcessingMessage : context.l10n.thisCannotBeUndone,
-                  confirmLabel: context.l10n.delete,
-                  confirmColor: Colors.red,
-                );
-              },
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20.0),
-                color: Colors.red,
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (direction) {
-                syncProvider.deleteWal(wals[i]);
-              },
-              child: _walRow(wals[i]),
+          Dismissible(
+            // Index suffix because `wal.id` (device_timerStart) is not unique
+            // across SD-card + on-phone copies of the same recording.
+            key: ValueKey('${wal.id}#$i'),
+            direction: wal.isSyncing ? DismissDirection.none : DismissDirection.endToStart,
+            confirmDismiss: (direction) {
+              final uploading = wal.syncDisplayState == WalSyncDisplayState.uploaded;
+              return OmiConfirmDialog.show(
+                context,
+                title: uploading ? context.l10n.deleteWhileProcessingTitle : context.l10n.deleteRecording,
+                message: uploading ? context.l10n.deleteWhileProcessingMessage : context.l10n.thisCannotBeUndone,
+                confirmLabel: context.l10n.delete,
+                confirmColor: Colors.red,
+              );
+            },
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20.0),
+              color: Colors.red,
+              child: const Icon(Icons.delete, color: Colors.white),
             ),
-            if (i < wals.length - 1) const Divider(height: 1, color: Color(0xFF2C2C2E), indent: 16, endIndent: 16),
-          ],
+            onDismissed: (direction) {
+              syncProvider.deleteWal(wal);
+            },
+            child: _walRow(wal),
+          ),
+          if (!isLast) const Divider(height: 1, color: Color(0xFF2C2C2E), indent: 16, endIndent: 16),
         ],
       ),
     );

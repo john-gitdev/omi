@@ -429,6 +429,12 @@ class AppLocalizationsCs extends AppLocalizations {
   String get offlineSync => 'Offline synchronizace';
 
   @override
+  String get autoSync => 'Automatická synchronizace';
+
+  @override
+  String get autoSyncDescription => 'Automaticky synchronizovat offline nahrávky při připojení zařízení';
+
+  @override
   String get deviceSettings => 'Nastavení zařízení';
 
   @override
@@ -961,11 +967,6 @@ class AppLocalizationsCs extends AppLocalizations {
   @override
   String insightsUsedThisMonth(String used, String limit) {
     return 'Tento měsíc získáno $used z $limit přehledů';
-  }
-
-  @override
-  String memoriesUsedThisMonth(String used, String limit) {
-    return 'Tento měsíc vytvořeno $used z $limit vzpomínek';
   }
 
   @override
@@ -1713,12 +1714,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String devicesFoundNearby(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'ZAŘÍZENÍ',
-      one: 'ZAŘÍZENÍ',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'ZAŘÍZENÍ', one: 'ZAŘÍZENÍ');
     return '$count $_temp0 NALEZENO V BLÍZKOSTI';
   }
 
@@ -4623,41 +4619,13 @@ class AppLocalizationsCs extends AppLocalizations {
       'Děkujeme, že jste váženým uživatelem Omi. Máte-li jakékoli dotazy nebo obavy, neváhejte nás kontaktovat na team@basedhardware.com.';
 
   @override
-  String get wifiSyncSettings => 'Nastavení WiFi synchronizace';
-
-  @override
-  String get enterHotspotCredentials => 'Zadejte přihlašovací údaje hotspotu telefonu';
-
-  @override
-  String get wifiSyncUsesHotspot =>
-      'WiFi synchronizace používá váš telefon jako hotspot. Název a heslo najdete v Nastavení > Osobní hotspot.';
-
-  @override
-  String get hotspotNameSsid => 'Název hotspotu (SSID)';
-
-  @override
-  String get exampleIphoneHotspot => 'např. iPhone Hotspot';
-
-  @override
   String get password => 'Heslo';
-
-  @override
-  String get enterHotspotPassword => 'Zadejte heslo hotspotu';
 
   @override
   String get saveCredentials => 'Uložit přihlašovací údaje';
 
   @override
   String get clearCredentials => 'Vymazat přihlašovací údaje';
-
-  @override
-  String get pleaseEnterHotspotName => 'Prosím zadejte název hotspotu';
-
-  @override
-  String get wifiCredentialsSaved => 'WiFi přihlašovací údaje uloženy';
-
-  @override
-  String get wifiCredentialsCleared => 'WiFi přihlašovací údaje vymazány';
 
   @override
   String summaryGeneratedForDate(String date) {
@@ -5802,9 +5770,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get limitless => 'Limitless';
 
   @override
-  String get fastTransfer => 'Rychlý přenos';
-
-  @override
   String get syncingStatus => 'Synchronizace';
 
   @override
@@ -5814,15 +5779,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String etaLabel(String time) {
     return 'Odhadovaný čas: $time';
   }
-
-  @override
-  String get transferMethod => 'Metoda přenosu';
-
-  @override
-  String get fast => 'Rychle';
-
-  @override
-  String get ble => 'BLE';
 
   @override
   String get phone => 'Telefon';
@@ -5843,25 +5799,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get processedFilesDeleted => 'Zpracované soubory smazány';
 
   @override
-  String get wifiEnableFailed => 'Nepodařilo se povolit WiFi na zařízení. Zkuste to prosím znovu.';
-
-  @override
-  String get deviceNoFastTransfer => 'Vaše zařízení nepodporuje rychlý přenos. Použijte místo toho Bluetooth.';
-
-  @override
-  String get enableHotspotMessage => 'Povolte prosím hotspot telefonu a zkuste to znovu.';
-
-  @override
-  String get transferStartFailed => 'Nepodařilo se spustit přenos. Zkuste to prosím znovu.';
-
-  @override
   String get deviceNotResponding => 'Zařízení neodpovídá. Zkuste to prosím znovu.';
-
-  @override
-  String get invalidWifiCredentials => 'Neplatné přihlašovací údaje WiFi. Zkontrolujte nastavení hotspotu.';
-
-  @override
-  String get wifiConnectionFailed => 'Připojení WiFi selhalo. Zkuste to prosím znovu.';
 
   @override
   String get sdCardProcessing => 'Zpracování SD karty';
@@ -5873,9 +5811,6 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get process => 'Zpracovat';
-
-  @override
-  String get wifiSyncFailed => 'WiFi synchronizace selhala';
 
   @override
   String get processingFailed => 'Zpracování selhalo';
@@ -6651,24 +6586,13 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get wifiSync => 'Synchronizace WiFi';
-
-  @override
   String itemCopiedToClipboard(String item) {
     return '$item zkopírováno do schránky';
   }
 
   @override
-  String get wifiConnectionFailedTitle => 'Připojení selhalo';
-
-  @override
   String connectingToDeviceName(String deviceName) {
     return 'Připojování k $deviceName';
-  }
-
-  @override
-  String enableDeviceWifi(String deviceName) {
-    return 'Povolit WiFi na $deviceName';
   }
 
   @override
@@ -6764,9 +6688,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get statusUnprocessed => 'Nezpracováno';
 
   @override
-  String get switchedToFastTransfer => 'Přepnuto na rychlý přenos';
-
-  @override
   String get transferCompleteMessage => 'Přenos dokončen! Nyní můžete tuto nahrávku přehrát.';
 
   @override
@@ -6778,33 +6699,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get transferCancelled => 'Přenos zrušen';
 
   @override
-  String get fastTransferEnabled => 'Rychlý přenos povolen';
-
-  @override
   String get bluetoothSyncEnabled => 'Synchronizace Bluetooth povolena';
-
-  @override
-  String get enableFastTransfer => 'Povolit rychlý přenos';
-
-  @override
-  String get fastTransferDescription =>
-      'Rychlý přenos používá WiFi pro ~5x rychlejší přenosy. Váš telefon se dočasně připojí k WiFi síti zařízení Omi během přenosu.';
-
-  @override
-  String get internetAccessPausedDuringTransfer => 'Přístup k internetu je během přenosu pozastaven';
-
-  @override
-  String get chooseTransferMethodDescription => 'Zvolte, jak se nahrávky přenášejí ze zařízení Omi do telefonu.';
-
-  @override
-  String get wifiSpeed => '~150 KB/s přes WiFi';
-
-  @override
-  String get fiveTimesFaster => '5X RYCHLEJŠÍ';
-
-  @override
-  String get fastTransferMethodDescription =>
-      'Vytvoří přímé WiFi připojení k zařízení Omi. Telefon se dočasně odpojí od běžné WiFi během přenosu.';
 
   @override
   String get bluetooth => 'Bluetooth';
@@ -7508,13 +7403,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get voiceFailedToTranscribe => 'Nepodařilo se přepsat zvuk';
 
   @override
-  String get locationPermissionRequired => 'Vyžadováno oprávnění k poloze';
-
-  @override
-  String get locationPermissionContent =>
-      'Rychlý přenos vyžaduje oprávnění k poloze pro ověření WiFi připojení. Prosím, udělte oprávnění k poloze pro pokračování.';
-
-  @override
   String get pdfTranscriptExport => 'Export přepisu';
 
   @override
@@ -7659,12 +7547,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String get dailyRecapsDescription => 'Vaše denní přehledy se zde zobrazí po vygenerování';
 
   @override
-  String get chooseTransferMethod => 'Vyberte metodu přenosu';
-
-  @override
-  String get fastTransferSpeed => '~150 KB/s přes WiFi';
-
-  @override
   String largeTimeGapDetected(String gap) {
     return 'Zjištěna velká časová mezera ($gap)';
   }
@@ -7673,10 +7555,6 @@ class AppLocalizationsCs extends AppLocalizations {
   String largeTimeGapsDetected(String gaps) {
     return 'Zjištěny velké časové mezery ($gaps)';
   }
-
-  @override
-  String get deviceDoesNotSupportWifiSwitchingToBle =>
-      'Zařízení nepodporuje WiFi synchronizaci, přepínání na Bluetooth';
 
   @override
   String get appleHealthNotAvailable => 'Apple Health není na tomto zařízení k dispozici';
@@ -7875,6 +7753,9 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get viewAll => 'Zobrazit vše';
+
+  @override
+  String get expand => 'Rozbalit';
 
   @override
   String get addTask => 'Přidat úkol';
@@ -9268,7 +9149,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get syncStatusBackedUp => 'Zálohováno';
 
   @override
-  String get syncStatusBackingUp => 'Zálohování…';
+  String get syncStatusBackingUp => 'Synchronizace…';
 
   @override
   String get syncStatusWaiting => 'Čeká na synchronizaci';
@@ -9335,7 +9216,7 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get syncFlowIntro =>
-      'Nahrávky se přenášejí z vašeho zařízení Omi do tohoto telefonu a ukládají se lokálně, poté se nahrávají na server Omi, kde se přepisují a převádějí na konverzace.';
+      'Nahrávky se přenášejí z vašeho zařízení do tohoto telefonu a ukládají se místně, poté se nahrávají na server Omi, kde se přepisují a mění v konverzace.';
 
   @override
   String get syncStepUpload => 'Synchronizace';
@@ -9366,7 +9247,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get syncCardUploadingTitle => 'Nahrávání do Omi';
 
   @override
-  String get syncCardDownloadingTitle => 'Stahování z Omi';
+  String get syncCardDownloadingTitle => 'Stahování z vašeho zařízení';
 
   @override
   String syncCardProgressOf(int current, int total) {
@@ -9374,10 +9255,10 @@ class AppLocalizationsCs extends AppLocalizations {
   }
 
   @override
-  String get syncStatusOnDevice => 'Čeká na Omi';
+  String get syncStatusOnDevice => 'Ve vašem zařízení';
 
   @override
-  String get syncStatusDownloadingFromDevice => 'Stahování z Omi';
+  String get syncStatusDownloadingFromDevice => 'Stahování z vašeho zařízení';
 
   @override
   String get newestFirst => 'Nejnovější první';
@@ -9387,4 +9268,199 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get morePaymentMethodsComingSoon => 'Brzy přibudou další platební metody';
+
+  @override
+  String get syncProcessingBackgroundHint => 'Pokračuje to na pozadí — tuto obrazovku můžete opustit.';
+
+  @override
+  String get syncCardRateLimited => 'Byl dosažen limit férového využití — synchronizace bude automaticky pokračovat';
+
+  @override
+  String get syncCardBackendBusy =>
+      'Servery Omi jsou vytížené — vaše nahrávky se synchronizují, jakmile bude k dispozici kapacita';
+
+  @override
+  String get unableToDetermineFirmwareVersion => 'Nelze určit aktuální verzi firmwaru';
+
+  @override
+  String get promoCode => 'Promo kód';
+
+  @override
+  String get enterPromoCode => 'Zadejte promo kód';
+
+  @override
+  String get invalidPromotionCode => 'Neplatný promo kód.';
+
+  @override
+  String get backgroundModeTitle => 'Režim na pozadí';
+
+  @override
+  String get backgroundModeDescription => 'Udržujte nahrávání Omi, i když je aplikace úplně zavřená.';
+
+  @override
+  String get backgroundModeNote => 'Zatím funguje pouze se zařízeními Omi a průběžně se vylepšuje.';
+
+  @override
+  String get backgroundModeUnavailable =>
+      'Režim na pozadí není k dispozici, protože není připojeno žádné kompatibilní zařízení. Pro použití této funkce připojte zařízení Omi, OpenGlass nebo Friend Pendant.';
+
+  @override
+  String get regenerateRecap => 'Znovu vygenerovat shrnutí';
+
+  @override
+  String get recapRegeneratedSnackbar => 'Shrnutí bylo znovu vygenerováno';
+
+  @override
+  String get recapRegenerateFailed => 'Shrnutí se nepodařilo znovu vygenerovat. Zkuste to později.';
+
+  @override
+  String get recapRegenerateCooldown => 'Před opětovným generováním prosím počkejte několik sekund.';
+
+  @override
+  String get recapRegenerateNoConversations => 'Pro tento den nejsou žádné konverzace k shrnutí.';
+
+  @override
+  String get syncCustomSttWarningTitle => 'Synchronizace používá přepis Omi';
+
+  @override
+  String get syncCustomSttWarningMessage =>
+      'Používáte vlastního poskytovatele přepisu. Synchronizace těchto nahrávek je přepíše na serverech Omi a započítají se do limitu přepisu vašeho tarifu.';
+
+  @override
+  String get transcribeLaterTitle => 'Přepsat později';
+
+  @override
+  String get transcribeLaterDescription =>
+      'Nahrávejte zvuk hned a přepisujte ho podle potřeby místo přepisu naživo. Nahrávky se uloží do telefonu a poté je nahrajete na server, aby z nich vznikly konverzace.';
+
+  @override
+  String get transcribeLaterNote =>
+      'Zatím funguje se zařízeními Omi. Zvuk zůstává v telefonu, dokud se ho nerozhodnete odeslat.';
+
+  @override
+  String get transcribeLaterStorageFull =>
+      'V telefonu dochází místo, proto je nahrávání pozastaveno. Uvolněte místo nebo odešlete své nahrávky a nahrávání se automaticky obnoví.';
+
+  @override
+  String get recordingMode => 'Režim nahrávání';
+
+  @override
+  String get captureModeLater => 'Později';
+
+  @override
+  String get captureModeLiveDescription => 'Přepis v reálném čase, jak mluvíte.';
+
+  @override
+  String get captureModeLaterDescription => 'Uložte zvuk nyní a přepište jej, kdykoli budete chtít.';
+
+  @override
+  String get unmute => 'Zapnout zvuk';
+
+  @override
+  String get newRecording => 'Nová nahrávka';
+
+  @override
+  String get transcribeLaterPaused => 'Pozastaveno — zvuk se nenahrává';
+
+  @override
+  String get deviceTutorial => 'Jak používat Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionTitle => 'Mluvte do svého Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionSubtitle => 'Řekněte pár slov a sledujte, jak se zobrazují v reálném čase';
+
+  @override
+  String get deviceOnboardingGoodJob => 'Skvělá práce!';
+
+  @override
+  String get deviceOnboardingStartSpeaking => 'Začněte mluvit...';
+
+  @override
+  String get deviceOnboardingAskQuestionTitle => 'Zeptejte se Omi';
+
+  @override
+  String get deviceOnboardingAskQuestionSubtitle =>
+      'Jednou stiskněte tlačítko, položte otázku a po dokončení stiskněte znovu';
+
+  @override
+  String get deviceOnboardingProcessingQuestion => 'Zpracovávám vaši otázku...';
+
+  @override
+  String get deviceOnboardingListening => 'Poslouchám...';
+
+  @override
+  String get deviceOnboardingTurnOffTitle => 'Vypnutí';
+
+  @override
+  String get deviceOnboardingTurnOnTitle => 'Zapnutí';
+
+  @override
+  String get deviceOnboardingTurnOffSubtitle => 'Podržte tlačítko po dobu 3 sekund';
+
+  @override
+  String get deviceOnboardingTurnOnSubtitle => 'Stisknutím tlačítka zařízení znovu zapnete';
+
+  @override
+  String get deviceOnboardingHoldButtonHint => 'Pevně držte tlačítko, dokud kontrolka nezhasne';
+
+  @override
+  String get deviceOnboardingStatusConnected => 'Připojeno';
+
+  @override
+  String get deviceOnboardingStatusConnectedDone => 'Připojeno!';
+
+  @override
+  String get deviceOnboardingStatusDisconnected => 'Odpojeno';
+
+  @override
+  String get deviceOnboardingStatusTurningOff => 'Vypínám...';
+
+  @override
+  String get deviceOnboardingDoubleTapTitle => 'Nastavení dvojitého klepnutí';
+
+  @override
+  String get deviceOnboardingEndConversation => 'Ukončit konverzaci';
+
+  @override
+  String get deviceOnboardingEndConversationDesc => 'Uložit a ukončit aktuální konverzaci';
+
+  @override
+  String get deviceOnboardingMuteUnmute => 'Ztlumit / Zrušit ztlumení';
+
+  @override
+  String get deviceOnboardingMuteUnmuteDesc => 'Zapnout nebo vypnout mikrofon';
+
+  @override
+  String get deviceOnboardingStarConversation => 'Označit probíhající konverzaci hvězdičkou';
+
+  @override
+  String get deviceOnboardingStarConversationDesc => 'Označit konverzaci jako důležitou';
+
+  @override
+  String get deviceOnboardingSingleTapHint => 'To bylo jen jedno klepnutí – zkuste klepnout dvakrát rychle za sebou!';
+
+  @override
+  String get deviceOnboardingTryDoubleTap => 'Vyzkoušejte to! Dvakrát klepněte na své Omi';
+
+  @override
+  String get deviceOnboardingContinue => 'Pokračovat';
+
+  @override
+  String get deviceOnboardingFinish => 'Dokončit';
+
+  @override
+  String get deviceOnboardingIntroTitle => 'Poznejte svůj Omi';
+
+  @override
+  String get deviceOnboardingIntroSubtitle => 'Rychlá praktická prohlídka všeho, co váš Omi umí.';
+
+  @override
+  String get deviceOnboardingIntroDuration => 'Přibližně 1 minuta';
+  @override
+  String get jumpToLatestMessage => 'Přejít na nejnovější zprávu';
+
+  @override
+  String get latest => 'Nejnovější';
 }

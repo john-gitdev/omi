@@ -322,6 +322,8 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
       _SearchableItem(title: context.l10n.speechProfile, icon: profileIcon, onTap: goToProfile),
       _SearchableItem(title: context.l10n.identifyingOthers, icon: profileIcon, onTap: goToProfile),
       _SearchableItem(title: context.l10n.voiceResponseMode, icon: profileIcon, onTap: goToProfile),
+      if (Platform.isAndroid)
+        _SearchableItem(title: context.l10n.backgroundModeTitle, icon: profileIcon, onTap: goToProfile),
       _SearchableItem(title: context.l10n.paymentMethods, icon: profileIcon, onTap: goToProfile),
       _SearchableItem(title: context.l10n.conversationDisplay, icon: profileIcon, onTap: goToProfile),
       _SearchableItem(title: context.l10n.dataPrivacy, icon: profileIcon, onTap: goToProfile),
@@ -341,7 +343,6 @@ class _SettingsDrawerState extends State<SettingsDrawer> {
         _SearchableItem(title: context.l10n.deviceName, icon: deviceIcon, onTap: goToDevice),
         _SearchableItem(title: context.l10n.firmware, icon: deviceIcon, onTap: goToDevice),
         _SearchableItem(title: context.l10n.sdCardSync, icon: deviceIcon, onTap: goToDevice),
-        _SearchableItem(title: context.l10n.wifiSync, icon: deviceIcon, onTap: goToDevice),
         _SearchableItem(title: context.l10n.doubleTap, icon: deviceIcon, onTap: goToDevice),
         _SearchableItem(title: context.l10n.ledBrightness, icon: deviceIcon, onTap: goToDevice),
         _SearchableItem(title: context.l10n.micGain, icon: deviceIcon, onTap: goToDevice),

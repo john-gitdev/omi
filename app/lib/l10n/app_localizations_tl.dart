@@ -430,6 +430,13 @@ class AppLocalizationsTl extends AppLocalizations {
   String get offlineSync => 'Offline Sync';
 
   @override
+  String get autoSync => 'Awtomatikong pag-sync';
+
+  @override
+  String get autoSyncDescription =>
+      'Awtomatikong i-sync ang mga offline na recording kapag nakakonekta ang iyong device';
+
+  @override
   String get deviceSettings => 'Mga Device Setting';
 
   @override
@@ -967,11 +974,6 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String memoriesUsedThisMonth(String used, String limit) {
-    return '$used ng $limit alaala na nabuo sa buwan na ito';
-  }
-
-  @override
   String get visibility => 'Visibility';
 
   @override
@@ -1470,7 +1472,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get payYourSttProvider => 'Gamitin ang omi nang libre. Direkta lang sa iyong STT provider ang babayaran mo.';
 
   @override
-  String get freeMinutesMonth => '1,200 libreng minuto/buwan kasama. Unlimited sa ';
+  String get freeMinutesMonth => '600 libreng minuto/buwan kasama. Unlimited sa ';
 
   @override
   String get omiUnlimited => 'Omi Unlimited';
@@ -1719,12 +1721,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String devicesFoundNearby(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'DEVICES',
-      one: 'DEVICE',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 'DEVICES', one: 'DEVICE');
     return '$count $_temp0 NAHANAP SA MALAPIT';
   }
 
@@ -4669,41 +4666,13 @@ class AppLocalizationsTl extends AppLocalizations {
       'Salamat sa pagiging valued user ng Omi. Kung mayroon kang anumang mga katanungan o alalahanin, huwag mag-atubiling makipag-ugnayan sa amin sa team@basedhardware.com.';
 
   @override
-  String get wifiSyncSettings => 'WiFi Sync Settings';
-
-  @override
-  String get enterHotspotCredentials => 'Ipasok ang iyong phone hotspot credentials';
-
-  @override
-  String get wifiSyncUsesHotspot =>
-      'Ang WiFi sync ay gumagamit ng iyong phone bilang hotspot. Hanapin ang iyong hotspot name at password sa Settings > Personal Hotspot.';
-
-  @override
-  String get hotspotNameSsid => 'Hotspot Name (SSID)';
-
-  @override
-  String get exampleIphoneHotspot => 'halimbawa iPhone Hotspot';
-
-  @override
   String get password => 'Password';
-
-  @override
-  String get enterHotspotPassword => 'Ipasok ang hotspot password';
 
   @override
   String get saveCredentials => 'I-save ang Credentials';
 
   @override
   String get clearCredentials => 'I-clear ang Credentials';
-
-  @override
-  String get pleaseEnterHotspotName => 'Mangyaring ipasok ang isang hotspot name';
-
-  @override
-  String get wifiCredentialsSaved => 'WiFi credentials na na-save';
-
-  @override
-  String get wifiCredentialsCleared => 'WiFi credentials na na-clear';
 
   @override
   String summaryGeneratedForDate(String date) {
@@ -4772,7 +4741,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get noSpecificDataAccessConfigured => 'Walang specific data access na na-configure.';
 
   @override
-  String get basicPlanDescription => '1,200 premium mins + unlimited on-device';
+  String get basicPlanDescription => '600 premium mins + unlimited on-device';
 
   @override
   String get minutes => 'minutes';
@@ -5859,9 +5828,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get limitless => 'Limitless';
 
   @override
-  String get fastTransfer => 'Fast Transfer';
-
-  @override
   String get syncingStatus => 'Sine-sync';
 
   @override
@@ -5871,15 +5837,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String etaLabel(String time) {
     return 'ETA: $time';
   }
-
-  @override
-  String get transferMethod => 'Transfer Method';
-
-  @override
-  String get fast => 'Mabilis';
-
-  @override
-  String get ble => 'BLE';
 
   @override
   String get phone => 'Telepono';
@@ -5900,26 +5857,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get processedFilesDeleted => 'Naprosesong mga file ay natanggal';
 
   @override
-  String get wifiEnableFailed => 'Nabigo ang pagpapagana ng WiFi sa device. Subukan ulit.';
-
-  @override
-  String get deviceNoFastTransfer =>
-      'Ang iyong device ay hindi sumusuporta sa Fast Transfer. Gumamit ng Bluetooth sa halip.';
-
-  @override
-  String get enableHotspotMessage => 'Pakipagana ang hotspot ng iyong telepono at subukan ulit.';
-
-  @override
-  String get transferStartFailed => 'Nabigo ang pagsisimula ng transfer. Subukan ulit.';
-
-  @override
   String get deviceNotResponding => 'Ang device ay hindi tumugon. Subukan ulit.';
-
-  @override
-  String get invalidWifiCredentials => 'Invalid na WiFi credentials. Suriin ang iyong hotspot settings.';
-
-  @override
-  String get wifiConnectionFailed => 'Nabigo ang WiFi connection. Subukan ulit.';
 
   @override
   String get sdCardProcessing => 'SD Card Processing';
@@ -5931,9 +5869,6 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get process => 'Proseso';
-
-  @override
-  String get wifiSyncFailed => 'Nabigo ang WiFi Sync';
 
   @override
   String get processingFailed => 'Nabigo ang Pagpoproseso';
@@ -6108,7 +6043,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get premiumMinutesInfo =>
-      '1,200 premium na minuto/buwan. Ang On-Device tab ay nag-aalok ng unlimited na libreng transcription.';
+      '600 premium na minuto/buwan. Ang On-Device tab ay nag-aalok ng unlimited na libreng transcription.';
 
   @override
   String get viewUsage => 'Tingnan ang paggamit';
@@ -6191,7 +6126,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get premiumMinutesMonth =>
-      '1,200 premium na minuto/buwan. Ang On-Device tab ay nag-aalok ng unlimited na libreng transcription. ';
+      '600 premium na minuto/buwan. Ang On-Device tab ay nag-aalok ng unlimited na libreng transcription. ';
 
   @override
   String get audioProcessedLocally =>
@@ -6717,24 +6652,13 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get wifiSync => 'WiFi Sync';
-
-  @override
   String itemCopiedToClipboard(String item) {
     return '$item ay kinopya sa clipboard';
   }
 
   @override
-  String get wifiConnectionFailedTitle => 'Connection Failed';
-
-  @override
   String connectingToDeviceName(String deviceName) {
     return 'Kumokonekta sa $deviceName';
-  }
-
-  @override
-  String enableDeviceWifi(String deviceName) {
-    return 'Paganahin ang $deviceName\'s WiFi';
   }
 
   @override
@@ -6831,9 +6755,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get statusUnprocessed => 'Hindi Naproseso';
 
   @override
-  String get switchedToFastTransfer => 'Lumipat sa Fast Transfer';
-
-  @override
   String get transferCompleteMessage => 'Tapos na ang paglipat! Maaari mo na ngayong i-play ang recording na ito.';
 
   @override
@@ -6845,34 +6766,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get transferCancelled => 'Kinansela ang paglipat';
 
   @override
-  String get fastTransferEnabled => 'Fast Transfer ay naka-enable';
-
-  @override
   String get bluetoothSyncEnabled => 'Bluetooth sync ay naka-enable';
-
-  @override
-  String get enableFastTransfer => 'I-enable ang Fast Transfer';
-
-  @override
-  String get fastTransferDescription =>
-      'Gumagamit ang Fast Transfer ng WiFi para sa humigit-kumulang na 5x na mas mabilis na bilis. Ang iyong telepono ay pansamantalang magkonekta sa WiFi network ng iyong Omi device sa panahon ng paglipat.';
-
-  @override
-  String get internetAccessPausedDuringTransfer => 'Ang internet access ay napigil sa panahon ng paglipat';
-
-  @override
-  String get chooseTransferMethodDescription =>
-      'Pumili kung paano ang mga recording ay ilipat mula sa iyong Omi device patungo sa iyong telepono.';
-
-  @override
-  String get wifiSpeed => '~150 KB/s sa pamamagitan ng WiFi';
-
-  @override
-  String get fiveTimesFaster => '5X MAS MABILIS';
-
-  @override
-  String get fastTransferMethodDescription =>
-      'Lumilikha ng direktang WiFi connection sa iyong Omi device. Ang iyong telepono ay pansamantalang nadadiskonekta mula sa iyong regular na WiFi sa panahon ng paglipat.';
 
   @override
   String get bluetooth => 'Bluetooth';
@@ -7584,13 +7478,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get voiceFailedToTranscribe => 'Nabigo ang pag-transcribe ng audio';
 
   @override
-  String get locationPermissionRequired => 'Ang Location Permission ay Kinakailangan';
-
-  @override
-  String get locationPermissionContent =>
-      'Ang Fast Transfer ay nangangailangan ng location permission upang ma-verify ang WiFi connection. Mangyaring bigyan ng location permission upang magpatuloy.';
-
-  @override
   String get pdfTranscriptExport => 'Transcript Export';
 
   @override
@@ -7735,12 +7622,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String get dailyRecapsDescription => 'Ang iyong daily recaps ay lilitaw dito kapag na-generate na';
 
   @override
-  String get chooseTransferMethod => 'Pumili ng Transfer Method';
-
-  @override
-  String get fastTransferSpeed => '~150 KB/s sa pamamagitan ng WiFi';
-
-  @override
   String largeTimeGapDetected(String gap) {
     return 'Malaking time gap na natuklasan ($gap)';
   }
@@ -7749,10 +7630,6 @@ class AppLocalizationsTl extends AppLocalizations {
   String largeTimeGapsDetected(String gaps) {
     return 'Malaking time gaps na natuklasan ($gaps)';
   }
-
-  @override
-  String get deviceDoesNotSupportWifiSwitchingToBle =>
-      'Ang device ay hindi sumusuporta sa WiFi sync, lumipat sa Bluetooth';
 
   @override
   String get appleHealthNotAvailable => 'Ang Apple Health ay hindi available sa device na ito';
@@ -7951,6 +7828,9 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get viewAll => 'Tingnan Lahat';
+
+  @override
+  String get expand => 'Palawakin';
 
   @override
   String get addTask => 'Magdagdag ng Task';
@@ -8648,12 +8528,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String nConversationsCreated(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 's',
-      one: '',
-    );
+    String _temp0 = intl.Intl.pluralLogic(count, locale: localeName, other: 's', one: '');
     return '$count conversation$_temp0 na ginawa';
   }
 
@@ -9357,7 +9232,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get syncStatusBackedUp => 'Na-back up na';
 
   @override
-  String get syncStatusBackingUp => 'Nagba-back up…';
+  String get syncStatusBackingUp => 'Sine-sync…';
 
   @override
   String get syncStatusWaiting => 'Naghihintay na mag-sync';
@@ -9420,7 +9295,7 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get syncFlowIntro =>
-      'Inililipat ang mga recording mula sa iyong Omi device papunta sa telepono na ito at iniimbak nang lokal, pagkatapos ay ina-upload sa server ng Omi kung saan ito tina-transcribe at ginagawang mga pag-uusap.';
+      'Ang mga recording ay inililipat mula sa iyong device patungo sa telepono na ito at iniimbak nang lokal, pagkatapos ay ina-upload sa server ng Omi kung saan tina-transcribe ang mga ito at ginagawang mga pag-uusap.';
 
   @override
   String get syncStepUpload => 'I-sync';
@@ -9451,7 +9326,7 @@ class AppLocalizationsTl extends AppLocalizations {
   String get syncCardUploadingTitle => 'Ina-upload sa Omi';
 
   @override
-  String get syncCardDownloadingTitle => 'Dina-download mula sa Omi';
+  String get syncCardDownloadingTitle => 'Dina-download mula sa iyong device';
 
   @override
   String syncCardProgressOf(int current, int total) {
@@ -9459,10 +9334,10 @@ class AppLocalizationsTl extends AppLocalizations {
   }
 
   @override
-  String get syncStatusOnDevice => 'Naghihintay sa Omi';
+  String get syncStatusOnDevice => 'Nasa iyong device';
 
   @override
-  String get syncStatusDownloadingFromDevice => 'Dina-download mula sa Omi';
+  String get syncStatusDownloadingFromDevice => 'Dina-download mula sa iyong device';
 
   @override
   String get newestFirst => 'Pinakabago muna';
@@ -9472,4 +9347,203 @@ class AppLocalizationsTl extends AppLocalizations {
 
   @override
   String get morePaymentMethodsComingSoon => 'Mas maraming paraan ng pagbabayad na malapit nang dumating';
+
+  @override
+  String get syncProcessingBackgroundHint => 'Magpapatuloy ito sa background — puwede mong iwan ang screen na ito.';
+
+  @override
+  String get syncCardRateLimited =>
+      'Naabot na ang limitasyon ng patas na paggamit — awtomatikong magpapatuloy ang pag-sync';
+
+  @override
+  String get syncCardBackendBusy =>
+      'Abala ang mga server ng Omi — masi-sync ang iyong mga recording kapag may bakanteng kapasidad na muli';
+
+  @override
+  String get unableToDetermineFirmwareVersion => 'Hindi matukoy ang kasalukuyang bersyon ng firmware';
+
+  @override
+  String get promoCode => 'Promo code';
+
+  @override
+  String get enterPromoCode => 'Ilagay ang promo code';
+
+  @override
+  String get invalidPromotionCode => 'Hindi valid na promo code.';
+
+  @override
+  String get backgroundModeTitle => 'Background Mode';
+
+  @override
+  String get backgroundModeDescription => 'Panatilihing nagre-record ang iyong Omi kahit na ganap nang sarado ang app.';
+
+  @override
+  String get backgroundModeNote => 'Sa ngayon ay gumagana lang sa mga Omi device at patuloy na pinapabuti.';
+
+  @override
+  String get backgroundModeUnavailable =>
+      'Hindi available ang Background Mode dahil walang nakakonektang compatible na device. Magkonekta ng Omi, OpenGlass, o Friend Pendant device para magamit ang feature na ito.';
+
+  @override
+  String get regenerateRecap => 'Buuin muli ang buod';
+
+  @override
+  String get recapRegeneratedSnackbar => 'Nabuo muli ang buod';
+
+  @override
+  String get recapRegenerateFailed => 'Hindi nagawang muling buuin ang buod. Subukang muli mamaya.';
+
+  @override
+  String get recapRegenerateCooldown => 'Mangyaring maghintay ng ilang segundo bago bumuo muli.';
+
+  @override
+  String get recapRegenerateNoConversations => 'Walang mga pag-uusap na ibubuod para sa araw na ito.';
+
+  @override
+  String get syncCustomSttWarningTitle => 'Gumagamit ang pag-sync ng transcription ng Omi';
+
+  @override
+  String get syncCustomSttWarningMessage =>
+      'Gumagamit ka ng sarili mong transcription provider. Kapag in-sync ang mga recording na ito, ita-transcribe ang mga ito sa mga server ng Omi at mabibilang sa limitasyon ng transcription ng iyong plan.';
+
+  @override
+  String get transcribeLaterTitle => 'I-transcribe Mamaya';
+
+  @override
+  String get transcribeLaterDescription =>
+      'Mag-record ng audio ngayon at i-transcribe ito kapag kailangan mo, sa halip na live. Naka-save ang mga recording sa iyong telepono, tapos i-a-upload mo ang mga ito para gumawa ng mga usapan.';
+
+  @override
+  String get transcribeLaterNote =>
+      'Gumagana muna sa mga Omi device. Mananatili ang audio sa iyong telepono hangga\'t hindi mo ito ina-upload.';
+
+  @override
+  String get transcribeLaterStorageFull =>
+      'Kapos na sa storage ang iyong telepono, kaya naka-pause ang pag-record. Magbakante ng espasyo o i-upload ang iyong mga recording, at awtomatiko itong magpapatuloy.';
+
+  @override
+  String get recordingMode => 'Mode ng pag-record';
+
+  @override
+  String get captureModeLater => 'Mamaya';
+
+  @override
+  String get captureModeLiveDescription => 'I-transcribe nang real time habang nagsasalita ka.';
+
+  @override
+  String get captureModeLaterDescription => 'I-save ang audio ngayon at i-transcribe kahit kailan mo gusto.';
+
+  @override
+  String get unmute => 'I-unmute';
+
+  @override
+  String get newRecording => 'Bagong recording';
+
+  @override
+  String get transcribeLaterPaused => 'Naka-pause — hindi nire-record ang audio';
+
+  @override
+  String get deviceTutorial => 'Paano Gamitin ang Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionTitle => 'Magsalita sa Iyong Omi';
+
+  @override
+  String get deviceOnboardingTranscriptionSubtitle =>
+      'Magsabi ng ilang salita at panoorin itong lumitaw nang real-time';
+
+  @override
+  String get deviceOnboardingGoodJob => 'Magaling!';
+
+  @override
+  String get deviceOnboardingStartSpeaking => 'Magsimulang magsalita...';
+
+  @override
+  String get deviceOnboardingAskQuestionTitle => 'Magtanong sa Omi';
+
+  @override
+  String get deviceOnboardingAskQuestionSubtitle =>
+      'Pindutin ang button nang isang beses, sabihin ang iyong tanong, pagkatapos ay pindutin muli kapag tapos na';
+
+  @override
+  String get deviceOnboardingProcessingQuestion => 'Pinoproseso ang iyong tanong...';
+
+  @override
+  String get deviceOnboardingListening => 'Nakikinig...';
+
+  @override
+  String get deviceOnboardingTurnOffTitle => 'Patayin';
+
+  @override
+  String get deviceOnboardingTurnOnTitle => 'Buksan';
+
+  @override
+  String get deviceOnboardingTurnOffSubtitle => 'Pindutin nang matagal ang button sa loob ng 3 segundo';
+
+  @override
+  String get deviceOnboardingTurnOnSubtitle => 'Pindutin ang button para muling buksan ito';
+
+  @override
+  String get deviceOnboardingHoldButtonHint => 'Pindutin nang matatag ang button hanggang mamatay ang ilaw';
+
+  @override
+  String get deviceOnboardingStatusConnected => 'Nakakonekta';
+
+  @override
+  String get deviceOnboardingStatusConnectedDone => 'Nakakonekta!';
+
+  @override
+  String get deviceOnboardingStatusDisconnected => 'Nadiskonekta';
+
+  @override
+  String get deviceOnboardingStatusTurningOff => 'Pinapatay...';
+
+  @override
+  String get deviceOnboardingDoubleTapTitle => 'I-customize ang Double Tap';
+
+  @override
+  String get deviceOnboardingEndConversation => 'Tapusin ang Usapan';
+
+  @override
+  String get deviceOnboardingEndConversationDesc => 'I-save at tapusin ang kasalukuyang usapan';
+
+  @override
+  String get deviceOnboardingMuteUnmute => 'I-mute / I-unmute';
+
+  @override
+  String get deviceOnboardingMuteUnmuteDesc => 'I-on o i-off ang mikropono';
+
+  @override
+  String get deviceOnboardingStarConversation => 'I-star ang Kasalukuyang Usapan';
+
+  @override
+  String get deviceOnboardingStarConversationDesc => 'Markahan ang usapan bilang mahalaga';
+
+  @override
+  String get deviceOnboardingSingleTapHint =>
+      'Isang tap lang iyon — subukang mag-tap nang dalawang beses nang mabilis!';
+
+  @override
+  String get deviceOnboardingTryDoubleTap => 'Subukan mo ngayon! I-double tap ang iyong Omi';
+
+  @override
+  String get deviceOnboardingContinue => 'Magpatuloy';
+
+  @override
+  String get deviceOnboardingFinish => 'Tapusin';
+
+  @override
+  String get deviceOnboardingIntroTitle => 'Kilalanin ang Iyong Omi';
+
+  @override
+  String get deviceOnboardingIntroSubtitle =>
+      'Isang mabilis at praktikal na pamamasyal sa lahat ng kayang gawin ng iyong Omi.';
+
+  @override
+  String get deviceOnboardingIntroDuration => 'Mga 1 minuto';
+  @override
+  String get jumpToLatestMessage => 'Tumalon sa pinakabagong mensahe';
+
+  @override
+  String get latest => 'Pinakabago';
 }
